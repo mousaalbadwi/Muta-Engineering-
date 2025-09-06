@@ -1,0 +1,16 @@
+﻿@model MutaEngineering.Models.AcademicAlert
+@{
+    var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] = isRtl ? "تعديل تنبيه" : "Edit Alert";
+}
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+    <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        @Html.Partial("_Form", Model)
+    </form>
+</section>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

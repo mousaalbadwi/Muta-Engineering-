@@ -1,0 +1,49 @@
+/* _content/MutaEngineering/Views/Shared/_Layout.cshtml.rz.scp.css */
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand[b-rtrr69x1zl] {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a[b-rtrr69x1zl] {
+  color: #0077cc;
+}
+
+.btn-primary[b-rtrr69x1zl] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active[b-rtrr69x1zl], .nav-pills .show > .nav-link[b-rtrr69x1zl] {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top[b-rtrr69x1zl] {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom[b-rtrr69x1zl] {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow[b-rtrr69x1zl] {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy[b-rtrr69x1zl] {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer[b-rtrr69x1zl] {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}

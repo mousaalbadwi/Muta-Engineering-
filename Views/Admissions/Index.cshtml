@@ -1,0 +1,228 @@
+﻿@using System.Globalization
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    ViewData["Title"] = T("القبول والتسجيل", "Admissions");
+}
+
+@section Styles {
+    <style>
+        /* ===== Hero ===== */
+        .ad-hero {
+            position: relative;
+            min-height: 260px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            color: #fff;
+            background: radial-gradient(1200px 300px at 50% 0%, rgba(13,110,253,.35), transparent 60%), linear-gradient(135deg, #0d6efd, #6610f2);
+            overflow: hidden;
+            border-radius: 1.25rem;
+        }
+
+            .ad-hero .hero-wave {
+                position: absolute;
+                inset: auto 0 0 0;
+                height: 70px;
+                pointer-events: none;
+                opacity: .35;
+            }
+
+            .ad-hero h1 {
+                font-weight: 800;
+                letter-spacing: .3px;
+            }
+
+            .ad-hero p {
+                opacity: .85;
+            }
+
+        /* ===== Cards ===== */
+        .ad-card {
+            display: block;
+            background: #fff;
+            border: 0;
+            border-radius: 1rem;
+            padding: 1.25rem 1.25rem 1rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,.06);
+            transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+            position: relative;
+        }
+
+            .ad-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 36px rgba(0,0,0,.10);
+            }
+
+        .ad-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            margin-inline-end: .75rem;
+            background: #f3f6ff;
+            border: 1px solid #e7ecff;
+            font-size: 22px;
+        }
+
+        .ad-card small {
+            color: #6c757d;
+        }
+
+        /* ===== Side panel ===== */
+        .ad-panel {
+            background: #fff;
+            border-radius: 1rem;
+            padding: 1rem 1rem;
+            border: 0;
+            box-shadow: 0 8px 30px rgba(0,0,0,.06);
+        }
+
+        .ad-timeline {
+            position: relative;
+            padding-left: 1rem;
+            margin: 0;
+        }
+
+            .ad-timeline li {
+                list-style: none;
+                margin: 0 0 .75rem 0;
+                padding-left: .5rem;
+                position: relative;
+            }
+
+                .ad-timeline li::before {
+                    content: "";
+                    position: absolute;
+                    left: -.9rem;
+                    top: .4rem;
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 50%;
+                    background: #0d6efd;
+                    box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+                }
+
+        /* RTL tweaks */
+        [dir="rtl"] .ad-timeline {
+            padding-right: 1rem;
+            padding-left: 0;
+        }
+
+            [dir="rtl"] .ad-timeline li {
+                padding-right: .5rem;
+                padding-left: 0;
+            }
+
+                [dir="rtl"] .ad-timeline li::before {
+                    right: -.9rem;
+                    left: auto;
+                }
+    </style>
+}
+
+<section class="container my-4">
+    <!-- ===== HERO ===== -->
+    <div class="ad-hero mb-4">
+        <div class="px-3 px-md-5 py-4">
+            <h1 class="display-6 mb-2">
+                @T("القبول والتسجيل – كلية الهندسة", "Admissions – Faculty of Engineering")
+            </h1>
+            <p class="lead mb-0">
+                @T("كل ما تحتاجه للتقديم: المتطلبات، خطوات الطلب، والرسوم/المنح.",
+                "Everything you need to apply: requirements, how to apply, and tuition/scholarships.")
+            </p>
+        </div>
+        <div class="hero-wave">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none" width="100%" height="100%">
+                <path fill="#ffffff" d="M0,60 C240,90 480,30 720,60 C960,90 1200,30 1440,60 L1440,120 L0,120 Z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <!-- ===== CONTENT ===== -->
+    <div class="row g-3 g-md-4 after-hero">
+        <!-- Left: main cards -->
+        <div class="col-12 col-lg-8">
+            <div class="row g-3 g-md-4">
+                <!-- Requirements -->
+                <div class="col-12 col-md-6">
+                    <a class="text-decoration-none" asp-controller="Admissions" asp-action="Requirements">
+                        <div class="ad-card h-100">
+                            <div class="d-flex align-items-start">
+                                <div class="ad-icon"><i class="bi bi-clipboard-check"></i></div>
+                                <div>
+                                    <h5 class="mb-1">@T("متطلبات القبول", "Admission Requirements")</h5>
+                                    <small>@T("الشروط، الوثائق المطلوبة، والمعدلات.", "Eligibility, documents, and prerequisites.")</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- How to apply -->
+                <div class="col-12 col-md-6">
+                    <a class="text-decoration-none" asp-controller="Admissions" asp-action="HowToApply">
+                        <div class="ad-card h-100">
+                            <div class="d-flex align-items-start">
+                                <div class="ad-icon"><i class="bi bi-compass"></i></div>
+                                <div>
+                                    <h5 class="mb-1">@T("كيفية التقديم", "How to Apply")</h5>
+                                    <small>@T("خطوات واضحة ورابط البوابة الموحَّدة.", "Clear steps and unified portal link.")</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Tuition & Scholarships -->
+                <div class="col-12">
+                    <a class="text-decoration-none" asp-controller="Admissions" asp-action="Tuition">
+                        <div class="ad-card">
+                            <div class="d-flex align-items-start">
+                                <div class="ad-icon"><i class="bi bi-cash-coin"></i></div>
+                                <div>
+                                    <h5 class="mb-1">@T("الرسوم والمنح", "Tuition & Scholarships")</h5>
+                                    <small>
+                                        @T("الرسوم التفصيلية، طرق الدفع، والمنح المتاحة.",
+                                                                                "Tuition breakdown, payment methods, and available scholarships.")
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: side widgets -->
+        <div class="col-12 col-lg-4">
+            <div class="ad-panel mb-3">
+                <h6 class="mb-3">@T("تواريخ مهمة", "Important Dates")</h6>
+                <ul class="ad-timeline">
+                    <li><strong>@T("فتح باب التقديم", "Applications open")</strong> — @T("1 تموز", "July 1")</li>
+                    <li><strong>@T("إغلاق التقديم", "Applications close")</strong> — @T("31 آب", "Aug 31")</li>
+                    <li><strong>@T("إعلان القبول", "Admission results")</strong> — @T("منتصف أيلول", "Mid-September")</li>
+                </ul>
+            </div>
+
+            <div class="ad-panel">
+                <h6 class="mb-2">@T("أسئلة سريعة", "Quick FAQs")</h6>
+                <div class="small text-muted">
+                    <p class="mb-2">
+                        • @T("هل يوجد تقديم إلكتروني؟", "Is there online application?")
+                        <br />@T("نعم، عبر البوابة الإلكترونية للجامعة.", "Yes, via the university portal.")
+                    </p>
+                    <p class="mb-0">
+                        • @T("هل تتوفر منح؟", "Are scholarships available?")
+                        <br />@T("راجع صفحة الرسوم والمنح للتفاصيل.", "See Tuition & Scholarships for details.")
+                    </p>
+                </div>
+                <a class="btn btn-outline-primary btn-sm mt-3" asp-controller="Admissions" asp-action="HowToApply">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>@T("ابدأ التقديم", "Start Application")
+                </a>
+            </div>
+        </div>
+    </div>
+</section>

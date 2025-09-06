@@ -1,0 +1,192 @@
+﻿@using System.Globalization
+@using MutaEngineering.Models
+@model List<MutaEngineering.Models.Exam>
+
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    ViewData["Title"] ??= T("اختبارات الجامعة", "University Exams");
+
+    var depDict = (IDictionary<string, string>)ViewBag.Departments;
+    var years = (IEnumerable<int>)ViewBag.Years;
+    var isAdmin = (bool?)ViewBag.IsAdmin == true;
+
+    var currentDept = Context.Request.Query["dept"].ToString();
+    var currentYear = Context.Request.Query["year"].ToString();
+    var currentQ = Context.Request.Query["q"].ToString();
+}
+
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+
+    @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
+    {
+        <div class="alert alert-success">@ok</div>
+    }
+
+    @if (isAdmin)
+    {
+        <div class="mb-3 d-flex gap-2">
+            <a class="btn btn-primary"
+               asp-action="Create"
+               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                <i class="bi bi-plus-lg me-1"></i>@T("إضافة امتحان", "Add Exam")
+            </a>
+            <a class="btn btn-outline-secondary"
+               asp-action="Archive">
+                <i class="bi bi-archive me-1"></i>@T("أرشيف النماذج", "Past Papers Archive")
+            </a>
+        </div>
+    }
+
+    <form method="get" class="row g-2 g-md-3 align-items-end mb-3">
+        <div class="col-12 col-md-3">
+            <label class="form-label small">@T("القسم", "Department")</label>
+            <select name="dept" class="form-select" onchange="this.form.submit()">
+                <option value="">@T("الكل", "All")</option>
+                @foreach (var kv in depDict)
+                {
+                    var code = kv.Key;
+                    var pair = kv.Value.Split('|');
+                    var name = isRtl ? pair[0] : pair[1];
+                    <option value="@code" selected="@(currentDept == code ? "selected" : null)">@name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-12 col-md-2">
+            <label class="form-label small">@T("السنة", "Year")</label>
+            <select name="year" class="form-select" onchange="this.form.submit()">
+                <option value="">@T("الكل", "All")</option>
+                @foreach (var y in years)
+                {
+                    <option value="@y" selected="@(currentYear == y.ToString() ? "selected" : null)">@y</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-12 col-md-5">
+            <label class="form-label small">@T("بحث بالمادة/الكود", "Search by course/code")</label>
+            <input name="q" class="form-control" value="@currentQ" />
+        </div>
+
+        <div class="col-12 col-md-2 d-grid">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search me-1"></i>@T("بحث", "Search")
+            </button>
+        </div>
+    </form>
+
+    <div class="row g-3 g-md-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12"><div class="alert alert-info mb-0">@T("لا توجد امتحانات مطابقة.", "No matching exams.")</div></div>
+        }
+        else
+        {
+            @foreach (var e in Model)
+            {
+                var title = isRtl ? e.CourseNameAr : e.CourseNameEn;
+                var deptName = e.Department == null ? "" : (isRtl ? e.Department.NameAr : e.Department.NameEn);
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3 pb-5 position-relative">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <div class="small text-muted">@e.CourseCode • @deptName • @T("سنة", "Y") @e.Year</div>
+                                <h5 class="m-0">@title</h5>
+                            </div>
+                            <span class="badge text-bg-@(e.Mode == ExamMode.Online ? "info" : "secondary")">
+                                @(e.Mode == ExamMode.Online ? T("إلكتروني", "Online") : T("حضوري", "In-Person"))
+                            </span>
+                        </div>
+                        <div class="text-muted small">
+                            <i class="bi bi-calendar-event me-1"></i>@e.DateTime.ToString("ddd dd/MM • HH:mm", CultureInfo.CurrentUICulture)
+                            @if (e.Mode == ExamMode.InPerson && !string.IsNullOrWhiteSpace(e.Location))
+                            {
+                                <span class="ms-2"><i class="bi bi-geo-alt me-1"></i>@e.Location</span>
+                            }
+                        </div>
+                        @if (e.HasStegoProtection)
+                        {
+                            <div class="mt-2 small text-success"><i class="bi bi-shield-check me-1"></i>@T("محمي بستيغانوغرافي", "Stego-protected")</div>
+                        }
+
+                        <a class="stretched-link" asp-action="Details" asp-route-id="@e.Id"></a>
+
+                        @if (isAdmin)
+                        {
+                            <div class="position-absolute bottom-0 end-0 p-2 d-flex gap-1 admin-actions" style="z-index:20;">
+                                <a class="btn btn-sm btn-light border"
+                                   asp-action="Edit" asp-route-id="@e.Id"
+                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
+                                   title="Edit" onclick="event.stopPropagation();">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="Delete" method="post" class="d-inline js-delete-form" onsubmit="event.stopPropagation();">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@e.Id" />
+                                    <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+                                    <button type="button" class="btn btn-sm btn-light border js-delete-btn" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="mt-4 d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Archive"><i class="bi bi-archive me-1"></i>@T("نماذج سابقة", "Past Papers")</a>
+        <a class="btn btn-outline-secondary" asp-action="Policies"><i class="bi bi-journal-check me-1"></i>@T("السياسات والتعليمات", "Policies & Guidelines")</a>
+        <a class="btn btn-outline-secondary" asp-action="Support"><i class="bi bi-life-preserver me-1"></i>@T("الدعم الفني", "Technical Support")</a>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        (function () {
+          document.addEventListener('click', function (ev) {
+            const btn = ev.target.closest('.js-delete-btn');
+            if (!btn) return;
+
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            const form = btn.closest('.js-delete-form');
+            if (!form) return;
+
+            const rtl = document.documentElement.dir === 'rtl';
+            Swal.fire({
+              title: rtl ? 'تأكيد الحذف؟' : 'Confirm delete?',
+              text:  rtl ? 'لا يمكن التراجع بعد الحذف.' : 'This action cannot be undone.',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: rtl ? 'نعم، احذف' : 'Yes, delete',
+              cancelButtonText:   rtl ? 'إلغاء' : 'Cancel',
+              reverseButtons: rtl,
+              customClass: { confirmButton: 'btn btn-danger', cancelButton: 'btn btn-secondary ms-2' },
+              buttonsStyling: false
+            }).then(res => { if (res.isConfirmed) form.submit(); });
+          }, true);
+        })();
+    </script>
+
+    <style>
+        .card .admin-actions {
+            z-index: 20;
+        }
+
+        .stretched-link::after {
+            z-index: 1;
+        }
+
+        .admin-actions, .admin-actions * {
+            pointer-events: auto !important;
+        }
+    </style>
+}

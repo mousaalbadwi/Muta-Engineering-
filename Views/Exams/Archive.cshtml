@@ -1,0 +1,301 @@
+﻿@model IEnumerable<MutaEngineering.Models.ExamArchiveItem>
+@using System.Globalization
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    // ViewData["Title"] يجي من الكنترولر (سياسات/أرشيف...) — نتركه كما هو
+    var isAdmin = (bool?)ViewBag.IsAdmin == true;
+}
+
+<!-- Hero -->
+<section class="ex-hero py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    @(ViewData["Title"] ?? (isRtl ? "نماذج امتحانات سابقة" : "Past Exam Papers"))
+                </h1>
+                <p class="lead text-muted mb-0">
+                    @(isRtl
+                                        ? "نماذج وامتحانات سابقة قابلة للتنزيل — رتّب وابحث بالرمز أو اسم المساق أو الفصل."
+                                        : "Downloadable past papers — filter by course code, name, or term.")
+                </p>
+            </div>
+            <div class="col-12 col-lg-4 d-none d-lg-block">
+                <div class="ex-illust rounded-4 shadow-sm"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Exams sub-nav -->
+<section class="py-3">
+    <div class="container">
+        <ul class="nav nav-pills ex-subnav small">
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Exams" asp-action="Index">
+                    <i class="bi bi-list-ul me-1"></i> @(isRtl ? "الامتحانات" : "Exams")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Exams" asp-action="Policies">
+                    <i class="bi bi-shield-check me-1"></i> @(isRtl ? "السياسات" : "Policies")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Exams" asp-action="Support">
+                    <i class="bi bi-life-preserver me-1"></i> @(isRtl ? "الدعم" : "Support")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Exams" asp-action="Archive">
+                    <i class="bi bi-archive me-1"></i> @(isRtl ? "الأرشيف" : "Archive")
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- Filters -->
+<section class="py-3">
+    <div class="container">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-3 p-md-4">
+                <div class="row g-2 g-md-3 align-items-end">
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <label class="form-label mb-1">@((isRtl ? "ابحث" : "Search"))</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input id="q" class="form-control" placeholder="@((isRtl ? "كود/اسم المساق" : "Course code/name"))" />
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-2">
+                        <label class="form-label mb-1">@((isRtl ? "الفصل" : "Term"))</label>
+                        <select id="term" class="form-select">
+                            <option value="">@((isRtl ? "الكل" : "All"))</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3 col-lg-2">
+                        <label class="form-label mb-1">@((isRtl ? "الترتيب" : "Sort"))</label>
+                        <select id="sort" class="form-select">
+                            <option value="term_desc">@((isRtl ? "الأحدث أولًا" : "Newest first"))</option>
+                            <option value="term_asc">@((isRtl ? "الأقدم أولًا" : "Oldest first"))</option>
+                            <option value="code_asc">@((isRtl ? "حسب الكود (أ-ي)" : "By code (A-Z)"))</option>
+                            <option value="name_asc">@((isRtl ? "حسب الاسم (أ-ي)" : "By name (A-Z)"))</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-lg-4 text-lg-end">
+                        @if (isAdmin)
+                        {
+                            <a asp-action="ArchiveCreate" asp-controller="Exams" asp-route-returnUrl="@(Context?.Request?.Path.Value)"
+                               class="btn btn-primary">
+                                <i class="bi bi-plus-lg me-1"></i>@(isRtl ? "إضافة ملف للأرشيف" : "Add archive item")
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Archive grid -->
+<section class="py-4">
+    <div class="container">
+        <div id="grid" class="row g-3 g-md-4">
+            @foreach (var item in Model)
+            {
+                var name = isRtl ? item.CourseNameAr : item.CourseNameEn;
+                var paperUrl = string.IsNullOrWhiteSpace(item.PdfUrl) ? null : Url.Content(item.PdfUrl);
+                var solUrl = string.IsNullOrWhiteSpace(item.SolutionUrl) ? null : Url.Content(item.SolutionUrl);
+
+                <div class="col-12 col-md-6 col-xl-4 archive-card"
+                     data-code="@item.CourseCode"
+                     data-name="@name"
+                     data-term="@item.Term">
+                    <div class="card h-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex align-items-start justify-content-between gap-3">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span class="badge rounded-pill text-bg-secondary">@item.CourseCode</span>
+                                        @if (!string.IsNullOrWhiteSpace(item.Term))
+                                        {
+                                            <span class="badge rounded-pill text-bg-primary">@item.Term</span>
+                                        }
+                                    </div>
+                                    <h5 class="mt-2 mb-1 lh-sm">@name</h5>
+                                    <div class="text-muted small">@((isRtl ? "Past paper" : "Past paper"))</div>
+                                </div>
+                                <div class="file-glyph" aria-hidden="true"><i class="bi bi-file-earmark-pdf"></i></div>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                @if (paperUrl != null)
+                                {
+                                    <a class="btn btn-outline-primary btn-sm" href="@paperUrl" target="_blank" rel="noopener">
+                                        <i class="bi bi-box-arrow-up-right me-1"></i>@(isRtl ? "فتح الملف" : "Open paper")
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="btn btn-outline-secondary btn-sm disabled">
+                                        <i class="bi bi-file-earmark-x me-1"></i>@(isRtl ? "لا يوجد ملف" : "No paper")
+                                    </span>
+                                }
+
+                                @if (solUrl != null)
+                                {
+                                    <a class="btn btn-outline-success btn-sm" href="@solUrl" target="_blank" rel="noopener">
+                                        <i class="bi bi-filetype-pdf me-1"></i>@(isRtl ? "نموذج حل" : "Solution")
+                                    </a>
+                                }
+                            </div>
+
+                            @if (isAdmin)
+                            {
+                                <div class="d-flex flex-wrap gap-2 mt-3 border-top pt-3">
+                                    <a class="btn btn-sm btn-outline-dark"
+                                       asp-action="ArchiveEdit" asp-route-id="@item.Id"
+                                       asp-route-returnUrl="@(Context?.Request?.Path.Value)">
+                                        <i class="bi bi-pencil-square me-1"></i>@(isRtl ? "تعديل" : "Edit")
+                                    </a>
+
+                                    <form method="post" asp-action="ArchiveDelete" class="d-inline"
+                                          asp-route-id="@item.Id" asp-route-returnUrl="@(Context?.Request?.Path.Value)">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('@(isRtl ? "هل تريد حذف هذا السجل من الأرشيف؟" : "Delete this archive item?")')">
+                                            <i class="bi bi-trash me-1"></i>@(isRtl ? "حذف" : "Delete")
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Empty state -->
+        <div id="empty" class="text-center py-5 d-none">
+            <div class="display-6 mb-2">🤷‍♂️</div>
+            <p class="text-muted mb-0">@((isRtl ? "لا توجد عناصر مطابقة للبحث." : "No items match your filters."))</p>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        /* Hero */
+        .ex-hero {
+            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%), radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%), linear-gradient(180deg, #f8fbff, #ffffff);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .ex-illust {
+            height: 340px;
+            width: 110%; /* عشان تتأكد إنها ماخدة عرض كامل */
+            background-image: url('/img/illustrations/Architect-bro.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 90%; /* الصورة تغطي كل البوكس */
+        
+        }
+
+        /* Subnav */
+        .ex-subnav .nav-link {
+            background: #f5f7fb;
+            border: 1px solid #e7edf5;
+            color: #334155;
+            margin-inline-end: .5rem;
+        }
+
+            .ex-subnav .nav-link:hover {
+                background: #eef3ff;
+                color: #0d6efd;
+            }
+
+            .ex-subnav .nav-link.active {
+                background: #0d6efd;
+                color: #fff;
+                border-color: #0d6efd;
+                box-shadow: 0 6px 14px rgba(13,110,253,.18);
+            }
+
+        /* Cards */
+        .file-glyph {
+            font-size: 2rem;
+            color: #c2cbe2;
+        }
+
+        .archive-card .card {
+            background: linear-gradient(180deg,#ffffff,#fcfdff);
+            border: 1px solid #e7edf5;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+          const grid = document.getElementById('grid');
+          const empty = document.getElementById('empty');
+          const q = document.getElementById('q');
+          const term = document.getElementById('term');
+          const sort = document.getElementById('sort');
+
+          const cards = Array.from(grid.querySelectorAll('.archive-card'));
+
+          // Fill term select from data
+          const terms = [...new Set(cards.map(c => (c.dataset.term || '').trim()).filter(Boolean))]
+            .sort((a,b)=>a.localeCompare(b, undefined, {numeric:true}));
+          for (const t of terms) {
+            const opt = document.createElement('option');
+            opt.value = t; opt.textContent = t;
+            term.appendChild(opt);
+          }
+
+          function apply() {
+            const query = (q.value || '').toLowerCase().trim();
+            const t = (term.value || '').toLowerCase().trim();
+
+            let visible = [];
+
+            for (const c of cards) {
+              const code = (c.dataset.code || '').toLowerCase();
+              const name = (c.dataset.name || '').toLowerCase();
+              const ct = (c.dataset.term || '').toLowerCase();
+
+              const matchQ = !query || code.includes(query) || name.includes(query);
+              const matchT = !t || ct === t;
+
+              const show = matchQ && matchT;
+              c.classList.toggle('d-none', !show);
+              if (show) visible.push(c);
+            }
+
+            // sort
+            const getTerm = c => (c.dataset.term || '');
+            const getCode = c => (c.dataset.code || '');
+            const getName = c => (c.dataset.name || '');
+            switch (sort.value) {
+              case 'term_asc':   visible.sort((a,b)=> getTerm(a).localeCompare(getTerm(b), undefined, {numeric:true})); break;
+              case 'term_desc':  visible.sort((a,b)=> getTerm(b).localeCompare(getTerm(a), undefined, {numeric:true})); break;
+              case 'code_asc':   visible.sort((a,b)=> getCode(a).localeCompare(getCode(b), undefined, {numeric:true})); break;
+              case 'name_asc':   visible.sort((a,b)=> getName(a).localeCompare(getName(b), undefined, {numeric:true})); break;
+            }
+
+            // reflow
+            for (const c of visible) grid.appendChild(c);
+
+            empty.classList.toggle('d-none', visible.length > 0);
+          }
+
+          q.addEventListener('input', apply);
+          term.addEventListener('change', apply);
+          sort.addEventListener('change', apply);
+          apply();
+        })();
+    </script>
+}

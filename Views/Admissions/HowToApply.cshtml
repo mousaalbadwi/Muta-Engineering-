@@ -1,0 +1,355 @@
+﻿@using System.Globalization
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] = isRtl ? "طريقة التقديم" : "How to Apply";
+}
+
+<!-- Hero -->
+<section class="ad-hero py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    @(isRtl ? "طريقة التقديم" : "How to Apply")
+                </h1>
+                <p class="lead text-muted mb-0">
+                    @(isRtl
+                                        ? "اتبع الخطوات التالية لإكمال طلب الالتحاق بكلية الهندسة – جامعة مؤتة."
+                                        : "Follow the steps below to complete your application to the Faculty of Engineering – Mutah University.")
+                </p>
+            </div>
+            <div class="col-12 col-lg-4 d-none d-lg-block">
+                <div class="ad-illust rounded-4 shadow-sm"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admissions sub-nav -->
+<section class="py-3">
+    <div class="container">
+        <ul class="nav nav-pills ad-subnav small">
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="Index">
+                    <i class="bi bi-grid me-1"></i> @(isRtl ? "الرئيسية" : "Overview")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="Requirements">
+                    <i class="bi bi-clipboard-check me-1"></i> @(isRtl ? "المتطلبات" : "Requirements")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Admissions" asp-action="HowToApply">
+                    <i class="bi bi-check2-square me-1"></i> @(isRtl ? "طريقة التقديم" : "How to apply")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="Tuition">
+                    <i class="bi bi-cash-coin me-1"></i> @(isRtl ? "الرسوم" : "Tuition & Fees")
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- Content -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Main -->
+            <div class="col-12 col-lg-8">
+
+                <!-- Stepper -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-list-check text-primary fs-5"></i>
+                            <h3 class="h4 mb-0">@((isRtl ? "خطوات التقديم" : "Application steps"))</h3>
+                        </div>
+
+                        <ol class="stepper">
+                            <li class="step">
+                                <div class="step-icon bg-primary-subtle"><i class="bi bi-person-plus"></i></div>
+                                <div class="step-body">
+                                    <h6 class="mb-1">@((isRtl ? "أنشئ حسابًا" : "Create an account"))</h6>
+                                    <p class="text-muted mb-2">
+                                        @((isRtl ? "سجّل بواسطة بريدك الإلكتروني لإدارة طلبك والمتابعة." : "Sign up with your email to manage and track your application."))
+                                    </p>
+                                    <a asp-controller="Account" asp-action="SignUp" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i>@(isRtl ? "إنشاء حساب" : "Sign up")
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="step">
+                                <div class="step-icon bg-success-subtle"><i class="bi bi-ui-checks"></i></div>
+                                <div class="step-body">
+                                    <h6 class="mb-1">@((isRtl ? "املأ نموذج الطلب" : "Fill the application form"))</h6>
+                                    <p class="text-muted mb-2">
+                                        @((isRtl ? "أدخل بياناتك الشخصية والأكاديمية بدقة." : "Enter your personal and academic information accurately."))
+                                    </p>
+                                    <a href="~/docs/admissions/application-form.pdf" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-file-earmark-pdf me-1"></i>@(isRtl ? "تنزيل النموذج (PDF)" : "Download form (PDF)")
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="step">
+                                <div class="step-icon bg-warning-subtle"><i class="bi bi-cloud-upload"></i></div>
+                                <div class="step-body">
+                                    <h6 class="mb-1">@((isRtl ? "ارفع الوثائق المطلوبة" : "Upload required documents"))</h6>
+                                    <ul class="list-dot mb-2">
+                                        <li>@(isRtl ? "هوية/جواز سفر" : "ID/Passport")</li>
+                                        <li>@(isRtl ? "كشف علامات الثانوية" : "High school transcript")</li>
+                                        <li>@(isRtl ? "صورة شخصية" : "Personal photo")</li>
+                                    </ul>
+                                    <small class="text-muted">
+                                        @((isRtl ? "الصيغ المقبولة: PDF/JPG، الحجم الأقصى 5MB للملف." : "Accepted: PDF/JPG, up to 5MB per file."))
+                                    </small>
+                                </div>
+                            </li>
+
+                            <li class="step">
+                                <div class="step-icon bg-info-subtle"><i class="bi bi-credit-card2-front"></i></div>
+                                <div class="step-body">
+                                    <h6 class="mb-1">@((isRtl ? "سدّد رسوم الطلب" : "Pay application fee"))</h6>
+                                    <p class="text-muted mb-2">
+                                        @((isRtl ? "يمكن الدفع إلكترونيًا أو في دوائر الجامعة." : "Pay online or at the university cashiers."))
+                                    </p>
+                                    <a asp-controller="Admissions" asp-action="Tuition" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-cash-coin me-1"></i>@(isRtl ? "تفاصيل الرسوم" : "See fees")
+                                    </a>
+                                </div>
+                            </li>
+
+                            <li class="step">
+                                <div class="step-icon bg-secondary-subtle"><i class="bi bi-send-check"></i></div>
+                                <div class="step-body">
+                                    <h6 class="mb-1">@((isRtl ? "أرسل الطلب وتابع حالته" : "Submit & track"))</h6>
+                                    <p class="text-muted mb-0">
+                                        @((isRtl ? "بعد الإرسال ستتلقى بريدًا تأكيديًا ويمكنك متابعة حالة الطلب من حسابك." : "After submission you'll receive a confirmation email and can track status from your account."))
+                                    </p>
+                                </div>
+                            </li>
+                        </ol>
+
+                        <div class="alert alert-info d-flex align-items-start gap-2 mt-3">
+                            <i class="bi bi-info-circle flex-shrink-0 fs-5"></i>
+                            <div>
+                                <strong>@(isRtl ? "تلميح:" : "Tip:")</strong>
+                                @((isRtl ? "يُنصح باستخدام بريد جامعي/احترافي وتسمية الملفات بشكل واضح (مثال: ID_YourName.pdf)." : "Use a professional email and clear file names (e.g., ID_YourName.pdf)."))
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-question-circle text-primary fs-5"></i>
+                            <h3 class="h4 mb-0">FAQ</h3>
+                        </div>
+                        <div class="accordion" id="faq">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="q1">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
+                                        @(isRtl ? "هل أستطيع تعديل الطلب بعد الإرسال؟" : "Can I edit after submitting?")
+                                    </button>
+                                </h2>
+                                <div id="a1" class="accordion-collapse collapse show" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        @((isRtl ? "يمكنك طلب فتح التعديل عبر وحدة القبول خلال 48 ساعة من الإرسال." : "You can request an edit window from the admissions unit within 48 hours of submission."))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="q2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2">
+                                        @(isRtl ? "كم يستغرق الرد؟" : "How long to get a decision?")
+                                    </button>
+                                </h2>
+                                <div id="a2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        @((isRtl ? "عادة من 7–14 يوم عمل بعد اكتمال جميع الوثائق والرسوم." : "Usually 7–14 business days after all documents and fees are complete."))
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="q3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3">
+                                        @(isRtl ? "هل يوجد أولوية زمنية؟" : "Is there time priority?")
+                                    </button>
+                                </h2>
+                                <div id="a3" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        @((isRtl ? "نعم، تُعالج الطلبات حسب تاريخ الإكمال، لذا أرسل مبكرًا." : "Yes, applications are processed by completion time—submit early."))
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /Main -->
+            <!-- Sidebar -->
+            <div class="col-12 col-lg-4">
+
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-3"><i class="bi bi-calendar2-week me-1 text-primary"></i> @(isRtl ? "تواريخ مهمة" : "Key dates")</h6>
+                        <ul class="timeline">
+                            <li><span class="tl-dot bg-primary"></span><div class="tl-content"><strong>@(isRtl ? "فتح باب التقديم" : "Application opens")</strong><div class="text-muted small">@((isRtl ? "الأسبوع الأول من أيلول" : "First week of September"))</div></div></li>
+                            <li><span class="tl-dot bg-warning"></span><div class="tl-content"><strong>@(isRtl ? "آخر موعد للتقديم" : "Deadline")</strong><div class="text-muted small">@((isRtl ? "نهاية تشرين الأول" : "End of October"))</div></div></li>
+                            <li><span class="tl-dot bg-success"></span><div class="tl-content"><strong>@(isRtl ? "إعلان النتائج" : "Results")</strong><div class="text-muted small">@((isRtl ? "منتصف تشرين الثاني" : "Mid November"))</div></div></li>
+                        </ul>
+                        <a asp-controller="Admissions" asp-action="Requirements" class="btn btn-primary w-100 mt-2">
+                            <i class="bi bi-clipboard-check me-1"></i> @(isRtl ? "تأكد من المتطلبات" : "Check requirements")
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-telephone-forward me-1 text-primary"></i> @(isRtl ? "تواصل" : "Contact")</h6>
+                        <ul class="list-unstyled small mb-0">
+                            <li><i class="bi bi-envelope me-1"></i> <a href="mailto:admissions@mutah.edu.jo">admissions@mutah.edu.jo</a></li>
+                            <li><i class="bi bi-telephone me-1"></i> +962 3 000 0000</li>
+                            <li><i class="bi bi-geo-alt me-1"></i> @(isRtl ? "الكرك - الحرم الجامعي" : "Karak – Campus")</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-link-45deg me-1 text-primary"></i> @(isRtl ? "روابط مفيدة" : "Useful links")</h6>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Admissions" asp-action="Tuition" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-cash-coin me-1"></i> @(isRtl ? "الرسوم" : "Tuition")
+                            </a>
+                            <a href="~/docs/admissions/application-form.pdf" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> @(isRtl ? "نموذج الطلب (PDF)" : "Application form (PDF)")
+                            </a>
+                            <a asp-controller="Home" asp-action="Privacy" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-shield-check me-1"></i> @(isRtl ? "سياسة الخصوصية" : "Privacy policy")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /Sidebar -->
+
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        /* Hero */
+        .ad-hero {
+            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%), radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%), linear-gradient(180deg, #f8fbff, #ffffff);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .ad-illust {
+            height: 330px;
+            width: 110%; /* عشان تتأكد إنها ماخدة عرض كامل */
+            background-image: url('/img/illustrations/Exams-rafiki.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 101%; /* الصورة تغطي كل البوكس */
+        }
+
+        /* Subnav */
+        .ad-subnav .nav-link {
+            background: #f5f7fb;
+            border: 1px solid #e7edf5;
+            color: #334155;
+            margin-inline-end: .5rem;
+        }
+
+            .ad-subnav .nav-link:hover {
+                background: #eef3ff;
+                color: #0d6efd;
+            }
+
+            .ad-subnav .nav-link.active {
+                background: #0d6efd;
+                color: #fff;
+                border-color: #0d6efd;
+                box-shadow: 0 6px 14px rgba(13,110,253,.18);
+            }
+
+        /* Stepper */
+        .stepper {
+            counter-reset: n;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px dashed #e6edf6;
+        }
+
+            .step:last-child {
+                border-bottom: 0;
+            }
+
+        .step-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+            color: #0f172a;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+        }
+
+        .step-body h6 {
+            font-weight: 600;
+        }
+
+        .list-dot {
+            padding-inline-start: 1.1rem;
+        }
+
+            .list-dot li {
+                margin-bottom: .4rem;
+            }
+
+        /* Timeline (sidebar) */
+        .timeline {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .timeline li {
+                display: flex;
+                gap: .75rem;
+                align-items: flex-start;
+                margin-bottom: .75rem;
+            }
+
+        .tl-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: .35rem;
+            display: inline-block;
+        }
+
+        .tl-content strong {
+            display: block;
+        }
+    </style>
+}

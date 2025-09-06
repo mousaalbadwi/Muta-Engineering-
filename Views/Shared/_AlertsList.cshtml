@@ -1,0 +1,35 @@
+﻿@using System.Globalization
+@model IEnumerable<MutaEngineering.Models.AcademicAlert>
+
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+}
+
+<ul class="list-unstyled m-0">
+    @foreach (var a in Model)
+    {
+        var title = isRtl ? a.TitleAr : a.TitleEn;
+        <li class="mb-2 p-2 rounded-3 border bg-white">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="me-2">
+                    <div class="fw-semibold">@title</div>
+                    <div class="small text-muted">
+                        @if (a.Date.HasValue)
+                        {
+                            <span><i class="bi bi-calendar-event me-1"></i>@a.Date.Value.ToString("dd/MM HH:mm", CultureInfo.CurrentUICulture)</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(a.Location))
+                        {
+                            <span class="ms-2"><i class="bi bi-geo-alt me-1"></i>@a.Location</span>
+                        }
+                    </div>
+                </div>
+                @if (a.IsImportant)
+                {
+                    <span class="badge text-bg-danger">@T("مهم", "Important")</span>
+                }
+            </div>
+        </li>
+    }
+</ul>

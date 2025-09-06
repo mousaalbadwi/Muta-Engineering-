@@ -1,0 +1,420 @@
+﻿@using System.Globalization
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] = isRtl ? "الدعم الفني للامتحانات" : "Exam Support";
+}
+
+<!-- Hero -->
+<section class="ex-hero py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    @(isRtl ? "الدعم الفني للامتحانات" : "Exam Support")
+                </h1>
+                <p class="lead text-muted mb-0">
+                    @(isRtl
+                                        ? "قنوات المساعدة وخطوات الحل السريع أثناء الامتحانات الحضورية والإلكترونية."
+                                        : "Help channels and quick troubleshooting for on-site and online exams.")
+                </p>
+            </div>
+            <div class="col-12 col-lg-4 d-none d-lg-block">
+                <div class="ex-illust rounded-4 shadow-sm"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Exams sub-nav -->
+<section class="py-3">
+    <div class="container">
+        <ul class="nav nav-pills ex-subnav small">
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Exams" asp-action="Index">
+                    <i class="bi bi-list-ul me-1"></i> @(isRtl ? "الامتحانات" : "Exams")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Exams" asp-action="Policies">
+                    <i class="bi bi-shield-check me-1"></i> @(isRtl ? "السياسات" : "Policies")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Exams" asp-action="Support">
+                    <i class="bi bi-life-preserver me-1"></i> @(isRtl ? "الدعم" : "Support")
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Main -->
+            <div class="col-12 col-lg-8">
+
+                <!-- Immediate help channels -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-headset text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "مساعدة فورية" : "Immediate help"))</h3>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <div class="tile">
+                                    <i class="bi bi-telephone-inbound"></i>
+                                    <div>
+                                        <strong>@(isRtl ? "الخط الساخن أثناء الامتحان" : "Exam hotline")</strong>
+                                        <div class="text-muted small">+962 3 000 0000 — 08:00–20:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="tile">
+                                    <i class="bi bi-envelope-open"></i>
+                                    <div>
+                                        <strong>exams@mutah.edu.jo</strong>
+                                        <div class="text-muted small">@((isRtl ? "إيميل الدعم الرسمي" : "Official support email"))</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <a class="tile text-decoration-none" href="#" role="button">
+                                    <i class="bi bi-chat-dots"></i>
+                                    <div>
+                                        <strong>@(isRtl ? "محادثة مباشرة" : "Live chat")</strong>
+                                        <div class="text-muted small">@((isRtl ? "متاح خلال الامتحان" : "Available during exam windows"))</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <a class="tile text-decoration-none" href="#" role="button">
+                                    <i class="bi bi-book"></i>
+                                    <div>
+                                        <strong>@(isRtl ? "قاعدة المعرفة" : "Knowledge base")</strong>
+                                        <div class="text-muted small">@((isRtl ? "أسئلة شائعة وشروحات" : "FAQs & guides"))</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick troubleshooting -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-tools text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "خطوات حلّ سريع" : "Quick troubleshooting"))</h3>
+                        </div>
+                        <ol class="list-number mb-3">
+                            <li>@(isRtl ? "أعد فتح الامتحان في نافذة خاصة (Private/Incognito) وأوقف الإضافات." : "Reopen in a private/incognito window and disable extensions.")</li>
+                            <li>@(isRtl ? "بدّل المتصفح بين Chrome/Edge/Firefox واستخدم أحدث نسخة." : "Switch between Chrome/Edge/Firefox and use the latest version.")</li>
+                            <li>@(isRtl ? "تحقّق من الكاميرا والمايك واسمح لهما في المتصفح." : "Check camera/mic and allow permissions in the browser.")</li>
+                            <li>@(isRtl ? "ثبت اتصال الإنترنت (كابل/راوتر، أو بدّل للشبكة الخلوية مؤقتًا)." : "Stabilize your internet (cable/router; or temporarily use cellular hotspot).")</li>
+                            <li>@(isRtl ? "أغلق كل البرامج غير اللازمة أثناء الامتحان." : "Close non-essential apps during the exam.")</li>
+                        </ol>
+                        <div class="alert alert-info small mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            @((isRtl ? "لو استمرّ الخلل، التقط لقطة شاشة للخطأ وأرفقها في نموذج الإبلاغ أدناه." : "If the issue persists, take a screenshot of the error and attach it in the report form below."))
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System requirements -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-pc-display text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "متطلبات النظام" : "System requirements"))</h3>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <ul class="list-dot mb-0">
+                                    <li>@(isRtl ? "ويندوز 10/11 أو ماك OS 12+." : "Windows 10/11 or macOS 12+.")</li>
+                                    <li>@(isRtl ? "متصفح حديث (Chrome/Edge/Firefox)." : "Modern browser (Chrome/Edge/Firefox).")</li>
+                                    <li>@(isRtl ? "كاميرا وميكروفون يعملان (للامتحانات المراقَبة)." : "Working camera & mic (for proctored exams).")</li>
+                                </ul>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <ul class="list-dot mb-0">
+                                    <li>@(isRtl ? "اتصال ثابت 5Mbps+ على الأقل." : "Stable 5Mbps+ connection.")</li>
+                                    <li>@(isRtl ? "سماح الأذونات للكاميرا/المايك/Popup." : "Allow camera/mic/pop-up permissions.")</li>
+                                    <li>@(isRtl ? "مساحة كافية وذاكرة متاحة." : "Sufficient disk space and free RAM.")</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proctoring & ID -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-webcam text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "المراقبة الإلكترونية والتحقّق من الهوية" : "Proctoring & ID verification"))</h3>
+                        </div>
+                        <ul class="list-check mb-0">
+                            <li>@(isRtl ? "جهّز هوية رسمية لعرضها عند الطلب." : "Keep a valid ID ready to show on request.")</li>
+                            <li>@(isRtl ? "وفّر إضاءة أمامية وتجنّب الخلفيات المشتتة." : "Provide front lighting and avoid distracting backgrounds.")</li>
+                            <li>@(isRtl ? "أغلق أي تبويبات/برامج غير لازمة." : "Close any non-essential tabs/apps.")</li>
+                            <li>@(isRtl ? "التزم بتعليمات السياسات لتجنّب المخالفات." : "Follow policy instructions to avoid violations.")</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Report an issue form -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-bug text-primary fs-5"></i>
+                                <h3 class="h5 mb-0">@((isRtl ? "الإبلاغ عن مشكلة" : "Report an issue"))</h3>
+                            </div>
+                            <span class="badge rounded-pill text-bg-secondary">@((isRtl ? "وقت الاستجابة المعتاد: 15–30 دقيقة" : "Typical response: 15–30 min"))</span>
+                        </div>
+
+                        <form method="post" action="#" enctype="multipart/form-data">
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">@((isRtl ? "الاسم الكامل" : "Full name"))</label>
+                                    <input class="form-control" name="fullName" required />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">@((isRtl ? "الرقم الجامعي" : "University ID"))</label>
+                                    <input class="form-control" name="studentId" required />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">@((isRtl ? "البريد الإلكتروني" : "Email"))</label>
+                                    <input type="email" class="form-control" name="email" required />
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">@((isRtl ? "المساق/الامتحان" : "Course/Exam"))</label>
+                                    <input class="form-control" name="course" />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">@((isRtl ? "نوع المشكلة" : "Issue type"))</label>
+                                    <select class="form-select" name="issueType">
+                                        <option>@(isRtl ? "لا أستطيع الدخول" : "Cannot access exam")</option>
+                                        <option>@(isRtl ? "انقطاع اتصال" : "Connection drop")</option>
+                                        <option>@(isRtl ? "الكاميرا/المايك لا يعمل" : "Camera/Mic not working")</option>
+                                        <option>@(isRtl ? "مشكلة تقنية أخرى" : "Other technical issue")</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">@((isRtl ? "لقطة شاشة (اختياري)" : "Screenshot (optional)"))</label>
+                                    <input type="file" class="form-control" name="screenshot" accept=".png,.jpg,.jpeg,.pdf" />
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">@((isRtl ? "وصف مختصر" : "Short description"))</label>
+                                    <textarea class="form-control" rows="3" name="details"
+                                              placeholder="@((isRtl ? "اعطني رسالة الخطأ وخطوات الوصول للمشكلة" : "Provide the error message and steps to reproduce"))"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-2 mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send me-1"></i> @(isRtl ? "إرسال البلاغ" : "Submit report")
+                                </button>
+                                <a href="mailto:exams@mutah.edu.jo" class="btn btn-outline-secondary">
+                                    <i class="bi bi-envelope me-1"></i> @(isRtl ? "إرسال عبر الإيميل" : "Send via email")
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div><!-- /Main -->
+            <!-- Sidebar -->
+            <div class="col-12 col-lg-4">
+
+                <!-- System status -->
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-3"><i class="bi bi-activity me-1 text-success"></i> @(isRtl ? "حالة الأنظمة" : "System status")</h6>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="status-dot bg-success"></span>
+                            <span class="small">@((isRtl ? "كل الأنظمة تعمل بشكل طبيعي." : "All systems operational."))</span>
+                        </div>
+                        <small class="text-muted d-block mt-2">@((isRtl ? "آخر تحديث الآن" : "Updated just now"))</small>
+                    </div>
+                </div>
+
+                <!-- Quick links -->
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-link-45deg me-1 text-primary"></i> @(isRtl ? "روابط سريعة" : "Quick links")</h6>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Exams" asp-action="Policies" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-shield-check me-1"></i> @(isRtl ? "سياسات الامتحانات" : "Exam policies")
+                            </a>
+                            <a asp-controller="Exams" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-card-checklist me-1"></i> @(isRtl ? "قائمة الامتحانات" : "Exams list")
+                            </a>
+                            <a asp-controller="Exams" asp-action="Archive" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-archive me-1"></i> @(isRtl ? "أرشيف الامتحانات" : "Exams archive")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ small -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-question-circle me-1 text-primary"></i> FAQ</h6>
+                        <div class="accordion" id="sFaq">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="sq1">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#sa1">
+                                        @(isRtl ? "المتصفح يرفض الكاميرا" : "Browser blocks camera")
+                                    </button>
+                                </h2>
+                                <div id="sa1" class="accordion-collapse collapse show" data-bs-parent="#sFaq">
+                                    <div class="accordion-body small">
+                                        @(isRtl ? "افتح الإعدادات > الخصوصية > الكاميرا واسمح للموقع. ثم أعد تحميل الصفحة." : "Go to settings > privacy > camera and allow the site, then reload.")
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="sq2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sa2">
+                                        @(isRtl ? "الامتحان لا يحمّل" : "Exam won’t load")
+                                    </button>
+                                </h2>
+                                <div id="sa2" class="accordion-collapse collapse" data-bs-parent="#sFaq">
+                                    <div class="accordion-body small">
+                                        @(isRtl ? "جرّب نافذة خاصّة، أوقف الإضافات، وامسح الكاش (Ctrl+Shift+R)." : "Try incognito, disable extensions, hard refresh (Ctrl+Shift+R).")
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="sq3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sa3">
+                                        @(isRtl ? "تأخر زمني/انقطاع" : "Lag/disconnection")
+                                    </button>
+                                </h2>
+                                <div id="sa3" class="accordion-collapse collapse" data-bs-parent="#sFaq">
+                                    <div class="accordion-body small">
+                                        @(isRtl ? "اقترب من الراوتر أو استخدم كابل، أو بدّل مؤقتًا لهاتف كنقطة اتصال." : "Move closer to router or use cable, or temporarily use phone hotspot.")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /Sidebar -->
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        /* Hero */
+        .ex-hero {
+            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%), radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%), linear-gradient(180deg, #f8fbff, #ffffff);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .ex-illust {
+            height: 340px;
+            width: 110%; /* عشان تتأكد إنها ماخدة عرض كامل */
+            background-image: url('/img/illustrations/Contact us-amico.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 90%; /* الصورة تغطي كل البوكس *
+        }
+
+        /* Subnav */
+        .ex-subnav .nav-link {
+            background: #f5f7fb;
+            border: 1px solid #e7edf5;
+            color: #334155;
+            margin-inline-end: .5rem;
+        }
+
+            .ex-subnav .nav-link:hover {
+                background: #eef3ff;
+                color: #0d6efd;
+            }
+
+            .ex-subnav .nav-link.active {
+                background: #0d6efd;
+                color: #fff;
+                border-color: #0d6efd;
+                box-shadow: 0 6px 14px rgba(13,110,253,.18);
+            }
+
+        /* Tiles & lists */
+        .tile {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            padding: .9rem;
+            border: 1px solid #e7edf5;
+            border-radius: 12px;
+            background: linear-gradient(180deg,#ffffff,#fcfdff);
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .tile i {
+                font-size: 1.15rem;
+                color: #0d6efd;
+            }
+
+        .list-check {
+            padding-inline-start: 1rem;
+        }
+
+            .list-check li {
+                margin-bottom: .55rem;
+                position: relative;
+                list-style: none;
+            }
+
+                .list-check li::before {
+                    content: "";
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg,#4f46e5,#06b6d4);
+                    position: absolute;
+                    top: .55rem;
+                    inset-inline-start: -1.5rem;
+                    box-shadow: 0 0 0 3px #eef2ff;
+                }
+
+        .list-dot {
+            padding-inline-start: 1.1rem;
+        }
+
+            .list-dot li {
+                margin-bottom: .45rem;
+            }
+
+        .list-number {
+            padding-inline-start: 1.1rem;
+        }
+
+            .list-number li {
+                margin-bottom: .5rem;
+            }
+
+        /* Status dot */
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+}

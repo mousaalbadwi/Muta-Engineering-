@@ -1,0 +1,76 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using MutaEngineering.Models
+@model Exam
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    var deps = (SelectList)ViewBag.DepartmentsSelect;
+    string toLocal(DateTime dt) => dt == default ? "" : dt.ToLocalTime().ToString("yyyy-MM-ddTHH:mm");
+}
+<div class="card border-0 shadow-sm rounded-4 p-3">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">@T("القسم", "Department")</label>
+            <select asp-for="DepartmentId" class="form-select" asp-items="deps"></select>
+            <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">@T("رمز المادة", "Course Code")</label>
+            <input asp-for="CourseCode" class="form-control" />
+            <span asp-validation-for="CourseCode" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label">@T("السنة", "Year")</label>
+            <input asp-for="Year" type="number" class="form-control" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("اسم المادة (AR)", "Course Name (AR)")</label>
+            <input asp-for="CourseNameAr" class="form-control" />
+            <span asp-validation-for="CourseNameAr" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("اسم المادة (EN)", "Course Name (EN)")</label>
+            <input asp-for="CourseNameEn" class="form-control" />
+            <span asp-validation-for="CourseNameEn" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("تاريخ ووقت الامتحان", "Date & Time")</label>
+            <input name="DateTime" type="datetime-local" class="form-control" value="@toLocal(Model.DateTime)" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">@T("النمط", "Mode")</label>
+            <select asp-for="Mode" class="form-select" asp-items="Html.GetEnumSelectList<ExamMode>()"></select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">@T("الموقع/القاعة", "Location")</label>
+            <input asp-for="Location" class="form-control" />
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">@T("تعليمات", "Instructions")</label>
+            <textarea asp-for="Instructions" rows="3" class="form-control"></textarea>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("رابط المنصة (إن وجد)", "LMS URL (optional)")</label>
+            <input asp-for="LmsUrl" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@T("طريقة الدخول للمنصة", "LMS How-To")</label>
+            <input asp-for="LmsHowTo" class="form-control" />
+        </div>
+
+        <div class="col-12 form-check mt-2">
+            <input asp-for="HasStegoProtection" class="form-check-input" />
+            <label class="form-check-label" for="HasStegoProtection">@T("محمي بستيغانوغرافي", "Stego Protected")</label>
+        </div>
+    </div>
+</div>

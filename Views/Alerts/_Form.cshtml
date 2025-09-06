@@ -1,0 +1,52 @@
+﻿@using System.Globalization
+@model MutaEngineering.Models.AcademicAlert
+
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    var returnUrl = (string?)ViewBag.ReturnUrl ?? Url.Action("Index");
+    var depSelect = (SelectList)ViewBag.Departments;
+    string? dt = Model.Date.HasValue ? Model.Date.Value.ToString("yyyy-MM-ddTHH:mm") : null;
+}
+
+<div class="row g-3">
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("العنوان (AR)", "Title (AR)")</label>
+        <input asp-for="TitleAr" class="form-control" />
+        <span asp-validation-for="TitleAr" class="text-danger"></span>
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("العنوان (EN)", "Title (EN)")</label>
+        <input asp-for="TitleEn" class="form-control" />
+        <span asp-validation-for="TitleEn" class="text-danger"></span>
+    </div>
+
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("المكان", "Location")</label>
+        <input asp-for="Location" class="form-control" />
+    </div>
+
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("الوقت والتاريخ", "Date & Time")</label>
+        <input type="datetime-local" name="Date" value="@dt" class="form-control" />
+    </div>
+
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("القسم", "Department (optional)")</label>
+        <select asp-for="DepartmentId" class="form-select" asp-items="depSelect">
+            <option value="">@T("بدون", "None")</option>
+        </select>
+    </div>
+
+    <div class="col-12 col-md-6 d-flex align-items-center">
+        <div class="form-check mt-4">
+            <input class="form-check-input" asp-for="IsImportant" />
+            <label class="form-check-label" for="IsImportant">@T("مهم", "Important")</label>
+        </div>
+    </div>
+
+    <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>@T("حفظ", "Save")</button>
+        <a class="btn btn-secondary" href="@returnUrl">@T("إلغاء", "Cancel")</a>
+    </div>
+</div>

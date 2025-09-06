@@ -1,0 +1,196 @@
+﻿@model IEnumerable<MutaEngineering.Models.AcademicAlert>
+@using System.Globalization
+@inject IHttpContextAccessor Ctx
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] = isRtl ? "الرئيسية" : "Home";
+}
+
+<!-- HERO -->
+<section class="home-hero position-relative text-white">
+    <div class="container py-5 py-lg-6 position-relative" style="z-index:2">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-7">
+                <h1 class="display-5 fw-bold mb-3">
+                    @(isRtl ? "كلية الهندسة – جامعة مؤتة" : "Faculty of Engineering – Mutah University")
+                </h1>
+                <p class="lead mb-4 text-white-75">
+                    @(isRtl
+                                        ? "بوابتك الرسمية للأقسام، الخطط الدراسية، أعضاء هيئة التدريس، الامتحانات، والأخبار."
+                                        : "Your official portal for departments, study plans, faculty, exams, and news.")
+                </p>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a asp-controller="Departments" asp-action="Index" class="btn btn-light btn-lg">
+                        <i class="bi bi-diagram-3 me-1"></i> @(isRtl ? "استعراض الأقسام" : "Explore Departments")
+                    </a>
+                    <a asp-controller="StudyPlans" asp-action="Index" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-journal-bookmark me-1"></i> @(isRtl ? "الخطط الدراسية" : "Study Plans")
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-5 d-none d-lg-block">
+                <!-- صندوق الصورة -->
+                <div class="home-illust shadow-sm rounded-4 overflow-hidden">
+                    <!-- غير المسار للصورة اللي بدك تعرضها -->
+                    <img src="~/img/MutahEng.jpeg" alt="Engineering"
+                         class="home-illust-img"
+                         onerror="this.style.display='none'; document.getElementById('heroFallback').style.display='grid';" />
+                    <div id="heroFallback" class="home-illust-fallback">
+                        <div class="bubble"></div>
+                        <div class="bubble"></div>
+                        <div class="bubble"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- موجة -->
+    <div class="wave-bottom">
+        <svg viewBox="0 0 1440 150" preserveAspectRatio="none"><path d="M0,64L48,74.7C96,85,192,107,288,106.7C384,107,480,85,576,85.3C672,85,768,107,864,117.3C960,128,1056,128,1152,117.3C1248,107,1344,85,1392,74.7L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>
+    </div>
+</section>
+
+<!-- QUICK ACTIONS -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-3 g-md-4">
+            <div class="col-6 col-lg-4">
+                <a asp-controller="Admissions" asp-action="Index" class="card card-tile h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="icon-wrap bg-primary-subtle"><i class="bi bi-mortarboard"></i></div>
+                        <div>
+                            <h6 class="mb-1">@((isRtl ? "القبول والتسجيل" : "Admissions"))</h6>
+                            <small class="text-muted">@((isRtl ? "متطلبات وآلية التقديم" : "Requirements & How to apply"))</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-lg-4">
+                <a asp-controller="Faculty" asp-action="Index" class="card card-tile h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="icon-wrap bg-success-subtle"><i class="bi bi-people"></i></div>
+                        <div>
+                            <h6 class="mb-1">@((isRtl ? "الهيئة التدريسية" : "Faculty"))</h6>
+                            <small class="text-muted">@((isRtl ? "بحث حسب القسم والاسم" : "Filter by department & name"))</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-lg-4">
+                <a asp-controller="Exams" asp-action="Index" class="card card-tile h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="icon-wrap bg-warning-subtle"><i class="bi bi-card-checklist"></i></div>
+                        <div>
+                            <h6 class="mb-1">@((isRtl ? "الامتحانات" : "Exams"))</h6>
+                            <small class="text-muted">@((isRtl ? "فلترة حسب القسم والسنة" : "Filter by department & year"))</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-lg-4">
+                <a asp-controller="Exams" asp-action="Archive" class="card card-tile h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="icon-wrap bg-info-subtle"><i class="bi bi-archive"></i></div>
+                        <div>
+                            <h6 class="mb-1">@((isRtl ? "أرشيف الامتحانات" : "Exams Archive"))</h6>
+                            <small class="text-muted">@((isRtl ? "ملفات PDF محفوظة" : "Saved PDF files"))</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-lg-4">
+                <a asp-controller="Departments" asp-action="Index" class="card card-tile h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="icon-wrap bg-danger-subtle"><i class="bi bi-building-gear"></i></div>
+                        <div>
+                            <h6 class="mb-1">@((isRtl ? "الأقسام" : "Departments"))</h6>
+                            <small class="text-muted">@((isRtl ? "نبذة وصور وروابط" : "Cards, images & links"))</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-6 col-lg-4">
+                <a asp-controller="Home" asp-action="Privacy" class="card card-tile h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <div class="icon-wrap bg-secondary-subtle"><i class="bi bi-shield-check"></i></div>
+                        <div>
+                            <h6 class="mb-1">@((isRtl ? "الخصوصية" : "Privacy"))</h6>
+                            <small class="text-muted">@((isRtl ? "كيف نتعامل مع بياناتك" : "How we handle your data"))</small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ALERTS -->
+<section class="py-4">
+    <div class="container">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-0">
+                <div class="d-flex align-items-center justify-content-between p-3 px-4 border-bottom">
+                    <h5 class="mb-0"><i class="bi bi-bell me-2 text-warning"></i>@(isRtl ? "التنبيهات الأكاديمية" : "Academic Alerts")</h5>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                        @(isRtl ? "تحديث" : "Refresh")
+                    </a>
+                </div>
+                <div class="p-3 p-md-4">
+                    <partial name="_AlertsList" model="Model" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NEWS TEASER -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-12 col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 h-100 card-gradient">
+                    <div class="card-body p-4 text-white d-flex flex-column justify-content-between">
+                        <div>
+                            <h4 class="fw-semibold mb-2"><i class="bi bi-newspaper me-2"></i>@(isRtl ? "الأخبار والفعاليات" : "News & Events")</h4>
+                            <p class="mb-0 text-white-75">
+                                @(isRtl ? "قريبًا: مستجدات الكلية وفعالياتها هنا." : "Coming soon: faculty updates and events here.")
+                            </p>
+                        </div>
+                        <div class="mt-4">
+                            <a asp-controller="News" asp-action="Index" class="btn btn-light">
+                                @(isRtl ? "استعراض عند الإطلاق" : "Browse when available")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <h6 class="text-muted mb-2">@((isRtl ? "روابط سريعة إضافية" : "More quick links"))</h6>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Exams" asp-action="Policies" class="btn btn-outline-primary">
+                                <i class="bi bi-file-text me-1"></i>@(isRtl ? "سياسات الامتحانات" : "Exam Policies")
+                            </a>
+                            <a asp-controller="Exams" asp-action="Support" class="btn btn-outline-primary">
+                                <i class="bi bi-life-preserver me-1"></i>@(isRtl ? "الدعم" : "Support")
+                            </a>
+                            <a asp-controller="Admissions" asp-action="Tuition" class="btn btn-outline-primary">
+                                <i class="bi bi-cash-coin me-1"></i>@(isRtl ? "الرسوم" : "Tuition")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

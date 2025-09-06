@@ -1,0 +1,30 @@
+﻿@using System.Globalization
+@using MutaEngineering.Models
+@model Exam
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    ViewData["Title"] = T("تعديل امتحان", "Edit Exam");
+    var returnUrl = ViewBag.ReturnUrl as string ?? Url.Action("Index");
+}
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+
+    <form asp-action="Edit" method="post" class="mt-2">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+        @if (ViewBag.FormErrors is string fe && !string.IsNullOrWhiteSpace(fe))
+        {
+            <div class="alert alert-danger">@fe</div>
+        }
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+        <partial name="_FormExam" model="Model" />
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2 me-1"></i>@T("حفظ", "Save")</button>
+            <a class="btn btn-outline-secondary" href="@returnUrl"><i class="bi bi-x me-1"></i>@T("إلغاء", "Cancel")</a>
+        </div>
+    </form>
+
+    <partial name="_ValidationScriptsPartial" />
+</section>

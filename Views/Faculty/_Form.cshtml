@@ -1,0 +1,58 @@
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using MutaEngineering.Models
+@model FacultyMember
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    var deps = (SelectList)ViewBag.Departments;
+}
+
+<div class="card border-0 shadow-sm rounded-4 p-3">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">@T("الاسم بالعربية", "Full name (AR)")</label>
+            <input asp-for="FullNameAr" class="form-control" />
+            <span asp-validation-for="FullNameAr" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@T("الاسم بالإنجليزية", "Full name (EN)")</label>
+            <input asp-for="FullNameEn" class="form-control" />
+            <span asp-validation-for="FullNameEn" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("المسمّى (AR)", "Title (AR)")</label>
+            <input asp-for="TitleAr" class="form-control" />
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@T("المسمّى (EN)", "Title (EN)")</label>
+            <input asp-for="TitleEn" class="form-control" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("البريد", "Email")</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@T("المكتب", "Office")</label>
+            <input asp-for="Office" class="form-control" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("القسم", "Department")</label>
+            <select asp-for="DepartmentId" class="form-select" asp-items="deps"></select>
+            <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("الصورة", "Photo")</label>
+            <input type="file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.webp,.gif,.svg" />
+            @if (!string.IsNullOrWhiteSpace(Model.PhotoPath))
+            {
+                <div class="small text-muted mt-1">@T("الحالية:", "Current:") @Model.PhotoPath</div>
+            }
+        </div>
+    </div>
+</div>

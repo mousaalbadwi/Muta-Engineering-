@@ -1,0 +1,29 @@
+﻿@using System.Globalization
+@using MutaEngineering.Models
+@model ExamArchiveItem
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    ViewData["Title"] = T("إضافة نموذج للأرشيف", "Add Archive Paper");
+    var returnUrl = ViewBag.ReturnUrl as string ?? Url.Action("Archive");
+}
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+
+    <form asp-action="ArchiveCreate" method="post" enctype="multipart/form-data" class="mt-2">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+        @if (ViewBag.FormErrors is string fe && !string.IsNullOrWhiteSpace(fe))
+        {
+            <div class="alert alert-danger">@fe</div>
+        }
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+        <partial name="_FormArchive" model="Model" />
+        <div class="mt-3 d-flex gap-2">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-check2 me-1"></i>@T("حفظ", "Save")</button>
+            <a class="btn btn-outline-secondary" href="@returnUrl"><i class="bi bi-x me-1"></i>@T("إلغاء", "Cancel")</a>
+        </div>
+    </form>
+
+    <partial name="_ValidationScriptsPartial" />
+</section>

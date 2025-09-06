@@ -1,0 +1,57 @@
+﻿@using System.Globalization
+@using MutaEngineering.Models
+@model ExamArchiveItem
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+}
+<div class="card border-0 shadow-sm rounded-4 p-3">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">@T("رمز المادة", "Course Code")</label>
+            <input asp-for="CourseCode" class="form-control" />
+            <span asp-validation-for="CourseCode" class="text-danger small"></span>
+        </div>
+        <div class="col-md-8">
+            <label class="form-label">@T("الفصل/العام", "Term (e.g., Spring 2024)")</label>
+            <input asp-for="Term" class="form-control" />
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("اسم المادة (AR)", "Course Name (AR)")</label>
+            <input asp-for="CourseNameAr" class="form-control" />
+            <span asp-validation-for="CourseNameAr" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">@T("اسم المادة (EN)", "Course Name (EN)")</label>
+            <input asp-for="CourseNameEn" class="form-control" />
+            <span asp-validation-for="CourseNameEn" class="text-danger small"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("ملف النموذج (PDF)", "Paper (PDF)")</label>
+            <input type="file" name="paper" class="form-control" accept=".pdf" />
+            @if (!string.IsNullOrWhiteSpace(Model.PdfUrl))
+            {
+                <div class="small mt-1">
+                    @T("الحالي:", "Current:") <a href="@Url.Content(Model.PdfUrl)" target="_blank">@Model.PdfUrl</a>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">@T("ملف الحل (PDF)", "Solution (PDF)")</label>
+            <input type="file" name="solution" class="form-control" accept=".pdf" />
+            @if (!string.IsNullOrWhiteSpace(Model.SolutionUrl))
+            {
+                <div class="form-check mt-1">
+                    <input class="form-check-input" type="checkbox" name="clearSolution" id="clearSolution" />
+                    <label class="form-check-label" for="clearSolution">@T("إزالة الحل", "Clear solution")</label>
+                </div>
+                <div class="small mt-1">
+                    @T("الحالي:", "Current:") <a href="@Url.Content(Model.SolutionUrl)" target="_blank">@Model.SolutionUrl</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

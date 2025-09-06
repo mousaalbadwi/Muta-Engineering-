@@ -1,0 +1,61 @@
+﻿@using System.Globalization
+@model MutaEngineering.Models.NewsItem
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    var returnUrl = (string?)ViewBag.ReturnUrl ?? Url.Action("Index");
+    var cats = (IEnumerable<SelectListItem>)ViewBag.Categories;
+    string dt = Model.PublishDate.ToString("yyyy-MM-ddTHH:mm");
+}
+<div class="row g-3">
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("العنوان (AR)", "Title (AR)")</label>
+        <input asp-for="TitleAr" class="form-control" />
+        <span asp-validation-for="TitleAr" class="text-danger"></span>
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("العنوان (EN)", "Title (EN)")</label>
+        <input asp-for="TitleEn" class="form-control" />
+        <span asp-validation-for="TitleEn" class="text-danger"></span>
+    </div>
+
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("النص (AR)", "Body (AR)")</label>
+        <textarea asp-for="BodyAr" rows="5" class="form-control"></textarea>
+    </div>
+    <div class="col-12 col-md-6">
+        <label class="form-label">@T("النص (EN)", "Body (EN)")</label>
+        <textarea asp-for="BodyEn" rows="5" class="form-control"></textarea>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <label class="form-label">@T("التصنيف", "Category")</label>
+        <select asp-for="Category" class="form-select" asp-items="cats"></select>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <label class="form-label">@T("تاريخ النشر", "Publish date")</label>
+        <input type="datetime-local" name="PublishDate" class="form-control" value="@dt" />
+    </div>
+
+    <div class="col-12 col-md-4 d-flex align-items-center">
+        <div class="form-check mt-4">
+            <input class="form-check-input" asp-for="IsPublished" />
+            <label class="form-check-label" for="IsPublished">@T("منشور", "Published")</label>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <label class="form-label">@T("الصورة", "Image")</label>
+        <input type="file" name="image" class="form-control" accept=".jpg,.jpeg,.png,.webp,.gif,.svg" />
+        @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+        {
+            <div class="form-text">Current: @Model.ImagePath</div>
+        }
+    </div>
+
+    <div class="col-12 d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>@T("حفظ", "Save")</button>
+        <a href="@returnUrl" class="btn btn-secondary">@T("إلغاء", "Cancel")</a>
+    </div>
+</div>

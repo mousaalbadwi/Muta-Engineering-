@@ -1,0 +1,196 @@
+﻿@using System.Globalization
+@using MutaEngineering.Models
+@model MutaEngineering.Controllers.FacultyVM
+
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+
+    ViewData["Title"] = T("أعضاء هيئة التدريس", "Faculty Members");
+
+    var currentDep = Model.SelectedDep ?? "";
+    var currentQ = Model.Query ?? "";
+    var isAdmin = (bool?)ViewBag.IsAdmin == true;
+}
+
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+
+    @* رسالة نجاح من TempData *@
+    @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
+    {
+        <div class="alert alert-success">@ok</div>
+    }
+
+    @* زر إضافة عضو (للمشرف فقط) *@
+    @if (isAdmin)
+    {
+        <div class="mb-3">
+            <a class="btn btn-primary"
+               asp-controller="Faculty" asp-action="Create"
+               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                <i class="bi bi-plus-lg me-1"></i>@T("إضافة عضو", "Add Member")
+            </a>
+        </div>
+    }
+
+    @* فلترة *@
+    <form method="get" class="row g-2 g-md-3 align-items-end mb-3">
+        <div class="col-12 col-md-4">
+            <label class="form-label small">@T("القسم", "Department")</label>
+            <select name="dep" class="form-select" onchange="this.form.submit()">
+                <option value="">@T("الكل", "All")</option>
+                @foreach (var kv in Model.Departments)
+                {
+                    var code = kv.Key;
+                    var pair = kv.Value.Split('|');
+                    var name = isRtl ? pair[0] : pair[1];
+                    <option value="@code" selected="@(currentDep == code ? "selected" : null)">@name</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="form-label small">@T("بحث بالاسم/المسمى/البريد", "Search by name/title/email")</label>
+            <input name="q" class="form-control" value="@currentQ" />
+        </div>
+
+        <div class="col-12 col-md-2 d-grid">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search me-1"></i>@T("بحث", "Search")
+            </button>
+        </div>
+    </form>
+
+    @* شبكة الكروت *@
+    <div class="row g-3 g-md-4">
+        @if (!Model.Members.Any())
+        {
+            <div class="col-12">
+                <div class="alert alert-info mb-0">@T("لا يوجد أعضاء مطابقون.", "No matching members.")</div>
+            </div>
+        }
+        else
+        {
+            @foreach (var m in Model.Members)
+            {
+                var name = isRtl ? m.FullNameAr : m.FullNameEn;
+                var title = isRtl ? m.TitleAr : m.TitleEn;
+                var deptName = m.Department == null ? "" : (isRtl ? m.Department.NameAr : m.Department.NameEn);
+                var img = Url.Content(m.PhotoPath ?? "~/img/faculty/avatar.png");
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3 position-relative">
+
+                        <div class="d-flex gap-3">
+                            <img loading="lazy" src="@img" class="rounded-3"
+                                 style="width:72px;height:72px;object-fit:cover"
+                                 onerror="this.src='@Url.Content("~/img/faculty/avatar-placeholder.svg")';"
+                                 alt="@name" />
+                            <div class="flex-grow-1">
+                                <h5 class="m-0">@name</h5>
+                                @if (!string.IsNullOrWhiteSpace(title))
+                                {
+                                    <div class="small text-muted">@title</div>
+                                }
+                                <div class="small text-muted">@deptName</div>
+                                @if (!string.IsNullOrWhiteSpace(m.Email))
+                                {
+                                    <div class="small"><i class="bi bi-envelope me-1"></i>@m.Email</div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(m.Office))
+                                {
+                                    <div class="small"><i class="bi bi-geo-alt me-1"></i>@m.Office</div>
+                                }
+                            </div>
+                        </div>
+
+                        @* رابط تفاصيل كـ stretched-link (بدون ما يغطي أزرار الإدارة) *@
+                        <a class="stretched-link"
+                           asp-controller="Faculty" asp-action="Details" asp-route-id="@m.Id"></a>
+
+                        @if (isAdmin)
+                        {
+                            <div class="position-absolute top-0 end-0 p-2 d-flex gap-1 admin-actions" style="z-index:20;">
+                                <a class="btn btn-sm btn-light border"
+                                   asp-controller="Faculty" asp-action="Edit"
+                                   asp-route-id="@m.Id"
+                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
+                                   title="Edit"
+                                   onclick="event.stopPropagation();">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <form asp-controller="Faculty" asp-action="Delete" method="post"
+                                      class="d-inline js-delete-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@m.Id" />
+                                    <input type="hidden" name="returnUrl"
+                                           value="@(Context.Request.Path + Context.Request.QueryString)" />
+                                    <button type="button" class="btn btn-sm btn-light border js-delete-btn"
+                                            title="Delete" onclick="event.stopPropagation();">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        (function () {
+            // نستخدم capture ليمنع الـstretched-link من سرقة الضغط
+            document.addEventListener('click', function (ev) {
+                const btn = ev.target.closest('.js-delete-btn');
+                if (!btn) return;
+
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                const form = btn.closest('.js-delete-form');
+                if (!form) return;
+
+                const rtl = document.documentElement.dir === 'rtl';
+
+                Swal.fire({
+                    title: rtl ? 'تأكيد الحذف؟' : 'Confirm delete?',
+                    text:  rtl ? 'لا يمكن التراجع بعد الحذف.' : 'This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: rtl ? 'نعم، احذف' : 'Yes, delete',
+                    cancelButtonText:   rtl ? 'إلغاء' : 'Cancel',
+                    reverseButtons: rtl,
+                    focusCancel: true,
+                    customClass: {
+                        confirmButton: 'btn btn-danger',
+                        cancelButton:  'btn btn-secondary ms-2'
+                    },
+                    buttonsStyling: false
+                }).then(res => {
+                    if (res.isConfirmed) form.submit();
+                });
+            }, true);
+        })();
+    </script>
+
+    <style>
+        /* ضمان عدم تغطية زرار الإدارة من الـ stretched-link */
+        .card .admin-actions {
+            z-index: 20;
+        }
+
+        .stretched-link::after {
+            z-index: 1;
+        }
+
+        .admin-actions, .admin-actions * {
+            pointer-events: auto !important;
+        }
+    </style>
+}

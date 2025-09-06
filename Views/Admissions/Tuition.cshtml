@@ -1,0 +1,381 @@
+﻿@using System.Globalization
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] = isRtl ? "الرسوم الدراسية" : "Tuition & Fees";
+}
+
+<!-- Hero -->
+<section class="tu-hero py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    @(isRtl ? "الرسوم الدراسية" : "Tuition & Fees")
+                </h1>
+                <p class="lead text-muted mb-0">
+                    @(isRtl
+                                        ? "نظرة شاملة على الرسوم والتكاليف والخصومات وطرق السداد لكلية الهندسة – جامعة مؤتة."
+                                        : "A complete overview of tuition, fees, discounts, and payment options for the Faculty of Engineering – Mutah University.")
+                </p>
+            </div>
+            <div class="col-12 col-lg-4 d-none d-lg-block">
+                <div class="tu-illust rounded-4 shadow-sm"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admissions sub-nav -->
+<section class="py-3">
+    <div class="container">
+        <ul class="nav nav-pills ad-subnav small">
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="Index">
+                    <i class="bi bi-grid me-1"></i> @(isRtl ? "الرئيسية" : "Overview")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="Requirements">
+                    <i class="bi bi-clipboard-check me-1"></i> @(isRtl ? "المتطلبات" : "Requirements")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="HowToApply">
+                    <i class="bi bi-check2-square me-1"></i> @(isRtl ? "طريقة التقديم" : "How to apply")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Admissions" asp-action="Tuition">
+                    <i class="bi bi-cash-coin me-1"></i> @(isRtl ? "الرسوم" : "Tuition & Fees")
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- Quick pricing -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-3 g-lg-4">
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="price-card">
+                    <div class="price-top">
+                        <span class="badge rounded-pill text-bg-primary">@((isRtl ? "ساعات البكالوريوس" : "Undergraduate credit"))</span>
+                        <h3 class="price">70 <small>JOD</small></h3>
+                    </div>
+                    <p class="mb-0 text-muted small">
+                        @(isRtl ? "للساعة المعتمدة (تقديري – يختلف حسب التخصص)." : "Per credit hour (typical – varies by program).")
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="price-card">
+                    <div class="price-top">
+                        <span class="badge rounded-pill text-bg-success">@((isRtl ? "مخابر/معدات" : "Lab & materials"))</span>
+                        <h3 class="price">10–20 <small>JOD</small></h3>
+                    </div>
+                    <p class="mb-0 text-muted small">
+                        @(isRtl ? "رسوم لكل مساق مخبري (إن وجد)." : "Per lab course, if applicable.")
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="price-card">
+                    <div class="price-top">
+                        <span class="badge rounded-pill text-bg-info">@((isRtl ? "تسجيل/خدمات" : "Registration & services"))</span>
+                        <h3 class="price">50 <small>JOD</small></h3>
+                    </div>
+                    <p class="mb-0 text-muted small">
+                        @(isRtl ? "لكل فصل دراسي." : "Per semester.")
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-xl-3">
+                <div class="price-card">
+                    <div class="price-top">
+                        <span class="badge rounded-pill text-bg-warning">@((isRtl ? "تأمين مسترجع" : "Refundable deposit"))</span>
+                        <h3 class="price">30 <small>JOD</small></h3>
+                    </div>
+                    <p class="mb-0 text-muted small">
+                        @(isRtl ? "يسترد عند التخرج وفق السياسة." : "Refunded upon graduation per policy.")
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Table + Notes -->
+<section class="py-3">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-12 col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-table text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "تفصيل الرسوم حسب البرنامج (تقريبي)" : "Fee breakdown by program (typical)"))</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table align-middle fee-table">
+                                <thead>
+                                    <tr>
+                                        <th>@(isRtl ? "البرنامج/القسم" : "Program/Department")</th>
+                                        <th class="text-nowrap">@((isRtl ? "رسوم الساعة" : "Per credit"))</th>
+                                        <th>@(isRtl ? "رسوم إضافية" : "Extra fees")</th>
+                                        <th>@(isRtl ? "ملاحظات" : "Notes")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>@(isRtl ? "الهندسة المدنية" : "Civil Engineering")</td>
+                                        <td>70 JOD</td>
+                                        <td>@(isRtl ? "مختبرات" : "Labs") 10–20</td>
+                                        <td>@(isRtl ? "مشاريع التخرج قد تتطلب تكاليف إضافية." : "Capstone projects may incur extra costs.")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@(isRtl ? "الهندسة الكهربائية" : "Electrical Engineering")</td>
+                                        <td>70 JOD</td>
+                                        <td>@(isRtl ? "معدات" : "Materials") 10–15</td>
+                                        <td>@(isRtl ? "بعض المساقات العملية تتطلب مستلزمات." : "Some practical courses require supplies.")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@(isRtl ? "هندسة الحاسوب" : "Computer Engineering")</td>
+                                        <td>70 JOD</td>
+                                        <td>@(isRtl ? "مخابر" : "Labs") 10–20</td>
+                                        <td>@(isRtl ? "برامج مرخصة متاحة عبر الجامعة." : "Licensed software provided by the university.")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>@(isRtl ? "الهندسة الميكانيكية" : "Mechanical Engineering")</td>
+                                        <td>70 JOD</td>
+                                        <td>@(isRtl ? "ورش" : "Workshops") 10–20</td>
+                                        <td>@(isRtl ? "المساقات التصنيعية قد تشمل مواد استهلاكية." : "Manufacturing courses may include consumables.")</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="alert alert-warning d-flex align-items-start gap-2 mt-3">
+                            <i class="bi bi-exclamation-triangle flex-shrink-0 fs-5"></i>
+                            <div class="small">
+                                @(isRtl
+                                                                ? "الأرقام أعلاه تقريبية لأغراض الإرشاد وقد تتغير بقرارات الجامعة. المرجع الرسمي هو إعلانات وحدة القبول."
+                                                                : "Figures above are indicative and subject to change by university decisions. The official reference is the admissions unit announcements.")
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <a href="~/docs/admissions/tuition.pdf" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> @(isRtl ? "تنزيل الرسوم (PDF)" : "Download fees (PDF)")
+                            </a>
+                            <a asp-controller="Admissions" asp-action="HowToApply" class="btn btn-primary btn-sm">
+                                <i class="bi bi-rocket-takeoff me-1"></i> @(isRtl ? "ابدأ التقديم" : "Start application")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-12 col-lg-4">
+                <!-- Discounts / Scholarships -->
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-gift me-1 text-success"></i> @(isRtl ? "منح وحسومات" : "Scholarships & discounts")</h6>
+                        <ul class="list-dot small mb-0">
+                            <li>@(isRtl ? "منحة تفوق أكاديمي تصل إلى 25%." : "Merit scholarship up to 25%.")</li>
+                            <li>@(isRtl ? "حسم أبناء العاملين وفق تعليمات الجامعة." : "Staff dependents discount per regulations.")</li>
+                            <li>@(isRtl ? "حسومات خاصة للطلبة الدوليين/الاتفاقيات." : "Special rates for international/agreements.")</li>
+                            <li>@(isRtl ? "لا تُجمع الحسومات إلا حسب السياسة." : "Discounts may not be combined unless allowed.")</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Payment methods -->
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-credit-card me-1 text-primary"></i> @(isRtl ? "طرق الدفع" : "Payment methods")</h6>
+                        <div class="d-grid gap-2">
+                            <div class="pay-tile"><i class="bi bi-phone"></i><div><strong>@(isRtl ? "إي فواتيركم" : "eFawateercom")</strong><div class="text-muted small">@((isRtl ? "اختَر جامعة مؤتة > الرسوم" : "Choose Mutah University > Fees"))</div></div></div>
+                            <div class="pay-tile"><i class="bi bi-bank"></i><div><strong>@(isRtl ? "إيداع بنكي" : "Bank deposit")</strong><div class="text-muted small">@((isRtl ? "تفاصيل الحساب تُزوّد عند التقديم" : "Account details provided upon application"))</div></div></div>
+                            <div class="pay-tile"><i class="bi bi-cash-stack"></i><div><strong>@(isRtl ? "صندوق الجامعة" : "On-campus cashier")</strong><div class="text-muted small">@((isRtl ? "أيام الدوام الرسمي" : "During business hours"))</div></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Refund policy -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-arrow-counterclockwise me-1 text-warning"></i> @(isRtl ? "سياسة الاسترجاع" : "Refund policy")</h6>
+                        <ul class="list-dot small mb-0">
+                            <li>@(isRtl ? "استرجاع 100% قبل بدء الفصل." : "100% before semester start.")</li>
+                            <li>@(isRtl ? "استرجاع 50% خلال الأسبوع الأول." : "50% during first week.")</li>
+                            <li>@(isRtl ? "لا يوجد استرجاع بعد الأسبوع الثاني." : "No refunds after second week.")</li>
+                            <li>@(isRtl ? "الرسوم الإدارية لا تُسترد." : "Administrative fees are non-refundable.")</li>
+                        </ul>
+                    </div>
+                </div>
+            </div><!-- /Sidebar -->
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="py-4">
+    <div class="container">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-question-circle text-primary fs-5"></i>
+                    <h3 class="h5 mb-0">FAQ</h3>
+                </div>
+                <div class="accordion" id="feeFaq">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="fq1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#fa1">
+                                @(isRtl ? "هل هناك أقساط؟" : "Are installments available?")
+                            </button>
+                        </h2>
+                        <div id="fa1" class="accordion-collapse collapse show" data-bs-parent="#feeFaq">
+                            <div class="accordion-body">
+                                @(isRtl ? "قد تتوفر خطط تقسيط وفق موافقة مالية مسبقة. راجع صندوق الطالب." : "Installment plans may be available with prior approval—check with the cashier’s office.")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="fq2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fa2">
+                                @(isRtl ? "هل تختلف الرسوم للطلبة الدوليين؟" : "Do international students pay different rates?")
+                            </button>
+                        </h2>
+                        <div id="fa2" class="accordion-collapse collapse" data-bs-parent="#feeFaq">
+                            <div class="accordion-body">
+                                @(isRtl ? "قد تُطبق رسوم خاصة وفق الاتفاقيات والأنظمة." : "Special rates may apply as per agreements and regulations.")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="fq3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#fa3">
+                                @(isRtl ? "هل هناك رسوم خفية؟" : "Any hidden fees?")
+                            </button>
+                        </h2>
+                        <div id="fa3" class="accordion-collapse collapse" data-bs-parent="#feeFaq">
+                            <div class="accordion-body">
+                                @(isRtl ? "لا، لكن بعض المساقات العملية/المشاريع قد تتطلب مواد إضافية كما هو مذكور." : "No—however some practical courses/projects may require consumables as indicated.")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        /* Hero */
+        .tu-hero {
+            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%), radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%), linear-gradient(180deg, #f8fbff, #ffffff);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .tu-illust {
+           
+            height: 340px;
+            width: 110%; /* عشان تتأكد إنها ماخدة عرض كامل */
+            background-image: url('/img/illustrations/Thesis-pana.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 85%; /* الصورة تغطي كل البوكس */
+        }
+
+        /* Subnav (reuse admissions style) */
+        .ad-subnav .nav-link {
+            background: #f5f7fb;
+            border: 1px solid #e7edf5;
+            color: #334155;
+            margin-inline-end: .5rem;
+        }
+
+            .ad-subnav .nav-link:hover {
+                background: #eef3ff;
+                color: #0d6efd;
+            }
+
+            .ad-subnav .nav-link.active {
+                background: #0d6efd;
+                color: #fff;
+                border-color: #0d6efd;
+                box-shadow: 0 6px 14px rgba(13,110,253,.18);
+            }
+
+        /* Pricing cards */
+        .price-card {
+            border: 1px solid #e7edf5;
+            border-radius: 16px;
+            background: linear-gradient(180deg,#ffffff,#fcfdff);
+            padding: 1rem 1.1rem;
+            height: 100%;
+            box-shadow: 0 6px 14px rgba(15,23,42,.04);
+        }
+
+        .price-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .4rem;
+        }
+
+        .price {
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+            .price small {
+                font-size: .7em;
+                color: #6b7280;
+            }
+
+        /* Fee table */
+        .fee-table thead th {
+            background: #f5f7fb;
+            border-bottom: 1px solid #e5ebf5;
+            color: #334155;
+        }
+
+        .fee-table tbody td {
+            vertical-align: middle;
+        }
+
+        /* Tiles, dots */
+        .pay-tile {
+            display: flex;
+            gap: .7rem;
+            align-items: center;
+            padding: .7rem .8rem;
+            border: 1px solid #e7edf5;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+            .pay-tile i {
+                color: #0d6efd;
+                font-size: 1.15rem;
+            }
+
+        .list-dot {
+            padding-inline-start: 1.1rem;
+        }
+
+            .list-dot li {
+                margin-bottom: .45rem;
+            }
+    </style>
+}

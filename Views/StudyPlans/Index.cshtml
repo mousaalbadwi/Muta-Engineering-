@@ -1,0 +1,99 @@
+﻿@using System.Globalization
+@model MutaEngineering.Controllers.StudyPlansVM
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] ??= isRtl ? "الخطط الدراسية" : "Study Plans";
+
+    // نطلع مفاتيح الأقسام حسب القاموس (slug -> "ar|en")
+    var depKeys = Model.Departments.Keys.ToList();
+    string depLabel(string slug)
+    {
+        var parts = Model.Departments[slug].Split('|');
+        return isRtl ? parts[0] : parts[1];
+    }
+}
+
+<section class="container after-hero">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+        <h2 class="h4 m-0">@(isRtl ? "الخطط الدراسية" : "Study Plans")</h2>
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">
+            <i class="bi bi-house-door me-1"></i> @(isRtl ? "الرئيسية" : "Home")
+        </a>
+    </div>
+
+    <!-- Tabs للأقسام -->
+    <ul class="nav nav-pills mb-3" id="depTabs" role="tablist">
+        @for (int i = 0; i < depKeys.Count; i++)
+        {
+            var slug = depKeys[i];
+            var active = i == 0 ? "active" : "";
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @active" id="tab-@slug" data-bs-toggle="tab" data-bs-target="#pane-@slug"
+                        type="button" role="tab" aria-controls="pane-@slug" aria-selected="@(i == 0 ? "true" : "false")">
+                    <i class="bi bi-journal-text me-1"></i> @depLabel(slug)
+                </button>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content rounded-4 border bg-white p-3 p-md-4 shadow-sm">
+        @for (int i = 0; i < depKeys.Count; i++)
+        {
+            var slug = depKeys[i];
+            var active = i == 0 ? "show active" : "";
+            var plans = Model.Plans.Where(p => p.DepartmentSlug == slug).OrderByDescending(p => p.Year).ToList();
+
+            <div class="tab-pane fade @active" id="pane-@slug" role="tabpanel" aria-labelledby="tab-@slug">
+                @if (!plans.Any())
+                {
+                    <div class="text-muted">@(isRtl ? "لا توجد خطط مضافة بعد." : "No plans added yet.")</div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width:60%">@(isRtl ? "العنوان" : "Title")</th>
+                                    <th>@(isRtl ? "السنة" : "Year")</th>
+                                    <th class="text-end">@(isRtl ? "الملف" : "File")</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var p in plans)
+                                {
+                                    <tr>
+                                        <td>@(isRtl? p.TitleAr: p.TitleEn)</td>
+                                        <td>@p.Year</td>
+                                        <td class="text-end">
+                                            <a class="btn btn-sm btn-outline-primary me-2"
+                                               asp-action="ViewPdf" asp-route-dep="@p.DepartmentSlug" asp-route-year="@p.Year">
+                                                <i class="bi bi-eye me-1"></i> @(isRtl ? "عرض" : "View")
+                                            </a>
+                                            <a class="btn btn-sm btn-primary" href="@Url.Content(p.PdfPath)" download>
+                                                <i class="bi bi-download me-1"></i> @(isRtl ? "تحميل" : "Download")
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <style>
+        /* تحسين بسيط للتبويبات */
+        .nav-pills .nav-link {
+            border-radius: .75rem;
+        }
+
+            .nav-pills .nav-link.active {
+                background: #0d6efd;
+            }
+    </style>
+}

@@ -1,0 +1,141 @@
+﻿@using System.Globalization
+@model List<MutaEngineering.Models.Department>
+
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    ViewData["Title"] ??= T("الأقسام الأكاديمية", "Academic Departments");
+    var q = (string)(ViewBag.Query ?? "");
+    var isAdmin = (bool?)ViewBag.IsAdmin == true;
+}
+
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+
+    @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
+    {
+        <div class="alert alert-success">@ok</div>
+    }
+
+    @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
+    {
+        <div class="alert alert-danger">@err</div>
+    }
+
+    @if (isAdmin)
+    {
+        <div class="mb-3">
+            <a class="btn btn-primary"
+               asp-action="Create"
+               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                <i class="bi bi-plus-lg me-1"></i>@T("إضافة قسم", "Add Department")
+            </a>
+        </div>
+    }
+
+    <form method="get" class="row g-2 align-items-end mb-3">
+        <div class="col-12 col-md-10">
+            <label class="form-label small">@T("بحث بالاسم/الكود/الوصف", "Search name/code/desc")</label>
+            <input name="q" class="form-control" value="@q" />
+        </div>
+        <div class="col-12 col-md-2 d-grid">
+            <button class="btn btn-primary" type="submit"><i class="bi bi-search me-1"></i>@T("بحث", "Search")</button>
+        </div>
+    </form>
+
+    <div class="row g-3 g-md-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12"><div class="alert alert-info mb-0">@T("لا توجد أقسام.", "No departments.")</div></div>
+        }
+        else
+        {
+            @foreach (var d in Model)
+            {
+                var name = isRtl ? d.NameAr : d.NameEn;
+                var code = (d.Code ?? "").ToLower();
+                var guess = Url.Content($"~/img/departments/{code}.svg");
+                var fallback = Url.Content("~/img/departments/default.svg");
+                var img = Url.Content(string.IsNullOrWhiteSpace(d.ImagePath) ? guess : d.ImagePath);
+
+                <div class="col-12 col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-3 position-relative">
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="@img" alt="@name" class="dept-thumb"
+                                 onerror="this.onerror=null;this.src='@fallback';"
+                                 style="width:56px;height:56px;object-fit:cover;border-radius:12px;background:#f2f4f7" />
+                            <div class="flex-grow-1">
+                                <div class="small text-muted">@d.Code</div>
+                                <h5 class="m-0">@name</h5>
+                            </div>
+                        </div>
+
+                        <a class="stretched-link" asp-action="Details" asp-route-id="@d.Id"></a>
+
+                        @if (isAdmin)
+                        {
+                            <div class="position-absolute bottom-0 end-0 p-2 d-flex gap-1 admin-actions" style="z-index:20;">
+                                <a class="btn btn-sm btn-light border"
+                                   asp-action="Edit" asp-route-id="@d.Id"
+                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
+                                   title="Edit" onclick="event.stopPropagation();">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <form asp-action="Delete" method="post" class="d-inline js-delete-form" onsubmit="event.stopPropagation();">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@d.Id" />
+                                    <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+                                    <button type="button" class="btn btn-sm btn-light border js-delete-btn" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        (function () {
+            document.addEventListener('click', function (ev) {
+                const btn = ev.target.closest('.js-delete-btn');
+                if (!btn) return;
+                ev.preventDefault(); ev.stopPropagation();
+                const form = btn.closest('.js-delete-form');
+                if (!form) return;
+
+                const rtl = document.documentElement.dir === 'rtl';
+                Swal.fire({
+                    title: rtl ? 'تأكيد الحذف؟' : 'Confirm delete?',
+                    text:  rtl ? 'لا يمكن التراجع بعد الحذف.' : 'This action cannot be undone.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: rtl ? 'نعم، احذف' : 'Yes, delete',
+                    cancelButtonText:   rtl ? 'إلغاء' : 'Cancel',
+                    reverseButtons: rtl,
+                    customClass: { confirmButton: 'btn btn-danger', cancelButton: 'btn btn-secondary ms-2' },
+                    buttonsStyling: false
+                }).then(res => { if (res.isConfirmed) form.submit(); });
+            }, true);
+        })();
+    </script>
+    <style>
+        .card .admin-actions {
+            z-index: 20;
+        }
+
+        .stretched-link::after {
+            z-index: 1;
+        }
+
+        .admin-actions, .admin-actions * {
+            pointer-events: auto !important;
+        }
+    </style>
+}

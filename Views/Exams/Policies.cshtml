@@ -1,0 +1,320 @@
+﻿@using System.Globalization
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] = isRtl ? "سياسات الامتحانات" : "Exam Policies";
+}
+
+<!-- Hero -->
+<section class="ex-hero py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    @(isRtl ? "سياسات الامتحانات" : "Exam Policies")
+                </h1>
+                <p class="lead text-muted mb-0">
+                    @(isRtl
+                                        ? "إرشادات وتعليمات الامتحانات الحضورية والإلكترونية لطلبة كلية الهندسة – جامعة مؤتة."
+                                        : "Guidelines for on-site and online exams for the Faculty of Engineering – Mutah University.")
+                </p>
+            </div>
+            <div class="col-12 col-lg-4 d-none d-lg-block">
+                <div class="ex-illust rounded-4 shadow-sm"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Exams sub-nav -->
+<section class="py-3">
+    <div class="container">
+        <ul class="nav nav-pills ex-subnav small">
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Exams" asp-action="Index">
+                    <i class="bi bi-list-ul me-1"></i> @(isRtl ? "الامتحانات" : "Exams")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Exams" asp-action="Policies">
+                    <i class="bi bi-shield-check me-1"></i> @(isRtl ? "السياسات" : "Policies")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Exams" asp-action="Support">
+                    <i class="bi bi-life-preserver me-1"></i> @(isRtl ? "الدعم" : "Support")
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Main -->
+            <div class="col-12 col-lg-8">
+
+                <!-- General rules -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-shield-lock text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "تعليمات عامة" : "General rules"))</h3>
+                        </div>
+                        <ul class="list-check">
+                            <li>@(isRtl ? "الحضور قبل بدء الامتحان بـ 15 دقيقة على الأقل." : "Arrive at least 15 minutes before the start time.")</li>
+                            <li>@(isRtl ? "إبراز الهوية الجامعية/الرسمية عند الطلب." : "Present your university/official ID upon request.")</li>
+                            <li>@(isRtl ? "الجلوس في المقعد المخصص والالتزام بتوجيهات المراقبين." : "Sit in assigned seats and follow invigilators’ instructions.")</li>
+                            <li>@(isRtl ? "يُمنع استخدام الهواتف أو الأجهزة الذكية داخل القاعة." : "Use of phones or smart devices is prohibited inside the room.")</li>
+                            <li>@(isRtl ? "أي محاولة غش تُحال للجنة الانضباط وفق الأنظمة." : "Any cheating attempt is referred to the disciplinary committee.")</li>
+                        </ul>
+                        <div class="alert alert-info mt-3 mb-0">
+                            <i class="bi bi-info-circle me-1"></i>
+                            @((isRtl ? "إحضار الأدوات المسموح بها فقط (آلة حاسبة بسيطة حيث يُعلن المدرّس)." : "Bring only permitted tools (basic calculator when announced by the instructor)."))
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Day checklist -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-clipboard-check text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "تذكير يوم الامتحان" : "Exam-day checklist"))</h3>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <div class="tile"><i class="bi bi-person-vcard"></i><div><strong>@(isRtl ? "هوية سارية" : "Valid ID")</strong><div class="text-muted small">@((isRtl ? "بطاقة جامعية أو رسمية." : "Student or official ID."))</div></div></div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="tile"><i class="bi bi-calculator"></i><div><strong>@(isRtl ? "آلة حاسبة بسيطة" : "Basic calculator")</strong><div class="text-muted small">@((isRtl ? "إذا أُعلن ذلك للمساق." : "When allowed for the course."))</div></div></div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="tile"><i class="bi bi-pen"></i><div><strong>@(isRtl ? "أقلام وأدوات" : "Writing tools")</strong><div class="text-muted small">@((isRtl ? "أقلام، ممحاة، مسطرة…" : "Pens, eraser, ruler…"))</div></div></div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="tile"><i class="bi bi-clock-history"></i><div><strong>@(isRtl ? "الوصول المبكر" : "Arrive early")</strong><div class="text-muted small">@((isRtl ? "للتعريف واستلام النموذج." : "For ID check and settling in."))</div></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Allowed / Not allowed -->
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-4">
+                                <h6 class="mb-3"><span class="badge rounded-pill text-bg-success me-1">✔</span>@(isRtl ? "مسموح" : "Allowed")</h6>
+                                <ul class="list-dot small mb-0">
+                                    <li>@(isRtl ? "آلة حاسبة بسيطة غير قابلة للبرمجة (عند السماح)." : "Basic non-programmable calculator (when allowed).")</li>
+                                    <li>@(isRtl ? "معجم ورقي للمساقات اللغوية (إن نصّت التعليمات)." : "Paper dictionary for language exams (if stated).")</li>
+                                    <li>@(isRtl ? "قارورة ماء شفافة بلا ملصق." : "Clear water bottle without label.")</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
+                            <div class="card-body p-4">
+                                <h6 class="mb-3"><span class="badge rounded-pill text-bg-danger me-1">✘</span>@(isRtl ? "غير مسموح" : "Not allowed")</h6>
+                                <ul class="list-dot small mb-0">
+                                    <li>@(isRtl ? "الهواتف والساعات الذكية والسماعات." : "Phones, smart watches, earphones.")</li>
+                                    <li>@(isRtl ? "الأوراق/الملصقات/الملاحظات الشخصية." : "Notes, crib sheets, personal papers.")</li>
+                                    <li>@(isRtl ? "التحدث أو مشاركة الأدوات مع الآخرين." : "Talking or sharing tools with others.")</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Online exams -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-wifi text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "امتحانات إلكترونية" : "Online exams"))</h3>
+                        </div>
+                        <ul class="list-check">
+                            <li>@(isRtl ? "استخدام متصفح حديث وكاميرا فعّالة (إن طُلب المراقبة)." : "Use a modern browser and a working camera when proctoring is required.")</li>
+                            <li>@(isRtl ? "شبكة مستقرة؛ مسؤوليتك التأكد من الاتصال قبل البدء." : "Stable internet; you are responsible for connectivity prior to start.")</li>
+                            <li>@(isRtl ? "يُحظر فتح تبويبات/برامج إضافية أثناء الامتحان." : "Opening other tabs/apps during the exam is prohibited.")</li>
+                            <li>@(isRtl ? "أي انقطاع يُوثّق ويُبلّغ خلال 10 دقائق عبر قناة الدعم." : "Report disconnections within 10 minutes through the support channel.")</li>
+                        </ul>
+                        <a asp-controller="Exams" asp-action="Support" class="btn btn-outline-primary btn-sm mt-2">
+                            <i class="bi bi-life-preserver me-1"></i> @(isRtl ? "الانتقال للدعم" : "Go to support")
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Misconduct -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-exclamation-octagon text-danger fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "المخالفات والعقوبات" : "Misconduct & penalties"))</h3>
+                        </div>
+                        <div class="alert alert-danger small mb-3">
+                            <i class="bi bi-shield-exclamation me-1"></i>
+                            @((isRtl ? "تشمل المخالفات: الغش، المساعدة غير المصرح بها، استخدام أجهزة غير مسموحة، انتحال الشخصية." : "Misconduct includes cheating, unauthorized assistance, use of prohibited devices, impersonation."))
+                        </div>
+                        <ul class="list-dot small mb-0">
+                            <li>@(isRtl ? "الإنذار والتحقيق الفوري." : "Immediate warning and investigation.")</li>
+                            <li>@(isRtl ? "إلغاء الامتحان وحسم علامة/رسوب وفق الأنظمة." : "Exam cancellation and possible fail as per regulations.")</li>
+                            <li>@(isRtl ? "إحالة للجنة الانضباط وإجراءات قد تصل للفصل." : "Referral to disciplinary committee; up to suspension.")</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Grading & appeals -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-journal-text text-primary fs-5"></i>
+                            <h3 class="h5 mb-0">@((isRtl ? "العلامات والتظلم" : "Grading & appeals"))</h3>
+                        </div>
+                        <ol class="list-number">
+                            <li>@(isRtl ? "تُنشر العلامات خلال أسبوعين من تاريخ الامتحان." : "Grades posted within two weeks after the exam.")</li>
+                            <li>@(isRtl ? "يحق للطالب طلب مراجعة ورقة الامتحان خلال 3 أيام عمل من النشر." : "Students may request a paper review within 3 business days of posting.")</li>
+                            <li>@(isRtl ? "التظلم الرسمي يُقدَّم عبر القسم مرفقًا بالمبررات والرسوم إن وُجدت." : "Formal appeal is submitted via the department with justification and any fees.")</li>
+                        </ol>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-12 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-lightbulb me-1 text-warning"></i> @(isRtl ? "نصائح سريعة" : "Quick tips")</h6>
+                        <ul class="list-dot small mb-0">
+                            <li>@(isRtl ? "اقرأ التعليمات على الغلاف أولًا." : "Read cover instructions first.")</li>
+                            <li>@(isRtl ? "قسّم الوقت على الأسئلة وتابع الساعة." : "Budget time and watch the clock.")</li>
+                            <li>@(isRtl ? "اترك آخر 5 دقائق للمراجعة." : "Leave the last 5 minutes for review.")</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-telephone-forward me-1 text-primary"></i> @(isRtl ? "تواصل" : "Contact")</h6>
+                        <ul class="list-unstyled small mb-0">
+                            <li><i class="bi bi-envelope me-1"></i> <a href="mailto:exams@mutah.edu.jo">exams@mutah.edu.jo</a></li>
+                            <li><i class="bi bi-telephone me-1"></i> +962 3 000 0000</li>
+                            <li><i class="bi bi-geo-alt me-1"></i> @(isRtl ? "مكتب الامتحانات – الكلية" : "Exams Office – Faculty")</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-file-earmark-pdf me-1 text-primary"></i> @(isRtl ? "روابط ووثائق" : "Links & docs")</h6>
+                        <div class="d-grid gap-2">
+                            <a href="~/docs/exams/policies.pdf" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-download me-1"></i> @(isRtl ? "سياسات (PDF)" : "Policies (PDF)")
+                            </a>
+                            <a asp-controller="Exams" asp-action="Support" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-life-preserver me-1"></i> @(isRtl ? "الدعم أثناء الامتحان" : "Exam support")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /sidebar -->
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        /* Hero */
+        .ex-hero {
+            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%), radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%), linear-gradient(180deg, #f8fbff, #ffffff);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .ex-illust {
+            
+            height: 340px;
+            width: 110%; /* عشان تتأكد إنها ماخدة عرض كامل */
+            background-image: url('/img/illustrations/Team work-rafiki.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 90%; /* الصورة تغطي كل البوكس */
+        }
+
+        /* Subnav */
+        .ex-subnav .nav-link {
+            background: #f5f7fb;
+            border: 1px solid #e7edf5;
+            color: #334155;
+            margin-inline-end: .5rem;
+        }
+
+            .ex-subnav .nav-link:hover {
+                background: #eef3ff;
+                color: #0d6efd;
+            }
+
+            .ex-subnav .nav-link.active {
+                background: #0d6efd;
+                color: #fff;
+                border-color: #0d6efd;
+                box-shadow: 0 6px 14px rgba(13,110,253,.18);
+            }
+
+        /* Lists & tiles */
+        .list-check {
+            padding-inline-start: 1rem;
+        }
+
+            .list-check li {
+                margin-bottom: .55rem;
+                position: relative;
+                list-style: none;
+            }
+
+                .list-check li::before {
+                    content: "";
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg,#4f46e5,#06b6d4);
+                    position: absolute;
+                    top: .55rem;
+                    inset-inline-start: -1.5rem;
+                    box-shadow: 0 0 0 3px #eef2ff;
+                }
+
+        .list-dot {
+            padding-inline-start: 1.1rem;
+        }
+
+            .list-dot li {
+                margin-bottom: .5rem;
+            }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            padding: .9rem;
+            border: 1px solid #e7edf5;
+            border-radius: 12px;
+            background: linear-gradient(180deg,#ffffff,#fcfdff);
+        }
+
+            .tile i {
+                font-size: 1.15rem;
+                color: #0d6efd;
+            }
+
+        /* Numbered list */
+        .list-number {
+            padding-inline-start: 1.1rem;
+        }
+
+            .list-number li {
+                margin-bottom: .5rem;
+            }
+    </style>
+}

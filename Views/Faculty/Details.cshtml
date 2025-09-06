@@ -1,0 +1,39 @@
+﻿@using System.Globalization
+@using MutaEngineering.Models
+@model FacultyMember
+
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    var name = isRtl ? Model.FullNameAr : Model.FullNameEn;
+    var title = isRtl ? Model.TitleAr : Model.TitleEn;
+    var deptName = Model.Department == null ? "" : (isRtl ? Model.Department.NameAr : Model.Department.NameEn);
+    ViewData["Title"] = name;
+}
+
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@name</h2>
+
+    <div class="card border-0 shadow-sm rounded-4 p-3">
+        <div class="d-flex gap-3">
+            <img src="@Url.Content(Model.PhotoPath ?? "~/img/faculty/avatar.png")"
+                 onerror="this.src='@Url.Content("~/img/faculty/avatar.png")';"
+                 class="rounded-3" style="width:96px;height:96px;object-fit:cover" alt="@name" />
+            <div class="flex-grow-1">
+                @if (!string.IsNullOrWhiteSpace(title))
+                {
+                    <div class="mb-1">@title</div>
+                }
+                <div class="text-muted small">@deptName</div>
+                @if (!string.IsNullOrWhiteSpace(Model.Email))
+                {
+                    <div class="small"><i class="bi bi-envelope me-1"></i>@Model.Email</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Office))
+                {
+                    <div class="small"><i class="bi bi-geo-alt me-1"></i>@Model.Office</div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

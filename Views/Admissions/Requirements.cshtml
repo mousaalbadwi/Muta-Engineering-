@@ -1,0 +1,425 @@
+﻿@using System.Globalization
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] = isRtl ? "متطلبات القبول" : "Admission Requirements";
+}
+
+<!-- Hero -->
+<section class="req-hero py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    @(isRtl ? "متطلبات القبول" : "Admission Requirements")
+                </h1>
+                <p class="lead text-muted mb-0">
+                    @(isRtl
+                                        ? "الدليل المختصر لكل ما يلزم للتقديم إلى كلية الهندسة – جامعة مؤتة."
+                                        : "A concise guide to everything you need to apply to the Faculty of Engineering – Mutah University.")
+                </p>
+            </div>
+            <div class="col-12 col-lg-4 d-none d-lg-block">
+                <div class="req-hero-illust rounded-4 shadow-sm"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admissions sub-nav -->
+<section class="py-3">
+    <div class="container">
+        <ul class="nav nav-pills req-subnav small">
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="Index">
+                    <i class="bi bi-grid me-1"></i> @(isRtl ? "الرئيسية" : "Overview")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" asp-controller="Admissions" asp-action="Requirements">
+                    <i class="bi bi-clipboard-check me-1"></i> @(isRtl ? "المتطلبات" : "Requirements")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="HowToApply">
+                    <i class="bi bi-check2-square me-1"></i> @(isRtl ? "طريقة التقديم" : "How to apply")
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-controller="Admissions" asp-action="Tuition">
+                    <i class="bi bi-cash-coin me-1"></i> @(isRtl ? "الرسوم" : "Tuition & Fees")
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- Content -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Main -->
+            <div class="col-12 col-lg-8">
+
+                <!-- General Requirements -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-clipboard-check text-primary fs-5"></i>
+                            <h3 class="h4 mb-0">@((isRtl ? "المتطلبات العامة" : "General requirements"))</h3>
+                        </div>
+                        <ul class="list-check">
+                            <li>@(isRtl ? "أن يكون المتقدم حاصلاً على شهادة الثانوية العامة أو ما يعادلها." : "A recognized high school certificate or equivalent.")</li>
+                            <li>@(isRtl ? "تحقيق الحد الأدنى لمعدّل القبول بحسب التخصّص." : "Minimum admission average as determined per program.")</li>
+                            <li>@(isRtl ? "اجتياز أي اختبارات كفاءة/مقابلات يحددها القسم." : "Pass any aptitude tests/interviews required by the department.")</li>
+                            <li>@(isRtl ? "إتقان اللغة الإنجليزية حسب متطلبات الخطة (إن وجدت)." : "English proficiency where applicable.")</li>
+                            <li>@(isRtl ? "تسليم الوثائق ضمن المواعيد المحددة ودفع الرسوم المقررة." : "Submit documents within deadlines and pay applicable fees.")</li>
+                        </ul>
+
+                        <div class="alert alert-info d-flex align-items-start gap-2 mt-3">
+                            <i class="bi bi-info-circle flex-shrink-0 fs-5"></i>
+                            <div>
+                                <strong>@(isRtl ? "ملاحظة:" : "Note:")</strong>
+                                @(isRtl
+                                                                ? "قد تختلف الحدود الدنيا وبعض الشروط التفصيلية بين الأقسام. راجع صفحة التخصّص قبل التقديم."
+                                                                : "Cutoffs and specific conditions may vary by department. Review the program page before applying.")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-folder-check text-primary fs-5"></i>
+                            <h3 class="h4 mb-0">@((isRtl ? "الوثائق المطلوبة" : "Required documents"))</h3>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <div class="req-doc tile">
+                                    <i class="bi bi-card-text"></i>
+                                    <div>
+                                        <h6 class="mb-1">@((isRtl ? "صورة عن الهوية" : "National ID copy"))</h6>
+                                        <small class="text-muted">@((isRtl ? "وجهين، واضحة." : "Both sides, clear scan."))</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="req-doc tile">
+                                    <i class="bi bi-award"></i>
+                                    <div>
+                                        <h6 class="mb-1">@((isRtl ? "كشف علامات الثانوية" : "High school transcript"))</h6>
+                                        <small class="text-muted">@((isRtl ? "مصدّق حسب الأصول." : "Certified as required."))</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="req-doc tile">
+                                    <i class="bi bi-image"></i>
+                                    <div>
+                                        <h6 class="mb-1">@((isRtl ? "صورة شخصية حديثة" : "Recent personal photo"))</h6>
+                                        <small class="text-muted">@((isRtl ? "خلفية بيضاء." : "White background."))</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="req-doc tile">
+                                    <i class="bi bi-passport"></i>
+                                    <div>
+                                        <h6 class="mb-1">@((isRtl ? "جواز السفر/الإقامة (لغير الأردنيين)" : "Passport/Residency (non-Jordanian)"))</h6>
+                                        <small class="text-muted">@((isRtl ? "نسخة واضحة." : "Clear copy."))</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="req-doc tile">
+                                    <i class="bi bi-shield-lock"></i>
+                                    <div>
+                                        <h6 class="mb-1">@((isRtl ? "دفتر خدمة العلم (إن لزم)" : "Military service card (if applicable)"))</h6>
+                                        <small class="text-muted">@((isRtl ? "للذكور حسب التعليمات." : "For males per regulations."))</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="req-doc tile">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                    <div>
+                                        <h6 class="mb-1">@((isRtl ? "نموذج طلب الالتحاق" : "Application form"))</h6>
+                                        <small class="text-muted">
+                                            @((isRtl ? "يمكن تنزيله وملؤه إلكترونيًا." : "Download and fill electronically."))
+                                        </small>
+                                        <div class="mt-2">
+                                            <a class="btn btn-sm btn-outline-primary" href="~/docs/admissions/application-form.pdf">
+                                                <i class="bi bi-download me-1"></i>@(isRtl ? "تنزيل" : "Download")
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- /row -->
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-journal-text text-primary fs-5"></i>
+                            <h3 class="h4 mb-0">@((isRtl ? "ملاحظات مهمة" : "Important notes"))</h3>
+                        </div>
+                        <ul class="list-dot">
+                            <li>@(isRtl ? "لن تُقبل الطلبات غير المكتملة." : "Incomplete applications will not be accepted.")</li>
+                            <li>@(isRtl ? "تُعاد الوثائق الأصلية بعد المطابقة." : "Originals will be returned after verification.")</li>
+                            <li>@(isRtl ? "قد تطلب الكلية وثائق إضافية عند الحاجة." : "Additional documents may be requested if needed.")</li>
+                            <li>@(isRtl ? "حافظ على إيصال الدفع واحتفظ بنسخة رقمية من الطلب." : "Keep the payment receipt and a digital copy of your application.")</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- FAQ -->
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-question-circle text-primary fs-5"></i>
+                            <h3 class="h4 mb-0">FAQ</h3>
+                        </div>
+                        <div class="accordion" id="faq">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="q1">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
+                                        @(isRtl ? "هل يوجد تقديم إلكتروني؟" : "Is there online application?")
+                                    </button>
+                                </h2>
+                                <div id="a1" class="accordion-collapse collapse show" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        @(isRtl
+                                                                                ? "نعم، يمكنك تعبئة الطلب إلكترونيًا وإرفاق الوثائق بصيغة PDF ثم متابعة الدفع وفق الإرشادات."
+                                                                                : "Yes. You can fill the application online, attach PDFs of your documents, and proceed with payment as instructed.")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="q2">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2">
+                                        @(isRtl ? "ماذا لو لم تتوفر بعض الوثائق لحظة التقديم؟" : "What if some documents are not available at submission?")
+                                    </button>
+                                </h2>
+                                <div id="a2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        @(isRtl
+                                                                                ? "قد تُقبل مبدئيًا مع تعهّد بإحضار النواقص خلال المهلة المحددة."
+                                                                                : "A provisional submission may be accepted with a commitment to provide missing items within the given timeframe.")
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="q3">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3">
+                                        @(isRtl ? "كيف أحسب معدّلي المكافئ؟" : "How is the equivalent average calculated?")
+                                    </button>
+                                </h2>
+                                <div id="a3" class="accordion-collapse collapse" data-bs-parent="#faq">
+                                    <div class="accordion-body">
+                                        @(isRtl
+                                                                                ? "يُحتسب وفق تعليمات الجامعة والجهات المختصة. راجع صفحة التخصّص أو وحدة القبول."
+                                                                                : "It is calculated according to university regulations. Please refer to the program page or the admissions unit.")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-12 col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-3"><i class="bi bi-calendar2-week me-1 text-primary"></i> @(isRtl ? "تواريخ مهمة" : "Key dates")</h6>
+                        <ul class="timeline">
+                            <li>
+                                <span class="tl-dot bg-primary"></span>
+                                <div class="tl-content">
+                                    <strong>@(isRtl ? "فتح باب التقديم" : "Application opens")</strong>
+                                    <div class="text-muted small">@((isRtl ? "الأسبوع الأول من أيلول" : "First week of September"))</div>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="tl-dot bg-warning"></span>
+                                <div class="tl-content">
+                                    <strong>@(isRtl ? "آخر موعد للتقديم" : "Deadline")</strong>
+                                    <div class="text-muted small">@((isRtl ? "نهاية تشرين الأول" : "End of October"))</div>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="tl-dot bg-success"></span>
+                                <div class="tl-content">
+                                    <strong>@(isRtl ? "إعلان النتائج" : "Results")</strong>
+                                    <div class="text-muted small">@((isRtl ? "منتصف تشرين الثاني" : "Mid November"))</div>
+                                </div>
+                            </li>
+                        </ul>
+                        <a asp-controller="Admissions" asp-action="HowToApply" class="btn btn-primary w-100 mt-2">
+                            <i class="bi bi-rocket-takeoff me-1"></i> @(isRtl ? "ابدأ التقديم" : "Start application")
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mb-3">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-telephone-forward me-1 text-primary"></i> @(isRtl ? "تواصل" : "Contact")</h6>
+                        <ul class="list-unstyled small mb-0">
+                            <li><i class="bi bi-envelope me-1"></i> <a href="mailto:admissions@mutah.edu.jo">admissions@mutah.edu.jo</a></li>
+                            <li><i class="bi bi-telephone me-1"></i> +962 3 000 0000</li>
+                            <li><i class="bi bi-geo-alt me-1"></i> @(isRtl ? "الكرك - الحرم الجامعي" : "Karak – Campus")</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+                        <h6 class="mb-2"><i class="bi bi-link-45deg me-1 text-primary"></i> @(isRtl ? "روابط مفيدة" : "Useful links")</h6>
+                        <div class="d-grid gap-2">
+                            <a asp-controller="Admissions" asp-action="HowToApply" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-check2-square me-1"></i> @(isRtl ? "طريقة التقديم" : "How to apply")
+                            </a>
+                            <a asp-controller="Admissions" asp-action="Tuition" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-cash-coin me-1"></i> @(isRtl ? "الرسوم" : "Tuition")
+                            </a>
+                            <a href="~/docs/admissions/requirements.pdf" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-file-earmark-pdf me-1"></i> @(isRtl ? "متطلبات (PDF)" : "Requirements (PDF)")
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /sidebar -->
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        /* Hero */
+        .req-hero {
+            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%), radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%), linear-gradient(180deg, #f8fbff, #ffffff);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .req-hero-illust {
+            height: 330px;
+            width: 120%; /* عشان تتأكد إنها ماخدة عرض كامل */
+            background-image: url('/img/illustrations/Learning-pana.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 90%; /* الصورة تغطي كل البوكس */
+        }
+
+
+
+
+
+        /* Subnav pills */
+        .req-subnav .nav-link {
+            background: #f5f7fb;
+            border: 1px solid #e7edf5;
+            color: #334155;
+            margin-inline-end: .5rem;
+        }
+
+            .req-subnav .nav-link:hover {
+                background: #eef3ff;
+                color: #0d6efd;
+            }
+
+            .req-subnav .nav-link.active {
+                background: #0d6efd;
+                color: #fff;
+                border-color: #0d6efd;
+                box-shadow: 0 6px 14px rgba(13,110,253,.18);
+            }
+
+        /* Check list + dot list */
+        .list-check {
+            padding-inline-start: 1rem;
+        }
+
+            .list-check li {
+                margin-bottom: .55rem;
+                position: relative;
+                list-style: none;
+            }
+
+                .list-check li::before {
+                    content: "";
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg,#4f46e5,#06b6d4);
+                    position: absolute;
+                    top: .55rem;
+                    inset-inline-start: -1.5rem;
+                    box-shadow: 0 0 0 3px #eef2ff;
+                }
+
+        .list-dot {
+            padding-inline-start: 1.1rem;
+        }
+
+            .list-dot li {
+                margin-bottom: .55rem;
+            }
+
+        /* Document tiles */
+        .tile {
+            display: flex;
+            align-items: center;
+            gap: .8rem;
+            padding: .9rem;
+            border: 1px solid #e7edf5;
+            border-radius: 12px;
+            background: linear-gradient(180deg,#ffffff,#fcfdff);
+        }
+
+            .tile i {
+                font-size: 1.25rem;
+                color: #0d6efd;
+            }
+
+        .req-doc {
+        }
+
+        /* Timeline */
+        .timeline {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .timeline li {
+                display: flex;
+                gap: .75rem;
+                align-items: flex-start;
+                margin-bottom: .75rem;
+            }
+
+        .tl-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: .35rem;
+            display: inline-block;
+        }
+
+        .tl-content strong {
+            display: block;
+        }
+
+    </style>
+}

@@ -1,0 +1,181 @@
+﻿@using System.Globalization
+@using MutaEngineering.Models
+@model List<AcademicAlert>
+
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    ViewData["Title"] ??= T("التنبيهات الأكاديمية", "Academic Alerts");
+
+    var depList = (SelectList)ViewBag.Departments;
+    var isAdmin = (bool?)ViewBag.IsAdmin == true;
+
+    int? currentDepId = null;
+    bool currentUpcoming = true;
+    string currentQ = "";
+
+    if (ViewBag.Filters != null)
+    {
+        currentDepId = (int?)ViewBag.Filters.depId;
+        currentUpcoming = (bool)ViewBag.Filters.upcomingOnly;
+        currentQ = (string)(ViewBag.Filters.q ?? "");
+    }
+}
+
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+
+    @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
+    {
+        <div class="alert alert-success">@ok</div>
+    }
+
+    @if (isAdmin)
+    {
+        <div class="mb-3 d-flex gap-2">
+            <a class="btn btn-primary"
+               asp-action="Create"
+               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                <i class="bi bi-plus-lg me-1"></i>@T("إضافة تنبيه", "Add Alert")
+            </a>
+        </div>
+    }
+
+    <form method="get" class="row g-2 g-md-3 align-items-end mb-3">
+        <div class="col-12 col-md-3">
+            <label class="form-label small">@T("القسم", "Department")</label>
+            <select name="depId" class="form-select" onchange="this.form.submit()">
+                <option value="">@T("الكل", "All")</option>
+                @foreach (var item in depList)
+                {
+                    <option value="@item.Value" selected="@(currentDepId?.ToString() == item.Value ? "selected" : null)">@item.Text</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-12 col-md-2">
+            <label class="form-label small">@T("القادم فقط", "Upcoming only")</label>
+            <select name="upcomingOnly" class="form-select" onchange="this.form.submit()">
+                <option value="true" selected="@(currentUpcoming ? "selected" : null)">@T("نعم", "Yes")</option>
+                <option value="false" selected="@(!currentUpcoming ? "selected" : null)">@T("لا", "No")</option>
+            </select>
+        </div>
+
+        <div class="col-12 col-md-5">
+            <label class="form-label small">@T("بحث بالعنوان/المكان/القسم", "Search by title/location/department")</label>
+            <input name="q" class="form-control" value="@currentQ" />
+        </div>
+
+        <div class="col-12 col-md-2 d-grid">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search me-1"></i>@T("بحث", "Search")
+            </button>
+        </div>
+    </form>
+
+    <div class="row g-3 g-md-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12">
+                <div class="alert alert-info mb-0">@T("لا توجد تنبيهات مطابقة.", "No matching alerts.")</div>
+            </div>
+        }
+        else
+        {
+            @foreach (var a in Model)
+            {
+                var title = isRtl ? a.TitleAr : a.TitleEn;
+                var depName = a.Department == null ? "" : (isRtl ? a.Department.NameAr : a.Department.NameEn);
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3 pb-5 position-relative">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="small text-muted">
+                                @if (a.Date.HasValue)
+                                {
+                                    <span><i class="bi bi-calendar-event me-1"></i>@a.Date.Value.ToString("ddd dd/MM • HH:mm", CultureInfo.CurrentUICulture)</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(a.Location))
+                                {
+                                    <span class="ms-2"><i class="bi bi-geo-alt me-1"></i>@a.Location</span>
+                                }
+                            </div>
+                            @if (a.IsImportant)
+                            {
+                                <span class="badge text-bg-danger">@T("مهم", "Important")</span>
+                            }
+                        </div>
+
+                        <h5 class="m-0">@title</h5>
+                        @if (!string.IsNullOrWhiteSpace(depName))
+                        {
+                            <div class="small text-muted mt-1">@depName</div>
+                        }
+
+                        @if (isAdmin)
+                        {
+                            <div class="position-absolute bottom-0 end-0 p-2 d-flex gap-1 admin-actions" style="z-index:20;">
+                                <a class="btn btn-sm btn-light border"
+                                   asp-action="Edit" asp-route-id="@a.Id"
+                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
+                                   title="Edit" onclick="event.stopPropagation();">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="Delete" method="post" class="d-inline js-delete-form" onsubmit="event.stopPropagation();">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@a.Id" />
+                                    <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+                                    <button type="button" class="btn btn-sm btn-light border js-delete-btn" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        (function () {
+          document.addEventListener('click', function (ev) {
+            const btn = ev.target.closest('.js-delete-btn');
+            if (!btn) return;
+            ev.preventDefault(); ev.stopPropagation();
+
+            const form = btn.closest('.js-delete-form');
+            if (!form) return;
+
+            const rtl = document.documentElement.dir === 'rtl';
+            Swal.fire({
+              title: rtl ? 'تأكيد الحذف؟' : 'Confirm delete?',
+              text:  rtl ? 'لا يمكن التراجع بعد الحذف.' : 'This action cannot be undone.',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: rtl ? 'نعم، احذف' : 'Yes, delete',
+              cancelButtonText:   rtl ? 'إلغاء' : 'Cancel',
+              reverseButtons: rtl,
+              customClass: { confirmButton: 'btn btn-danger', cancelButton: 'btn btn-secondary ms-2' },
+              buttonsStyling: false
+            }).then(res => { if (res.isConfirmed) form.submit(); });
+          }, true);
+        })();
+    </script>
+
+    <style>
+        .card .admin-actions {
+            z-index: 20;
+        }
+
+        .stretched-link::after {
+            z-index: 1;
+        }
+
+        .admin-actions, .admin-actions * {
+            pointer-events: auto !important;
+        }
+    </style>
+}

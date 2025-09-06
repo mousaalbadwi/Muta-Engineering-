@@ -1,0 +1,314 @@
+﻿@using System.Globalization
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] = isRtl ? "سياسة الخصوصية" : "Privacy Policy";
+    var updated = DateTime.UtcNow.ToString("yyyy-MM-dd");
+}
+
+<!-- Hero -->
+<section class="privacy-hero py-5">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-12 col-lg-7">
+                <h1 class="display-6 fw-bold mb-3">
+                    @(isRtl ? "سياسة الخصوصية" : "Privacy Policy")
+                </h1>
+                <p class="lead text-muted mb-4">
+                    @(isRtl
+                                        ? "تشرح هذه الصفحة ما هي البيانات التي نجمعها وكيف نستخدمها وحقوقك بخصوصها عند استخدام بوابة كلية الهندسة."
+                                        : "This page explains what data we collect, how we use it, and your rights when using the Faculty of Engineering portal.")
+                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="chip">@((isRtl ? "لا نبيع بياناتك" : "We do not sell your data"))</span>
+                    <span class="chip">@((isRtl ? "كوكيز أساسية فقط" : "Essential cookies only"))</span>
+                    <span class="chip">@((isRtl ? "تسجيل اجتماعي اختياري" : "Social sign-in optional"))</span>
+                    <span class="chip">@((isRtl ? "يمكنك طلب الحذف" : "You can request deletion"))</span>
+                </div>
+
+                <div class="text-muted mt-3">
+                    <small>@(isRtl ? "آخر تحديث:" : "Last updated:") @updated (UTC)</small>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-5 d-none d-lg-block">
+                <div class="privacy-hero-illustration"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick nav -->
+<section class="py-3">
+    <div class="container">
+        <div class="row g-2 small">
+            <div class="col-6 col-md-3"><a class="quick-anchor" href="#what">@(isRtl ? "ما الذي نجمعه" : "What we collect")</a></div>
+            <div class="col-6 col-md-3"><a class="quick-anchor" href="#how">@(isRtl ? "كيف نستخدمه" : "How we use it")</a></div>
+            <div class="col-6 col-md-3"><a class="quick-anchor" href="#cookies">Cookies</a></div>
+            <div class="col-6 col-md-3"><a class="quick-anchor" href="#rights">@(isRtl ? "حقوقك" : "Your rights")</a></div>
+        </div>
+    </div>
+</section>
+
+<!-- Content -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- What we collect -->
+            <div class="col-12">
+                <div id="what" class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="h4 mb-3">@((isRtl ? "البيانات التي نجمعها" : "Data we collect"))</h3>
+                        <p class="text-muted">
+                            @(isRtl
+                                                        ? "نعتمد على أقل قدر ممكن من البيانات لتشغيل البوابة وتقديم الميزات الأساسية. قد نجمع:"
+                                                        : "We operate on a data-minimal approach. We may collect:")
+                        </p>
+                        <ul class="list-check">
+                            <li>
+                                @(isRtl ? "معلومات الحساب" : "Account information")
+                                — @(isRtl ? "الاسم الكامل (اختياري)، رقم الهاتف عند التسجيل اليدوي، أو البريد عند التسجيل عبر مزوّد خارجي." : "full name (optional), phone number for manual sign-up, or email for external sign-in.")
+                            </li>
+                            <li>
+                                @(isRtl ? "بيانات تسجيل الدخول" : "Sign-in data")
+                                — @(isRtl ? "وقت إنشاء الحساب وآخر تسجيل دخول، وحالة الجلسة. لا نخزن كلمة المرور بنص واضح؛ نستخدم تجزئة آمنة." : "account creation/sign-in timestamps and session state. Passwords are never stored in plain text; we store a secure hash.")
+                            </li>
+                            <li>
+                                @(isRtl ? "ملفات وحقول إدارية" : "Administrative content")
+                                — @(isRtl ? "عند إضافة أقسام/أعضاء/امتحانات من لوحة الإدارة يتم حفظ البيانات والصور/الملفات التي ترفعها." : "when adding departments/faculty/exams via admin, we store the data and any uploaded images/files.")
+                            </li>
+                            <li>
+                                @(isRtl ? "بيانات تقنية" : "Technical data")
+                                — @(isRtl ? "سجل أخطاء الخادم، عنوان IP العام، نوع المتصفح، والصفحات التي تم الوصول إليها لأغراض أمنية وتشخيصية." : "server error logs, public IP, browser type, and accessed pages for security and diagnostics.")
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How we use -->
+            <div class="col-12">
+                <div id="how" class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="h4 mb-3">@((isRtl ? "كيف نستخدم بياناتك" : "How we use your data"))</h3>
+                        <ul class="list-dot">
+                            <li>@(isRtl ? "تقديم الوظائف الأساسية للموقع (العرض العام وإدارة المحتوى للأدمن)." : "Provide core site functionality (public views and admin content management).")</li>
+                            <li>@(isRtl ? "المصادقة وإدارة الجلسات." : "Authentication and session management.")</li>
+                            <li>@(isRtl ? "الأمان، رصد الإساءات، واستكشاف الأخطاء وإصلاحها." : "Security, abuse detection, and troubleshooting.")</li>
+                            <li>@(isRtl ? "الامتثال لالتزامات قانونية/مؤسسية ذات صلة." : "Compliance with relevant legal/institutional obligations.")</li>
+                        </ul>
+
+                        <h4 class="h5 mt-4">@((isRtl ? "الأساس القانوني للمعالجة (للأنظمة المشابهة للـGDPR)" : "Legal basis (for GDPR-like regimes)"))</h4>
+                        <ul class="list-dot">
+                            <li>@(isRtl ? "تنفيذ عقد الخدمة عند إنشاء الحساب واستخدام الموقع." : "Contract performance when creating an account and using the site.")</li>
+                            <li>@(isRtl ? "المصلحة المشروعة في تأمين الأنظمة وتحسينها." : "Legitimate interest in securing and improving the service.")</li>
+                            <li>@(isRtl ? "الامتثال للمتطلبات القانونية المعمول بها." : "Compliance with applicable legal requirements.")</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cookies -->
+            <div class="col-12">
+                <div id="cookies" class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="h4 mb-3">Cookies</h3>
+                        <p class="text-muted">
+                            @(isRtl
+                                                        ? "نستخدم ملفات تعريف الارتباط الأساسية لتذكر جلسة تسجيل الدخول وتفضيل اللغة. لا نستخدم تتبعًا إعلانيًا."
+                                                        : "We use essential cookies to remember your login session and language preference. No advertising trackers.")
+                        </p>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>@(isRtl ? "الاسم" : "Name")</th>
+                                        <th>@(isRtl ? "الغرض" : "Purpose")</th>
+                                        <th>@(isRtl ? "المدة" : "Duration")</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Layan.Session</td>
+                                        <td>@(isRtl ? "إدارة جلسة المستخدم" : "User session management")</td>
+                                        <td>@(isRtl ? "حتى انتهاء الجلسة أو الخروج" : "Until session expires or logout")</td>
+                                    </tr>
+                                    <tr>
+                                        <td>culture, ui-culture</td>
+                                        <td>@(isRtl ? "تذكر لغة الواجهة المختارة" : "Remember selected UI language")</td>
+                                        <td>@(isRtl ? "متغيّرة (عادةً بضعة أيام)" : "Varies (typically a few days)")</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="small text-muted mb-0">
+                            @(isRtl
+                                                        ? "يمكنك التحكّم بالكوكيز عبر إعدادات المتصفح. تعطيل الكوكيز الأساسية قد يؤثر على تسجيل الدخول."
+                                                        : "You can control cookies in your browser settings. Disabling essential cookies may impact sign-in.")
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Third-party sign-in -->
+            <div class="col-12">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="h4 mb-3">@((isRtl ? "التسجيل بحساب خارجي" : "Third-party sign-in"))</h3>
+                        <p class="text-muted">
+                            @(isRtl
+                                                        ? "عند استخدامك Google أو GitHub أو Facebook للتسجيل، قد يزوّدنا المزوّد بمعرّف فريد وبريد إلكتروني واسم العرض. نستخدم هذه المعلومات فقط لإنشاء حسابك وتسجيل دخولك."
+                                                        : "When using Google, GitHub, or Facebook to sign in, the provider may share a unique ID, email, and display name. We use these solely to create your account and sign you in.")
+                        </p>
+                        <ul class="list-dot">
+                            <li>@(isRtl ? "لا نصل إلى كلمة مرورك لدى المزوّد." : "We never access your provider password.")</li>
+                            <li>@(isRtl ? "استخدامك يخضع أيضًا لسياسة خصوصية المزوّد." : "Your use is also subject to the provider’s privacy policy.")</li>
+                            <li>@(isRtl ? "يمكنك إلغاء ربط الدخول الخارجي عبر حذف حسابك لدينا." : "You can unlink by deleting your account with us.")</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Retention & Security -->
+            <div class="col-12">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="h4 mb-3">@((isRtl ? "الاحتفاظ بالبيانات والأمان" : "Data retention & security"))</h3>
+                        <ul class="list-dot">
+                            <li>@(isRtl ? "نحتفظ ببيانات الحساب ما دام الحساب نشطًا أو كما يتطلبه الغرض." : "We retain account data while the account is active or as required for the stated purpose.")</li>
+                            <li>@(isRtl ? "عند طلب الحذف نقوم بإزالة معلوماتك خلال مدة معقولة مع الاحتفاظ بسجلات تقنية أساسية لحماية النظام." : "Upon a deletion request, we remove your information within a reasonable period while keeping minimal technical logs for system protection.")</li>
+                            <li>@(isRtl ? "نستخدم ممارسات أمان قياسية (تجزئة كلمات المرور، اتصالات مشفّرة HTTPS، وضوابط وصول)." : "We apply standard security practices (password hashing, HTTPS, and access controls).")</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your rights -->
+            <div class="col-12">
+                <div id="rights" class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="h4 mb-3">@((isRtl ? "حقوقك" : "Your rights"))</h3>
+                        <ul class="list-check">
+                            <li>@(isRtl ? "الوصول: يمكنك طلب نسخة من بياناتك لدينا." : "Access: request a copy of your data.")</li>
+                            <li>@(isRtl ? "التصحيح: يمكنك طلب تصحيح أي بيانات غير دقيقة." : "Rectification: ask us to correct inaccurate data.")</li>
+                            <li>@(isRtl ? "الحذف: يمكنك طلب حذف حسابك وبياناتك." : "Erasure: request account/data deletion.")</li>
+                            <li>@(isRtl ? "الاعتراض/تقييد المعالجة حيثما ينطبق." : "Object/restrict processing where applicable.")</li>
+                        </ul>
+                        <p class="text-muted small mb-0">
+                            @(isRtl
+                                                        ? "يتم تنفيذ هذه الحقوق بما يتوافق مع سياسات الجامعة والقوانين السارية."
+                                                        : "These rights are exercised subject to university policies and applicable laws.")
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="col-12">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body p-4">
+                        <h3 class="h4 mb-3">@((isRtl ? "التواصل" : "Contact"))</h3>
+                        <p class="mb-2">
+                            @(isRtl
+                                                        ? "للاستفسارات أو طلبات الخصوصية، يرجى التواصل مع إدارة الكلية عبر البريد الرسمي أو عبر صفحة التواصل على البوابة."
+                                                        : "For privacy inquiries or requests, contact the faculty administration via the official email or the portal’s contact page.")
+                        </p>
+                        <ul class="list-unstyled small mb-0 text-muted">
+                            <li>@(isRtl ? "أدخل بريد الكلية هنا" : "Insert official faculty email here")</li>
+                            <li>@(isRtl ? "أدخل رقم التواصل/التحويلة هنا (اختياري)" : "Insert phone/extension here (optional)")</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        /* Hero visual */
+        .privacy-hero {
+            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%), radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%), linear-gradient(180deg, #f8fbff, #ffffff);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .privacy-hero-illustration {
+            border-radius: 20px;
+            height: 440px;
+            width: 110%; /* عشان تتأكد إنها ماخدة عرض كامل */
+            background-image: url('/img/illustrations/Webinar-bro.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 90%; /* الصورة تغطي كل البوكس */
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .35rem .65rem;
+            border-radius: 999px;
+            font-size: .85rem;
+            background: #eef2ff;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        .quick-anchor {
+            display: block;
+            padding: .5rem .75rem;
+            border-radius: 10px;
+            background: #f8fafc;
+            border: 1px solid #eef2f7;
+            text-decoration: none;
+            color: #374151;
+        }
+
+            .quick-anchor:hover {
+                background: #eef2ff;
+            }
+
+        /* Lists */
+        .list-check {
+            padding-left: 1rem;
+        }
+
+            .list-check li {
+                margin-bottom: .5rem;
+                position: relative;
+            }
+
+                .list-check li::marker {
+                    content: "";
+                }
+
+                .list-check li::before {
+                    content: "";
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg,#4f46e5,#06b6d4);
+                    position: absolute;
+                    top: .5rem;
+                    inset-inline-start: -1.5rem;
+                    box-shadow: 0 0 0 3px #eef2ff;
+                }
+
+        .list-dot {
+            padding-left: 1.1rem;
+        }
+
+            .list-dot li {
+                margin-bottom: .5rem;
+            }
+
+        /* Cards polish */
+        .card {
+            border: 1px solid #eef2f7;
+        }
+    </style>
+}

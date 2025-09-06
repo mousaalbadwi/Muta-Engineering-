@@ -1,0 +1,24 @@
+﻿@using System.Globalization
+@model MutaEngineering.Models.StudyPlan
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    ViewData["Title"] ??= isRtl ? "عرض الخطة" : "View Plan";
+}
+
+<section class="container after-hero">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="h5 m-0">@(isRtl ? "عرض الخطة الدراسية" : "Study Plan Viewer") — @Model.Year</h2>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" asp-action="Index">
+                <i class="bi bi-arrow-90deg-left me-1"></i> @(isRtl ? "الرجوع" : "Back")
+            </a>
+            <a class="btn btn-primary" href="@Url.Content(Model.PdfPath)" download>
+                <i class="bi bi-download me-1"></i> @(isRtl ? "تحميل" : "Download")
+            </a>
+        </div>
+    </div>
+
+    <div class="ratio ratio-16x9 rounded-4 overflow-hidden border shadow-sm">
+        <iframe src="@Url.Content(Model.PdfPath)" title="Study Plan PDF" style="border:0;"></iframe>
+    </div>
+</section>

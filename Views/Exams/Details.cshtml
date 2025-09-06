@@ -1,0 +1,66 @@
+﻿@using System.Globalization
+@using MutaEngineering.Models
+@model Exam
+
+@{
+    var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+    string T(string ar, string en) => isRtl ? ar : en;
+    ViewData["Title"] ??= isRtl ? Model.CourseNameAr : Model.CourseNameEn;
+}
+
+<section class="container after-hero">
+    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+
+    <div class="card border-0 shadow-sm rounded-4 p-3">
+        <div class="mb-2 text-muted small">
+            <i class="bi bi-collection me-1"></i>@Model.CourseCode •
+            @(Model.Department == null ? "" : (isRtl ? Model.Department.NameAr : Model.Department.NameEn)) •
+            @T("سنة", "Y") @Model.Year
+        </div>
+
+        <div class="d-flex flex-column gap-2">
+            <div class="text-muted">
+                <i class="bi bi-calendar-event me-1"></i>
+                @Model.DateTime.ToString("dddd dd/MM/yyyy • HH:mm", CultureInfo.CurrentUICulture)
+                <span class="badge text-bg-@(Model.Mode == ExamMode.Online ? "info" : "secondary") ms-2">
+                    @(Model.Mode == ExamMode.Online ? T("إلكتروني", "Online") : T("حضوري", "In-Person"))
+                </span>
+            </div>
+
+            @if (Model.Mode == ExamMode.InPerson && !string.IsNullOrWhiteSpace(Model.Location))
+            {
+                <div class="text-muted"><i class="bi bi-geo-alt me-1"></i>@Model.Location</div>
+            }
+
+            @if (Model.Mode == ExamMode.Online && !string.IsNullOrWhiteSpace(Model.LmsUrl))
+            {
+                <div>
+                    <a class="btn btn-outline-primary btn-sm" href="@Model.LmsUrl" target="_blank">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>@T("دخول إلى منصة الامتحان", "Open LMS Exam")
+                    </a>
+                    @if (!string.IsNullOrWhiteSpace(Model.LmsHowTo))
+                    {
+                        <div class="small text-muted mt-1">@Model.LmsHowTo</div>
+                    }
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.Instructions))
+            {
+                <div class="border rounded-3 p-2 bg-light">
+                    <div class="fw-semibold mb-1">@T("تعليمات", "Instructions")</div>
+                    <div class="small">@Model.Instructions</div>
+                </div>
+            }
+
+            @if (Model.HasStegoProtection)
+            {
+                <div class="small text-success"><i class="bi bi-shield-check me-1"></i>@T("محمي بستيغانوغرافي", "Stego-protected")</div>
+            }
+        </div>
+
+        <div class="mt-3">
+            <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left-short"></i>@T("رجوع", "Back")</a>
+        </div>
+    </div>
+</section>
