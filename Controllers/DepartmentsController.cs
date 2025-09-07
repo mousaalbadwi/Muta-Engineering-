@@ -9,14 +9,19 @@ namespace MutaEngineering.Controllers
     {
         private readonly AppDbContext _db;
         private readonly IWebHostEnvironment _env;
-        private readonly IConfiguration _config;
 
-        public DepartmentsController(AppDbContext db, IWebHostEnvironment env, IConfiguration config)
+        public DepartmentsController(AppDbContext db, IWebHostEnvironment env)
         {
-            _db = db; _env = env; _config = config;
+            _db = db;
+            _env = env;
         }
 
-        private bool IsAdmin() => _config.GetValue<bool>("Admin:Enabled");
+        // ✅ الصلاحية الآن من الـSession
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return role == "Admin";
+        }
 
         // حفظ صورة القسم تحت wwwroot/img/departments
         private async Task<string?> SavePhotoAsync(IFormFile? file)
@@ -50,8 +55,10 @@ namespace MutaEngineering.Controllers
                 if (string.IsNullOrWhiteSpace(relPath)) return;
                 var rel = relPath.Replace("~", "").Replace('/', Path.DirectorySeparatorChar);
                 var full = Path.Combine(_env.WebRootPath, rel.TrimStart(Path.DirectorySeparatorChar));
+
                 var safeRoot = Path.Combine(_env.WebRootPath, "img", "departments");
                 if (!full.StartsWith(safeRoot)) return;
+
                 if (System.IO.File.Exists(full)) System.IO.File.Delete(full);
             }
             catch { /* ignore */ }

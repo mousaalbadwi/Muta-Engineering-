@@ -1,8 +1,26 @@
 ﻿@using System.Globalization
+@using Microsoft.AspNetCore.Http
 @{
     var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
-    var currentController = (string)ViewContext.RouteData.Values["controller"] ?? "";
-    var currentAction = (string)ViewContext.RouteData.Values["action"] ?? "";
+
+    // آمن ضد null (يمنع تحذير CS8600)
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+
+    // صلاحيات/جلسة (آمنة ضد null)
+    var userFull = Context.Session.GetString("UserFullName");
+    var userRole = Context.Session.GetString("UserRole") ?? "User";
+    var isAdmin = userRole == "Admin";
+
+    // صفحات بواجهة مُصغّرة (بدون Navbar/Footer)
+    // Welcome/Index + Account/Login + Account/SignUp
+    bool isMinimalLayout =
+        (string.Equals(currentController, "Welcome", StringComparison.OrdinalIgnoreCase)
+         && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase))
+        ||
+        (string.Equals(currentController, "Account", StringComparison.OrdinalIgnoreCase)
+         && (string.Equals(currentAction, "Login", StringComparison.OrdinalIgnoreCase)
+             || string.Equals(currentAction, "SignUp", StringComparison.OrdinalIgnoreCase)));
 }
 <!DOCTYPE html>
 <html lang="@CultureInfo.CurrentUICulture.Name" dir="@(isRtl ? "rtl" : "ltr")">
@@ -33,122 +51,241 @@
 </head>
 
 <body class="bg-light d-flex flex-column min-vh-100">
-    <!-- NAVBAR -->
-    <header class="navbar-glass">
-        <nav class="navbar navbar-expand-lg container">
-            <a class="navbar-brand brand-wrap d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
-                <img src="~/img/logo.jpg" alt="Mutah University Logo" asp-append-version="true" />
-                <span>@(isRtl ? "كلية الهندسة – جامعة مؤتة" : "Faculty of Engineering – Mutah University")</span>
-            </a>
+    <!-- NAVBAR (مخفي إذا الصفحة مصغّرة) -->
+    @if (!isMinimalLayout)
+    {
+        <header class="navbar-glass">
+            <nav class="navbar navbar-expand-lg container">
+                <a class="navbar-brand brand-wrap d-flex align-items-center gap-2" asp-controller="Home" asp-action="Index">
+                    <img src="~/img/logo.jpg" alt="Mutah University Logo" asp-append-version="true" />
+                    <span>@(isRtl ? "كلية الهندسة – جامعة مؤتة" : "Faculty of Engineering – Mutah University")</span>
+                </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-                    aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <div id="mainNav" class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto nav-underline">
-                    <li class="nav-item">
-                        <a class="nav-link @(currentController=="Home" && currentAction=="Index" ? "active" : "")"
-                           asp-controller="Home" asp-action="Index">
-                            @(isRtl ? "الرئيسية" : "Home")
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(currentController == "Home" && currentAction == "Privacy" ? "active" : "")"
-                           asp-controller="Home" asp-action="Privacy">
-                            Privacy
-                        </a>
-                    </li>
-                </ul>
+                <div id="mainNav" class="collapse navbar-collapse">
+                    <ul class="navbar-nav me-auto nav-underline">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController=="Home" && currentAction=="Index" ? "active" : "")"
+                               asp-controller="Home" asp-action="Index">
+                                @(isRtl ? "الرئيسية" : "Home")
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "Home" && currentAction == "Privacy" ? "active" : "")"
+                               asp-controller="Home" asp-action="Privacy">
+                                Privacy
+                            </a>
+                        </li>
+                    </ul>
 
-                <div class="d-flex">
-                    <div class="lang-switch">
-                        <a href="?culture=ar-JO&ui-culture=ar-JO"
-                           class="lang-pill @(isRtl ? "active" : "")" title="Arabic">
-                            <span class="lang-flag">🇯🇴</span> عربي
-                        </a>
-                        <a href="?culture=en-US&ui-culture=en-US"
-                           class="lang-pill @(!isRtl ? "active" : "")" title="English">
-                            <span class="lang-flag">🇺🇸</span> English
-                        </a>
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- لغة -->
+                        <div class="lang-switch me-2">
+                            <a href="?culture=ar-JO&ui-culture=ar-JO"
+                               class="lang-pill @(isRtl ? "active" : "")" title="Arabic">
+                                <span class="lang-flag">🇯🇴</span> عربي
+                            </a>
+                            <a href="?culture=en-US&ui-culture=en-US"
+                               class="lang-pill @(!isRtl ? "active" : "")" title="English">
+                                <span class="lang-flag">🇺🇸</span> English
+                            </a>
+                        </div>
+
+                        <!-- المستخدم والصلاحيات -->
+                        @if (!string.IsNullOrEmpty(userFull))
+                        {
+                            <div class="d-none d-lg-flex align-items-center small text-muted px-2">
+                                <i class="bi bi-person-circle me-1"></i>
+                                <span class="text-truncate" style="max-width: 160px;">@userFull</span>
+                                <span class="mx-1">·</span>
+                                <span class="badge rounded-pill @(isAdmin ? "text-bg-primary" : "text-bg-secondary")">@userRole</span>
+                            </div>
+
+                            @if (isAdmin)
+                            {
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @(isRtl ? "إدارة" : "Admin")
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" asp-controller="Departments" asp-action="Index"><i class="bi bi-diagram-3 me-2"></i>@(isRtl ? "الأقسام" : "Departments")</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Faculty" asp-action="Index"><i class="bi bi-people me-2"></i>@(isRtl ? "هيئة التدريس" : "Faculty")</a></li>
+                                        <li><a class="dropdown-item" asp-controller="News" asp-action="Index"><i class="bi bi-newspaper me-2"></i>@(isRtl ? "الأخبار" : "News")</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Exams" asp-action="Index"><i class="bi bi-journal-text me-2"></i>@(isRtl ? "الامتحانات" : "Exams")</a></li>
+                                    </ul>
+                                </div>
+                            }
+
+                            <form id="logoutForm" asp-controller="Account" asp-action="DeleteAndLogout" method="post" class="d-inline ms-1">
+                                @Html.AntiForgeryToken()
+                                <button id="btnLogoutConfirm" type="button" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-box-arrow-right me-1"></i>@(isRtl ? "تسجيل الخروج" : "Logout")
+                                </button>
+                            </form>
+
+                        }
+                        else
+                        {
+                            <a class="btn btn-sm btn-primary" asp-controller="Account" asp-action="Login">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>@(isRtl ? "تسجيل الدخول" : "Login")
+                            </a>
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Account" asp-action="SignUp">
+                                <i class="bi bi-person-plus me-1"></i>@(isRtl ? "حساب جديد" : "Sign Up")
+                            </a>
+                        }
                     </div>
                 </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
+        </header>
+    }
 
     <!-- MAIN -->
-    <main class="flex-fill main-padding">
+    <main class="flex-fill @(isMinimalLayout ? "" : "main-padding")">
         @RenderBody()
     </main>
 
-    <!-- FOOTER -->
-    <footer class="site-footer mt-auto">
-        <div class="container footer-grid">
-            <div>
-                <h6 class="fw-bold mb-2">
-                    @(
-                                        isRtl ? "كلية الهندسة – جامعة مؤتة" : "Faculty of Engineering – Mutah University")
-                </h6>
-                <p class="footer-meta">
-                    @(
-                                        isRtl ? "بوابتك الرسمية للأقسام، الخطط الدراسية، أعضاء هيئة التدريس، والمختبرات."
-                                        : "Your official portal for departments, study plans, faculty members, and laboratories.")
+    <!-- FOOTER (مخفي إذا الصفحة مصغّرة) -->
+    @if (!isMinimalLayout)
+    {
+        <footer class="site-footer mt-auto">
+            <div class="container footer-grid">
+                <div>
+                    <h6 class="fw-bold mb-2">
+                        @(isRtl ? "كلية الهندسة – جامعة مؤتة" : "Faculty of Engineering – Mutah University")
+                    </h6>
+                    <p class="footer-meta">
+                        @(isRtl ? "بوابتك الرسمية للأقسام، الخطط الدراسية، أعضاء هيئة التدريس، والمختبرات."
+                                            : "Your official portal for departments, study plans, faculty members, and laboratories.")
                 </p>
                 <p class="footer-meta mb-0">&copy; @DateTime.Now.Year — Mutah University</p>
             </div>
 
-            <div>
-                <h6 class="fw-bold mb-2">@((isRtl ? "روابط سريعة" : "Quick Links"))</h6>
-                <ul class="list-unstyled">
-                    <li><a class="footer-link" asp-controller="Home" asp-action="Index">@((isRtl ? "الرئيسية" : "Home"))</a></li>
-                    <li><a class="footer-link" asp-controller="Departments" asp-action="Index">@((isRtl ? "الأقسام" : "Departments"))</a></li>
-                    <li><a class="footer-link" asp-controller="StudyPlans" asp-action="Index">@((isRtl ? "الخطط الدراسية" : "Study Plans"))</a></li>
-                    <li><a class="footer-link" asp-controller="Home" asp-action="Privacy">@((isRtl ? "الخصوصية" : "Privacy"))</a></li>
-                </ul>
-            </div>
+                <div>
+                    <h6 class="fw-bold mb-2">@((isRtl ? "روابط سريعة" : "Quick Links"))</h6>
+                    <ul class="list-unstyled">
+                        <li><a class="footer-link" asp-controller="Home" asp-action="Index">@((isRtl ? "الرئيسية" : "Home"))</a></li>
+                        <li><a class="footer-link" asp-controller="Departments" asp-action="Index">@((isRtl ? "الأقسام" : "Departments"))</a></li>
+                        <li><a class="footer-link" asp-controller="StudyPlans" asp-action="Index">@((isRtl ? "الخطط الدراسية" : "Study Plans"))</a></li>
+                        <li><a class="footer-link" asp-controller="Home" asp-action="Privacy">@((isRtl ? "الخصوصية" : "Privacy"))</a></li>
+                    </ul>
+                </div>
 
-            <div>
-                <h6 class="fw-bold mb-2">@((isRtl ? "تواصل معنا" : "Contact Us"))</h6>
-                <ul class="list-unstyled">
-                    <li>
-                        <i class="bi bi-telephone me-1"></i>
-                        <a class="footer-link" href="tel:+962123456789">+962 1 234 567 89</a>
-                    </li>
-                    <li>
-                        <i class="bi bi-envelope me-1"></i>
-                        <a class="footer-link" href="mailto:engineering@mutah.edu.jo">engineering@mutah.edu.jo</a>
-                    </li>
-                    <li><i class="bi bi-geo-alt me-1"></i>@(isRtl ? "الكرك - الأردن" : "Karak, Jordan")</li>
-                </ul>
+                <div>
+                    <h6 class="fw-bold mb-2">@((isRtl ? "تواصل معنا" : "Contact Us"))</h6>
+                    <ul class="list-unstyled">
+                        <li>
+                            <i class="bi bi-telephone me-1"></i>
+                            <a class="footer-link" href="tel:+962123456789">+962 1 234 567 89</a>
+                        </li>
+                        <li>
+                            <i class="bi bi-envelope me-1"></i>
+                            <a class="footer-link" href="mailto:engineering@mutah.edu.jo">engineering@mutah.edu.jo</a>
+                        </li>
+                        <li><i class="bi bi-geo-alt me-1"></i>@(isRtl ? "الكرك - الأردن" : "Karak, Jordan")</li>
+                    </ul>
+                </div>
+            </div>
+        </footer>
+        }
+
+    <!-- Toasts (TempData) -->
+    @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
+    {
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080;">
+            <div id="toastOk" class="toast align-items-center text-bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-check-circle me-2"></i>@ok
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
             </div>
         </div>
-    </footer>
+    }
+    @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
+    {
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index:1080;">
+            <div id="toastErr" class="toast align-items-center text-bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="bi bi-exclamation-triangle me-2"></i>@err
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    }
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <script>
-        // ظل عند التمرير
-        (function () {
-          const h = document.querySelector('.navbar-glass');
-          const onScroll = () => h?.classList.toggle('scrolled', window.scrollY > 4);
-          document.addEventListener('scroll', onScroll, { passive: true });
-          onScroll();
-        })();
+    @if (!isMinimalLayout)
+    {
+        <script>
+            // ظل عند التمرير
+            (function () {
+              const h = document.querySelector('.navbar-glass');
+              const onScroll = () => h?.classList.toggle('scrolled', window.scrollY > 4);
+              document.addEventListener('scroll', onScroll, { passive: true });
+              onScroll();
+            })();
 
-        // اتجاه حركة الـ underline (يسار/يمين)
-        document.querySelectorAll('.nav-underline .nav-link').forEach(link => {
-          link.addEventListener('mouseenter', e => {
-            const r = e.currentTarget.getBoundingClientRect();
-            const x = e.clientX - r.left;
-            const origin = x < r.width / 2 ? 'left' : 'right';
-            e.currentTarget.style.setProperty('--x-origin', origin);
+            // اتجاه حركة الـ underline (يسار/يمين)
+            document.querySelectorAll('.nav-underline .nav-link').forEach(link => {
+              link.addEventListener('mouseenter', e => {
+                const r = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - r.left;
+                const origin = x < r.width / 2 ? 'left' : 'right';
+                e.currentTarget.style.setProperty('--x-origin', origin);
+              });
+            });
+        </script>
+    }
+
+    <script>
+        // تفعيل toast مع إخفاء تلقائي
+        (function () {
+          const ok = document.getElementById('toastOk');
+          const err = document.getElementById('toastErr');
+          if (ok) {
+            const t = new bootstrap.Toast(ok, { delay: 3500, autohide: true }); t.show();
+          }
+          if (err) {
+            const t = new bootstrap.Toast(err, { delay: 5000, autohide: true }); t.show();
+          }
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.getElementById("logoutForm")?.addEventListener("click", function () {
+          const rtl = document.documentElement.dir === 'rtl';
+          Swal.fire({
+            title: rtl ? 'تأكيد تسجيل الخروج؟' : 'Confirm logout?',
+            text: rtl ? 'سيتم حذف حسابك نهائياً.' : 'Your account will be permanently deleted.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: rtl ? 'نعم، احذف وسجّل خروج' : 'Yes, delete & logout',
+            cancelButtonText: rtl ? 'إلغاء' : 'Cancel',
+            reverseButtons: rtl,
+            customClass: { confirmButton: 'btn btn-danger', cancelButton: 'btn btn-secondary ms-2' },
+            buttonsStyling: false
+          }).then(res => {
+            if (res.isConfirmed) {
+              document.getElementById("logoutForm").submit();
+            }
           });
         });
     </script>
+
+
+
+
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -1,4 +1,5 @@
 ﻿@using System.Globalization
+@using Microsoft.AspNetCore.Http
 @model List<MutaEngineering.Models.Department>
 
 @{
@@ -6,7 +7,7 @@
     string T(string ar, string en) => isRtl ? ar : en;
     ViewData["Title"] ??= T("الأقسام الأكاديمية", "Academic Departments");
     var q = (string)(ViewBag.Query ?? "");
-    var isAdmin = (bool?)ViewBag.IsAdmin == true;
+    bool isAdmin = Context.Session.GetString("UserRole") == "Admin";
 }
 
 <section class="container after-hero">
@@ -39,14 +40,18 @@
             <input name="q" class="form-control" value="@q" />
         </div>
         <div class="col-12 col-md-2 d-grid">
-            <button class="btn btn-primary" type="submit"><i class="bi bi-search me-1"></i>@T("بحث", "Search")</button>
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-search me-1"></i>@T("بحث", "Search")
+            </button>
         </div>
     </form>
 
     <div class="row g-3 g-md-4">
         @if (!Model.Any())
         {
-            <div class="col-12"><div class="alert alert-info mb-0">@T("لا توجد أقسام.", "No departments.")</div></div>
+            <div class="col-12">
+                <div class="alert alert-info mb-0">@T("لا توجد أقسام.", "No departments.")</div>
+            </div>
         }
         else
         {
@@ -78,7 +83,8 @@
                                 <a class="btn btn-sm btn-light border"
                                    asp-action="Edit" asp-route-id="@d.Id"
                                    asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
-                                   title="Edit" onclick="event.stopPropagation();">
+                                   title="@T("تعديل", "Edit")"
+                                   onclick="event.stopPropagation();">
                                     <i class="bi bi-pencil"></i>
                                 </a>
 
@@ -86,7 +92,7 @@
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@d.Id" />
                                     <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
-                                    <button type="button" class="btn btn-sm btn-light border js-delete-btn" title="Delete">
+                                    <button type="button" class="btn btn-sm btn-light border js-delete-btn" title="@T("حذف", "Delete")">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>

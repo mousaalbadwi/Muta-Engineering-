@@ -1,9 +1,12 @@
 ﻿@model IEnumerable<MutaEngineering.Models.ExamArchiveItem>
 @using System.Globalization
+@using Microsoft.AspNetCore.Http
 @{
     var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
     // ViewData["Title"] يجي من الكنترولر (سياسات/أرشيف...) — نتركه كما هو
-    var isAdmin = (bool?)ViewBag.IsAdmin == true;
+
+    // ✅ صلاحيات: ViewBag أو Session
+    var isAdmin = ((bool?)ViewBag.IsAdmin == true) || (Context.Session.GetString("UserRole") == "Admin");
 }
 
 <!-- Hero -->
@@ -200,7 +203,6 @@
             background-repeat: no-repeat;
             background-position: center;
             background-size: 90%; /* الصورة تغطي كل البوكس */
-        
         }
 
         /* Subnav */

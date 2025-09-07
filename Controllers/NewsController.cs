@@ -11,14 +11,19 @@ namespace MutaEngineering.Controllers
     {
         private readonly AppDbContext _db;
         private readonly IWebHostEnvironment _env;
-        private readonly IConfiguration _config;
 
-        public NewsController(AppDbContext db, IWebHostEnvironment env, IConfiguration config)
+        public NewsController(AppDbContext db, IWebHostEnvironment env)
         {
-            _db = db; _env = env; _config = config;
+            _db = db;
+            _env = env;
         }
 
-        private bool IsAdmin() => _config.GetValue<bool>("Admin:Enabled");
+        // ✅ الصلاحية الآن من الـSession
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return role == "Admin";
+        }
 
         // حفظ الصورة تحت wwwroot/img/news
         private async Task<string?> SaveImageAsync(IFormFile? file)

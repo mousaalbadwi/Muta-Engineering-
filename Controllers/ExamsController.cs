@@ -3,139 +3,122 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MutaEngineering.Data;
 using MutaEngineering.Models;
+using System.Globalization;
 
 namespace MutaEngineering.Controllers
 {
     public class ExamsController : Controller
     {
         private readonly AppDbContext _db;
-        private readonly IWebHostEnvironment _env;
-        private readonly IConfiguration _config;
 
-        public ExamsController(AppDbContext db, IWebHostEnvironment env, IConfiguration config)
+        public ExamsController(AppDbContext db)
         {
-            _db = db; _env = env; _config = config;
+            _db = db;
         }
 
-        private bool IsAdmin() => _config.GetValue<bool>("Admin:Enabled");
+        // ✅ الصلاحية الآن من الـSession
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return role == "Admin";
+        }
 
         // ===== Helpers =====
         private async Task LoadDepartmentsAsync()
         {
-            var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+            var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
             var list = await _db.Departments.AsNoTracking()
                 .OrderBy(d => d.NameEn)
-                .Select(d => new { d.Id, d.Code, Name = isRtl ? d.NameAr : d.NameEn })
+                .Select(d => new { d.Id, Name = isRtl ? d.NameAr : d.NameEn })
                 .ToListAsync();
 
-            ViewBag.DepartmentsSelect = new SelectList(list, "Id", "Name");
+            ViewBag.Departments = new SelectList(list, "Id", "Name");
         }
 
-        private async Task<string?> SavePdfAsync(IFormFile? file)
+        // =========================================================
+        //                       Exams (Upcoming / List)
+        // =========================================================
+
+        // GET: /Exams
+        public async Task<IActionResult> Index(int? depId, int? year, string? q, bool upcomingOnly = true)
         {
-            if (file == null || file.Length == 0) return null;
-
-            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (ext != ".pdf")
-            {
-                ModelState.AddModelError("Pdf", "Only PDF files are allowed.");
-                return null;
-            }
-
-            var folder = Path.Combine(_env.WebRootPath, "docs", "archive");
-            Directory.CreateDirectory(folder);
-
-            var filename = $"{Guid.NewGuid():N}{ext}";
-            var full = Path.Combine(folder, filename);
-            using var stream = System.IO.File.Create(full);
-            await file.CopyToAsync(stream);
-
-            return $"~/docs/archive/{filename}";
-        }
-
-        // ===== Index (قائمة + فلترة) =====
-        public async Task<IActionResult> Index(string? dept, int? year, string? q)
-        {
-            var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
-            ViewData["Title"] = isRtl ? "اختبارات الجامعة" : "University Exams";
+            var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+            ViewData["Title"] = isRtl ? "الامتحانات" : "Exams";
             ViewBag.IsAdmin = IsAdmin();
 
             var query = _db.Exams
-                .Include(e => e.Department)
                 .AsNoTracking()
+                .Include(e => e.Department)
                 .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(dept))
-            {
-                var d = dept.Trim();
-                query = query.Where(x =>
-                    x.Department.Code == d ||
-                    x.Department.NameAr == d ||
-                    x.Department.NameEn == d);
-            }
+            if (depId.HasValue)
+                query = query.Where(e => e.DepartmentId == depId.Value);
 
-            if (year.HasValue)
-                query = query.Where(x => x.Year == year.Value);
+            if (year.HasValue && year.Value > 0)
+                query = query.Where(e => e.Year == year.Value);
 
             if (!string.IsNullOrWhiteSpace(q))
             {
                 var t = q.Trim().ToLower();
-                query = query.Where(x =>
-                    x.CourseCode.ToLower().Contains(t) ||
-                    (isRtl ? x.CourseNameAr : x.CourseNameEn).ToLower().Contains(t));
+                query = query.Where(e =>
+                    e.CourseCode.ToLower().Contains(t) ||
+                    e.CourseNameAr.ToLower().Contains(t) ||
+                    e.CourseNameEn.ToLower().Contains(t) ||
+                    (e.Location != null && e.Location.ToLower().Contains(t)) ||
+                    (e.Department != null && (
+                        e.Department.NameAr.ToLower().Contains(t) ||
+                        e.Department.NameEn.ToLower().Contains(t) ||
+                        (e.Department.Code != null && e.Department.Code.ToLower().Contains(t))
+                    )));
             }
 
-            var data = await query.OrderBy(x => x.DateTime).ToListAsync();
+            if (upcomingOnly)
+                query = query.Where(e => e.DateTime >= DateTime.UtcNow.AddDays(-1));
 
-            // لقوائم الفلترة
-            ViewBag.Departments = await _db.Departments
-                .AsNoTracking()
-                .OrderBy(d => d.NameEn)
-                .ToDictionaryAsync(
-                    d => d.Code ?? d.Id.ToString(),
-                    d => $"{d.NameAr}|{d.NameEn}");
-
-            ViewBag.Years = await _db.Exams
-                .AsNoTracking()
-                .Select(e => e.Year)
-                .Distinct()
-                .OrderBy(y => y)
+            var items = await query
+                .OrderBy(e => e.DateTime)
+                .ThenBy(e => e.CourseCode)
                 .ToListAsync();
 
-            return View(data);
+            await LoadDepartmentsAsync();
+            ViewBag.Filters = new { depId, year, q, upcomingOnly };
+
+            return View(items);
         }
 
-        // ===== Details =====
+        // GET: /Exams/Details/{id}
         public async Task<IActionResult> Details(int id)
         {
-            var item = await _db.Exams
+            var e = await _db.Exams
                 .AsNoTracking()
-                .Include(e => e.Department)
-                .FirstOrDefaultAsync(e => e.Id == id);
+                .Include(x => x.Department)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (item == null) return NotFound();
+            if (e == null) return NotFound();
 
-            var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
-            ViewData["Title"] = isRtl ? item.CourseNameAr : item.CourseNameEn;
-            return View(item);
+            var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
+            ViewData["Title"] = isRtl ? e.CourseNameAr : e.CourseNameEn;
+            return View(e);
         }
 
-        // ===== سياسات/دعم =====
+        // ثابتات واجهة: /Exams/Policies , /Exams/Support
         public IActionResult Policies()
         {
-            var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
-            ViewData["Title"] = isRtl ? "سياسات وتعليمات الامتحانات" : "Exam Policies & Guidelines";
+            ViewData["Title"] = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "السياسات" : "Policies";
+            ViewBag.IsAdmin = IsAdmin();
             return View();
         }
 
         public IActionResult Support()
         {
-            var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
-            ViewData["Title"] = isRtl ? "الدعم الفني للامتحانات" : "Exam Technical Support";
+            ViewData["Title"] = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "الدعم" : "Support";
+            ViewBag.IsAdmin = IsAdmin();
             return View();
         }
 
-        // ===== CRUD: Exams =====
+        // ===== Exams CRUD =====
+
+        // GET: /Exams/Create
         [HttpGet]
         public async Task<IActionResult> Create(string? returnUrl = null)
         {
@@ -143,18 +126,24 @@ namespace MutaEngineering.Controllers
             await LoadDepartmentsAsync();
             ViewBag.ReturnUrl = returnUrl ?? Url.Action("Index");
 
-            // حط قسم افتراضي مبدئيًا (لو حبيت)
+            // افتراضيًا أول قسم
             var firstDepId = await _db.Departments.OrderBy(d => d.NameEn).Select(d => d.Id).FirstOrDefaultAsync();
-            return View(new Exam { DepartmentId = firstDepId, DateTime = DateTime.UtcNow.AddDays(7) });
+            return View(new Exam
+            {
+                DepartmentId = firstDepId,
+                DateTime = DateTime.UtcNow.AddDays(7),
+                Mode = ExamMode.InPerson
+            });
         }
 
+        // POST: /Exams/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Exam model, string? returnUrl = null)
         {
             if (!IsAdmin()) return Forbid();
 
-            // نتجاهل الملاحة لأننا بنرسل DepartmentId فقط
+            // الملاحة تأتي من DB
             ModelState.Remove(nameof(Exam.Department));
 
             if (model.DepartmentId <= 0)
@@ -162,8 +151,6 @@ namespace MutaEngineering.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.FormErrors = string.Join(" | ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 await LoadDepartmentsAsync();
                 ViewBag.ReturnUrl = returnUrl ?? Url.Action("Index");
                 return View(model);
@@ -171,23 +158,25 @@ namespace MutaEngineering.Controllers
 
             _db.Exams.Add(model);
             await _db.SaveChangesAsync();
-            TempData["Ok"] = "Exam added.";
+            TempData["Ok"] = "Exam created.";
             return Redirect(returnUrl ?? Url.Action("Index")!);
         }
 
+        // GET: /Exams/Edit/{id}
         [HttpGet]
         public async Task<IActionResult> Edit(int id, string? returnUrl = null)
         {
             if (!IsAdmin()) return Forbid();
 
-            var exam = await _db.Exams.FindAsync(id);
-            if (exam == null) return NotFound();
+            var e = await _db.Exams.FindAsync(id);
+            if (e == null) return NotFound();
 
             await LoadDepartmentsAsync();
             ViewBag.ReturnUrl = returnUrl ?? Url.Action("Index");
-            return View(exam);
+            return View(e);
         }
 
+        // POST: /Exams/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Exam model, string? returnUrl = null)
@@ -199,13 +188,12 @@ namespace MutaEngineering.Controllers
             if (existing == null) return NotFound();
 
             ModelState.Remove(nameof(Exam.Department));
+
             if (model.DepartmentId <= 0)
                 ModelState.AddModelError("DepartmentId", "Select a department.");
 
-            existing.BusinessId = string.IsNullOrWhiteSpace(model.BusinessId)
-                ? existing.BusinessId
-                : model.BusinessId.Trim();
-
+            // نقل القيم
+            existing.BusinessId = string.IsNullOrWhiteSpace(model.BusinessId) ? existing.BusinessId : model.BusinessId;
             existing.CourseCode = model.CourseCode;
             existing.CourseNameAr = model.CourseNameAr;
             existing.CourseNameEn = model.CourseNameEn;
@@ -221,8 +209,6 @@ namespace MutaEngineering.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.FormErrors = string.Join(" | ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 await LoadDepartmentsAsync();
                 ViewBag.ReturnUrl = returnUrl ?? Url.Action("Index");
                 return View(existing);
@@ -233,37 +219,60 @@ namespace MutaEngineering.Controllers
             return Redirect(returnUrl ?? Url.Action("Index")!);
         }
 
+        // POST: /Exams/Delete/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id, string? returnUrl = null)
         {
             if (!IsAdmin()) return Forbid();
 
-            var m = await _db.Exams.FindAsync(id);
-            if (m == null) return NotFound();
+            var e = await _db.Exams.FindAsync(id);
+            if (e == null) return NotFound();
 
-            _db.Exams.Remove(m);
+            _db.Exams.Remove(e);
             await _db.SaveChangesAsync();
 
             TempData["Ok"] = "Exam deleted.";
             return Redirect(returnUrl ?? Url.Action("Index")!);
         }
 
-        // ===== Archive =====
-        public async Task<IActionResult> Archive()
+        // =========================================================
+        //                        Archive (Old Exams)
+        // =========================================================
+
+        // GET: /Exams/Archive
+        public async Task<IActionResult> Archive(string? course, string? term)
         {
-            var isRtl = System.Globalization.CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
-            ViewData["Title"] = isRtl ? "نماذج امتحانات سابقة" : "Past Exam Papers";
+            ViewData["Title"] = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft ? "أرشيف الامتحانات" : "Exam Archive";
             ViewBag.IsAdmin = IsAdmin();
 
-            var list = await _db.ExamArchiveItems
-                .AsNoTracking()
-                .OrderByDescending(x => x.Term)
+            var query = _db.ExamArchiveItems.AsNoTracking().AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(course))
+            {
+                var t = course.Trim().ToLower();
+                query = query.Where(a =>
+                    a.CourseCode.ToLower().Contains(t) ||
+                    a.CourseNameAr.ToLower().Contains(t) ||
+                    a.CourseNameEn.ToLower().Contains(t));
+            }
+
+            if (!string.IsNullOrWhiteSpace(term))
+            {
+                var tt = term.Trim().ToLower();
+                query = query.Where(a => a.Term != null && a.Term.ToLower().Contains(tt));
+            }
+
+            var items = await query
+                .OrderByDescending(a => a.Term)
+                .ThenBy(a => a.CourseCode)
                 .ToListAsync();
 
-            return View(list);
+            ViewBag.Filters = new { course, term };
+            return View(items);
         }
 
+        // GET: /Exams/ArchiveCreate
         [HttpGet]
         public IActionResult ArchiveCreate(string? returnUrl = null)
         {
@@ -272,40 +281,26 @@ namespace MutaEngineering.Controllers
             return View(new ExamArchiveItem());
         }
 
+        // POST: /Exams/ArchiveCreate
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [RequestSizeLimit(100_000_000)]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> ArchiveCreate(ExamArchiveItem model, IFormFile? paper, IFormFile? solution, string? returnUrl = null)
+        public async Task<IActionResult> ArchiveCreate(ExamArchiveItem model, string? returnUrl = null)
         {
             if (!IsAdmin()) return Forbid();
 
-            // نحفظ الملفات لو أُرفقت
-            var paperPath = await SavePdfAsync(paper);
-            var solutionPath = await SavePdfAsync(solution);
-
-            if (paper != null && paperPath == null)
-                ModelState.AddModelError("PdfUrl", "Invalid paper file.");
-            if (solution != null && solutionPath == null)
-                ModelState.AddModelError("SolutionUrl", "Invalid solution file.");
-
-            model.PdfUrl = paperPath ?? model.PdfUrl;
-            model.SolutionUrl = solutionPath ?? model.SolutionUrl;
-
             if (!ModelState.IsValid)
             {
-                ViewBag.FormErrors = string.Join(" | ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 ViewBag.ReturnUrl = returnUrl ?? Url.Action("Archive");
                 return View(model);
             }
 
             _db.ExamArchiveItems.Add(model);
             await _db.SaveChangesAsync();
-            TempData["Ok"] = "Archive entry added.";
+            TempData["Ok"] = "Archive item added.";
             return Redirect(returnUrl ?? Url.Action("Archive")!);
         }
 
+        // GET: /Exams/ArchiveEdit/{id}
         [HttpGet]
         public async Task<IActionResult> ArchiveEdit(int id, string? returnUrl = null)
         {
@@ -318,11 +313,10 @@ namespace MutaEngineering.Controllers
             return View(item);
         }
 
+        // POST: /Exams/ArchiveEdit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [RequestSizeLimit(100_000_000)]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> ArchiveEdit(int id, ExamArchiveItem model, IFormFile? paper, IFormFile? solution, bool? clearSolution, string? returnUrl = null)
+        public async Task<IActionResult> ArchiveEdit(int id, ExamArchiveItem model, string? returnUrl = null)
         {
             if (!IsAdmin()) return Forbid();
             if (id != model.Id) return BadRequest();
@@ -334,32 +328,21 @@ namespace MutaEngineering.Controllers
             existing.CourseNameAr = model.CourseNameAr;
             existing.CourseNameEn = model.CourseNameEn;
             existing.Term = model.Term;
+            existing.PdfUrl = model.PdfUrl;
+            existing.SolutionUrl = model.SolutionUrl;
 
-            var paperPath = await SavePdfAsync(paper);
-            var solutionPath = await SavePdfAsync(solution);
-
-            if (paper != null && paperPath == null)
-                ModelState.AddModelError("PdfUrl", "Invalid paper file.");
-            if (solution != null && solutionPath == null)
-                ModelState.AddModelError("SolutionUrl", "Invalid solution file.");
-
-            if (paperPath != null) existing.PdfUrl = paperPath;
-            if (solutionPath != null) existing.SolutionUrl = solutionPath;
-            if (clearSolution == true) existing.SolutionUrl = null;
-
-            if (!ModelState.IsValid)
+            if (!TryValidateModel(existing))
             {
-                ViewBag.FormErrors = string.Join(" | ",
-                    ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                 ViewBag.ReturnUrl = returnUrl ?? Url.Action("Archive");
                 return View(existing);
             }
 
             await _db.SaveChangesAsync();
-            TempData["Ok"] = "Archive entry updated.";
+            TempData["Ok"] = "Archive item updated.";
             return Redirect(returnUrl ?? Url.Action("Archive")!);
         }
 
+        // POST: /Exams/ArchiveDelete/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveDelete(int id, string? returnUrl = null)
@@ -372,7 +355,7 @@ namespace MutaEngineering.Controllers
             _db.ExamArchiveItems.Remove(item);
             await _db.SaveChangesAsync();
 
-            TempData["Ok"] = "Archive entry deleted.";
+            TempData["Ok"] = "Archive item deleted.";
             return Redirect(returnUrl ?? Url.Action("Archive")!);
         }
     }

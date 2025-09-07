@@ -1,4 +1,5 @@
-﻿@using System.Globalization
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.Globalization
 @using MutaEngineering.Models
 @model List<MutaEngineering.Models.Exam>
 
@@ -7,8 +8,11 @@
     string T(string ar, string en) => isRtl ? ar : en;
     ViewData["Title"] ??= T("اختبارات الجامعة", "University Exams");
 
-    var depDict = (IDictionary<string, string>)ViewBag.Departments;
-    var years = (IEnumerable<int>)ViewBag.Years;
+    // مرونة: نستوعب الحالتين
+    var depDict = ViewBag.Departments as IDictionary<string, string>;
+    var depSelect = ViewBag.Departments as IEnumerable<SelectListItem> ?? Enumerable.Empty<SelectListItem>();
+
+    var years = ViewBag.Years as IEnumerable<int> ?? Enumerable.Empty<int>();
     var isAdmin = (bool?)ViewBag.IsAdmin == true;
 
     var currentDept = Context.Request.Query["dept"].ToString();
@@ -32,8 +36,7 @@
                asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
                 <i class="bi bi-plus-lg me-1"></i>@T("إضافة امتحان", "Add Exam")
             </a>
-            <a class="btn btn-outline-secondary"
-               asp-action="Archive">
+            <a class="btn btn-outline-secondary" asp-action="Archive">
                 <i class="bi bi-archive me-1"></i>@T("أرشيف النماذج", "Past Papers Archive")
             </a>
         </div>
@@ -44,12 +47,29 @@
             <label class="form-label small">@T("القسم", "Department")</label>
             <select name="dept" class="form-select" onchange="this.form.submit()">
                 <option value="">@T("الكل", "All")</option>
-                @foreach (var kv in depDict)
+
+                @* حالة: depDict = Dictionary<string,string> والقيمة "ar|en" *@
+                @if (depDict != null)
                 {
-                    var code = kv.Key;
-                    var pair = kv.Value.Split('|');
-                    var name = isRtl ? pair[0] : pair[1];
-                    <option value="@code" selected="@(currentDept == code ? "selected" : null)">@name</option>
+                    foreach (var kv in depDict)
+                    {
+                        var code = kv.Key;
+                        var parts = (kv.Value ?? "").Split('|');
+                        var name = isRtl ? (parts.FirstOrDefault() ?? kv.Value)
+                        : (parts.Length > 1 ? parts[1] : kv.Value);
+                        <option value="@code" selected="@(currentDept == code ? "selected" : null)">@name</option>
+                    }
+                }
+                else
+                {
+                    @* حالة: SelectList/SelectListItem *@
+                    foreach (var item in depSelect)
+                    {
+                        var parts = (item.Text ?? "").Split('|');
+                        var name = isRtl ? (parts.FirstOrDefault() ?? item.Text)
+                        : (parts.Length > 1 ? parts[1] : item.Text);
+                        <option value="@item.Value" selected="@(currentDept == item.Value ? "selected" : null)">@name</option>
+                    }
                 }
             </select>
         </div>
@@ -80,7 +100,9 @@
     <div class="row g-3 g-md-4">
         @if (!Model.Any())
         {
-            <div class="col-12"><div class="alert alert-info mb-0">@T("لا توجد امتحانات مطابقة.", "No matching exams.")</div></div>
+            <div class="col-12">
+                <div class="alert alert-info mb-0">@T("لا توجد امتحانات مطابقة.", "No matching exams.")</div>
+            </div>
         }
         else
         {
@@ -100,16 +122,21 @@
                                 @(e.Mode == ExamMode.Online ? T("إلكتروني", "Online") : T("حضوري", "In-Person"))
                             </span>
                         </div>
+
                         <div class="text-muted small">
-                            <i class="bi bi-calendar-event me-1"></i>@e.DateTime.ToString("ddd dd/MM • HH:mm", CultureInfo.CurrentUICulture)
+                            <i class="bi bi-calendar-event me-1"></i>
+                            @e.DateTime.ToString("ddd dd/MM • HH:mm", CultureInfo.CurrentUICulture)
                             @if (e.Mode == ExamMode.InPerson && !string.IsNullOrWhiteSpace(e.Location))
                             {
                                 <span class="ms-2"><i class="bi bi-geo-alt me-1"></i>@e.Location</span>
                             }
                         </div>
+
                         @if (e.HasStegoProtection)
                         {
-                            <div class="mt-2 small text-success"><i class="bi bi-shield-check me-1"></i>@T("محمي بستيغانوغرافي", "Stego-protected")</div>
+                            <div class="mt-2 small text-success">
+                                <i class="bi bi-shield-check me-1"></i>@T("محمي بستيغانوغرافي", "Stego-protected")
+                            </div>
                         }
 
                         <a class="stretched-link" asp-action="Details" asp-route-id="@e.Id"></a>
@@ -123,6 +150,7 @@
                                    title="Edit" onclick="event.stopPropagation();">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+
                                 <form asp-action="Delete" method="post" class="d-inline js-delete-form" onsubmit="event.stopPropagation();">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@e.Id" />
@@ -140,9 +168,15 @@
     </div>
 
     <div class="mt-4 d-flex flex-wrap gap-2">
-        <a class="btn btn-outline-secondary" asp-action="Archive"><i class="bi bi-archive me-1"></i>@T("نماذج سابقة", "Past Papers")</a>
-        <a class="btn btn-outline-secondary" asp-action="Policies"><i class="bi bi-journal-check me-1"></i>@T("السياسات والتعليمات", "Policies & Guidelines")</a>
-        <a class="btn btn-outline-secondary" asp-action="Support"><i class="bi bi-life-preserver me-1"></i>@T("الدعم الفني", "Technical Support")</a>
+        <a class="btn btn-outline-secondary" asp-action="Archive">
+            <i class="bi bi-archive me-1"></i>@T("نماذج سابقة", "Past Papers")
+        </a>
+        <a class="btn btn-outline-secondary" asp-action="Policies">
+            <i class="bi bi-journal-check me-1"></i>@T("السياسات والتعليمات", "Policies & Guidelines")
+        </a>
+        <a class="btn btn-outline-secondary" asp-action="Support">
+            <i class="bi bi-life-preserver me-1"></i>@T("الدعم الفني", "Technical Support")
+        </a>
     </div>
 </section>
 
@@ -153,9 +187,7 @@
           document.addEventListener('click', function (ev) {
             const btn = ev.target.closest('.js-delete-btn');
             if (!btn) return;
-
-            ev.preventDefault();
-            ev.stopPropagation();
+            ev.preventDefault(); ev.stopPropagation();
 
             const form = btn.closest('.js-delete-form');
             if (!form) return;

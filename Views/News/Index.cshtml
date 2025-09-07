@@ -1,4 +1,6 @@
 ﻿@using System.Globalization
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Mvc.Rendering
 @using MutaEngineering.Models
 @model List<NewsItem>
 
@@ -7,8 +9,11 @@
     string T(string ar, string en) => isRtl ? ar : en;
     ViewData["Title"] ??= T("الأخبار والفعاليات", "News & Events");
 
-    var isAdmin = (bool?)ViewBag.IsAdmin == true;
-    var categories = (IEnumerable<SelectListItem>)ViewBag.Categories;
+    // ✅ Fallback للصلاحيات: ViewBag أو Session
+    var isAdmin = ((bool?)ViewBag.IsAdmin == true) || (Context.Session.GetString("UserRole") == "Admin");
+
+    // ✅ حماية من null
+    var categories = ViewBag.Categories as IEnumerable<SelectListItem> ?? new List<SelectListItem>();
 
     int? currentCat = null; bool currentPublishedOnly = true; string currentQ = "";
     if (ViewBag.Filters != null)

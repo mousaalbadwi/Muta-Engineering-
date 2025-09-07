@@ -41,4 +41,44 @@
             </div>
         </div>
     </div>
-</div>
+</div> <!-- نهاية الـ Hero -->
+<!-- FOOTER هنا خارج الـ Hero -->
+<footer class="site-footer mt-auto">
+    <div class="container footer-grid">
+        <div>
+            <h6 class="fw-bold mb-2">
+                @(isRtl ? "كلية الهندسة – جامعة مؤتة" : "Faculty of Engineering – Mutah University")
+            </h6>
+            <p class="footer-meta">
+                @(isRtl ? "بوابتك الرسمية للأقسام، الخطط الدراسية، أعضاء هيئة التدريس، والمختبرات."
+                                : "Your official portal for departments, study plans, faculty members, and laboratories.")
+            </p>
+            <p class="footer-meta mb-0">&copy; @DateTime.Now.Year — Mutah University</p>
+        </div>
+
+        <div>
+            <h6 class="fw-bold mb-2">@((isRtl ? "روابط سريعة" : "Quick Links"))</h6>
+            <ul class="list-unstyled">
+                <li><a class="footer-link" asp-controller="Home" asp-action="Index">@((isRtl ? "الرئيسية" : "Home"))</a></li>
+                <li><a class="footer-link" asp-controller="Departments" asp-action="Index">@((isRtl ? "الأقسام" : "Departments"))</a></li>
+                <li><a class="footer-link" asp-controller="StudyPlans" asp-action="Index">@((isRtl ? "الخطط الدراسية" : "Study Plans"))</a></li>
+                <li><a class="footer-link" asp-controller="Home" asp-action="Privacy">@((isRtl ? "الخصوصية" : "Privacy"))</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h6 class="fw-bold mb-2">@((isRtl ? "تواصل معنا" : "Contact Us"))</h6>
+            <ul class="list-unstyled">
+                <li>
+                    <i class="bi bi-telephone me-1"></i>
+                    <a class="footer-link" href="tel:+962123456789">+962 1 234 567 89</a>
+                </li>
+                <li>
+                    <i class="bi bi-envelope me-1"></i>
+                    <a class="footer-link" href="mailto:engineering@mutah.edu.jo">engineering@mutah.edu.jo</a>
+                </li>
+                <li><i class="bi bi-geo-alt me-1"></i>@(isRtl ? "الكرك - الأردن" : "Karak, Jordan")</li>
+            </ul>
+        </div>
+    </div>
+</footer>

@@ -1,139 +1,159 @@
 ﻿@using System.Globalization
-@using MutaEngineering.Models
+@using Microsoft.AspNetCore.Http
 @model MutaEngineering.Controllers.FacultyVM
 
 @{
     var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
     string T(string ar, string en) => isRtl ? ar : en;
-
-    ViewData["Title"] = T("أعضاء هيئة التدريس", "Faculty Members");
-
-    var currentDep = Model.SelectedDep ?? "";
-    var currentQ = Model.Query ?? "";
-    var isAdmin = (bool?)ViewBag.IsAdmin == true;
+    ViewData["Title"] ??= T("أعضاء هيئة التدريس", "Faculty Members");
+    bool isAdmin = Context.Session.GetString("UserRole") == "Admin";
+    var depCode = Model.SelectedDep ?? "";
+    var q = Model.Query ?? "";
 }
 
-<section class="container after-hero">
-    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
+<section class="container after-hero faculty-page">
+    <!-- Header / Title Bar -->
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
+        <div class="d-flex align-items-center gap-2">
+            <div class="title-dot"></div>
+            <h2 class="h4 mb-0">@ViewData["Title"]</h2>
+            <span class="badge rounded-pill text-bg-secondary opacity-75">@Model.Members.Count</span>
+        </div>
 
-    @* رسالة نجاح من TempData *@
+        @if (isAdmin)
+        {
+            <a class="btn btn-primary lift-sm"
+               asp-action="Create"
+               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                <i class="bi bi-person-plus me-1"></i>@T("إضافة عضو", "Add Member")
+            </a>
+        }
+    </div>
+
+    <!-- Alerts -->
     @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
     {
-        <div class="alert alert-success">@ok</div>
+        <div class="alert alert-success soft-shadow mb-3"><i class="bi bi-check-circle me-1"></i>@ok</div>
     }
-
-    @* زر إضافة عضو (للمشرف فقط) *@
-    @if (isAdmin)
+    @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
     {
-        <div class="mb-3">
-            <a class="btn btn-primary"
-               asp-controller="Faculty" asp-action="Create"
-               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
-                <i class="bi bi-plus-lg me-1"></i>@T("إضافة عضو", "Add Member")
-            </a>
-        </div>
+        <div class="alert alert-danger soft-shadow mb-3"><i class="bi bi-exclamation-triangle me-1"></i>@err</div>
     }
 
-    @* فلترة *@
-    <form method="get" class="row g-2 g-md-3 align-items-end mb-3">
-        <div class="col-12 col-md-4">
-            <label class="form-label small">@T("القسم", "Department")</label>
-            <select name="dep" class="form-select" onchange="this.form.submit()">
-                <option value="">@T("الكل", "All")</option>
-                @foreach (var kv in Model.Departments)
-                {
-                    var code = kv.Key;
-                    var pair = kv.Value.Split('|');
-                    var name = isRtl ? pair[0] : pair[1];
-                    <option value="@code" selected="@(currentDep == code ? "selected" : null)">@name</option>
-                }
-            </select>
-        </div>
+    <!-- Filters Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 filter-card">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label class="form-label small fw-semibold text-muted">@T("القسم", "Department")</label>
+                    <select name="dep" class="form-select rounded-3">
+                        <option value="">@T("الكل", "All")</option>
+                        @foreach (var kv in Model.Departments)
+                        {
+                            var code = kv.Key;
+                            var pair = kv.Value.Split('|');
+                            var name = isRtl ? pair[0] : pair[1];
+                            <option value="@code" selected="@(code == depCode)">@name</option>
+                        }
+                    </select>
+                </div>
 
-        <div class="col-12 col-md-6">
-            <label class="form-label small">@T("بحث بالاسم/المسمى/البريد", "Search by name/title/email")</label>
-            <input name="q" class="form-control" value="@currentQ" />
-        </div>
+                <div class="col-12 col-md-7">
+                    <label class="form-label small fw-semibold text-muted">@T("بحث بالاسم/اللقب/الإيميل", "Search name/title/email")</label>
+                    <div class="input-group">
+                        <span class="input-group-text rounded-start-3"><i class="bi bi-search"></i></span>
+                        <input class="form-control rounded-end-3" name="q" value="@q" placeholder="@T("اكتب للبحث…", "Type to search…")" />
+                    </div>
+                </div>
 
-        <div class="col-12 col-md-2 d-grid">
-            <button class="btn btn-primary" type="submit">
-                <i class="bi bi-search me-1"></i>@T("بحث", "Search")
-            </button>
-        </div>
-    </form>
+                <div class="col-12 col-md-2 d-grid">
+                    <button class="btn btn-dark rounded-3 lift-sm" type="submit">
+                        <i class="bi bi-funnel me-1"></i>@T("تصفية", "Filter")
+                    </button>
+                </div>
+            </form>
 
-    @* شبكة الكروت *@
+            @* Active Filters chips *@
+            @if (!string.IsNullOrWhiteSpace(depCode) || !string.IsNullOrWhiteSpace(q))
+            {
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    @if (!string.IsNullOrWhiteSpace(depCode) && Model.Departments.TryGetValue(depCode, out var depVal))
+                    {
+                        var depName = (isRtl ? depVal.Split('|')[0] : depVal.Split('|')[1]);
+                        <span class="chip">@T("القسم:", "Department:") @depName</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(q))
+                    {
+                        <span class="chip">@T("بحث:", "Query:") “@q”</span>
+                    }
+                    <a class="btn btn-sm btn-outline-secondary rounded-pill" href="@Context.Request.Path">
+                        <i class="bi bi-x-circle me-1"></i>@T("مسح", "Clear")
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Grid -->
     <div class="row g-3 g-md-4">
         @if (!Model.Members.Any())
         {
             <div class="col-12">
-                <div class="alert alert-info mb-0">@T("لا يوجد أعضاء مطابقون.", "No matching members.")</div>
+                <div class="empty-state text-center rounded-4 p-5 soft-shadow">
+                    <div class="empty-ill mb-3"><i class="bi bi-people"></i></div>
+                    <h5 class="mb-1">@T("لا يوجد أعضاء.", "No members.")</h5>
+                    <p class="text-muted mb-0">@T("جرّب تغيير معايير البحث أو القسم.", "Try adjusting department or search.")</p>
+                </div>
             </div>
         }
         else
         {
             @foreach (var m in Model.Members)
             {
-                var name = isRtl ? m.FullNameAr : m.FullNameEn;
-                var title = isRtl ? m.TitleAr : m.TitleEn;
-                var deptName = m.Department == null ? "" : (isRtl ? m.Department.NameAr : m.Department.NameEn);
-                var img = Url.Content(m.PhotoPath ?? "~/img/faculty/avatar.png");
+                var full = (isRtl ? m.FullNameAr : m.FullNameEn) ?? (m.FullNameEn ?? m.FullNameAr);
+                var title = (isRtl ? m.TitleAr : m.TitleEn) ?? (m.TitleEn ?? m.TitleAr) ?? "";
+                var depNamePair = (Model.Departments.TryGetValue(m.Department?.Code ?? (m.DepartmentId.ToString()), out var val) ? val : "|").Split('|');
+                var depName = isRtl ? depNamePair[0] : depNamePair[1];
+                var img = Url.Content(string.IsNullOrWhiteSpace(m.PhotoPath) ? "~/img/faculty/avatar-placeholder.svg" : m.PhotoPath);
 
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3 position-relative">
-
-                        <div class="d-flex gap-3">
-                            <img loading="lazy" src="@img" class="rounded-3"
-                                 style="width:72px;height:72px;object-fit:cover"
-                                 onerror="this.src='@Url.Content("~/img/faculty/avatar-placeholder.svg")';"
-                                 alt="@name" />
-                            <div class="flex-grow-1">
-                                <h5 class="m-0">@name</h5>
-                                @if (!string.IsNullOrWhiteSpace(title))
-                                {
-                                    <div class="small text-muted">@title</div>
-                                }
-                                <div class="small text-muted">@deptName</div>
-                                @if (!string.IsNullOrWhiteSpace(m.Email))
-                                {
-                                    <div class="small"><i class="bi bi-envelope me-1"></i>@m.Email</div>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(m.Office))
-                                {
-                                    <div class="small"><i class="bi bi-geo-alt me-1"></i>@m.Office</div>
-                                }
+                <div class="col-12 col-sm-6 col-lg-4 col-xxl-3">
+                    <div class="card faculty-card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="@img" alt="@full" class="avatar-lg" />
+                                <div class="flex-grow-1 min-w-0">
+                                    <div class="small text-muted text-truncate">@depName</div>
+                                    <h5 class="mb-0 text-truncate">@full</h5>
+                                    @if (!string.IsNullOrWhiteSpace(title))
+                                    {
+                                        <div class="text-muted small text-truncate">@title</div>
+                                    }
+                                </div>
                             </div>
                         </div>
 
-                        @* رابط تفاصيل كـ stretched-link (بدون ما يغطي أزرار الإدارة) *@
-                        <a class="stretched-link"
-                           asp-controller="Faculty" asp-action="Details" asp-route-id="@m.Id"></a>
-
-                        @if (isAdmin)
-                        {
-                            <div class="position-absolute top-0 end-0 p-2 d-flex gap-1 admin-actions" style="z-index:20;">
-                                <a class="btn btn-sm btn-light border"
-                                   asp-controller="Faculty" asp-action="Edit"
-                                   asp-route-id="@m.Id"
-                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
-                                   title="Edit"
-                                   onclick="event.stopPropagation();">
-                                    <i class="bi bi-pencil"></i>
+                        <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
+                            <div class="d-flex flex-wrap gap-2">
+                                <a class="btn btn-sm btn-outline-primary rounded-3 lift-xs" asp-action="Details" asp-route-id="@m.Id">
+                                    <i class="bi bi-info-circle me-1"></i>@T("التفاصيل", "Details")
                                 </a>
 
-                                <form asp-controller="Faculty" asp-action="Delete" method="post"
-                                      class="d-inline js-delete-form">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@m.Id" />
-                                    <input type="hidden" name="returnUrl"
-                                           value="@(Context.Request.Path + Context.Request.QueryString)" />
-                                    <button type="button" class="btn btn-sm btn-light border js-delete-btn"
-                                            title="Delete" onclick="event.stopPropagation();">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
+                                @if (isAdmin)
+                                {
+                                    <a class="btn btn-sm btn-warning rounded-3 lift-xs" asp-action="Edit" asp-route-id="@m.Id"
+                                       asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                                        <i class="bi bi-pencil-square me-1"></i>@T("تعديل", "Edit")
+                                    </a>
+                                    <form asp-action="Delete" asp-route-id="@m.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-danger rounded-3 lift-xs"
+                                                onclick="return confirm('@T("حذف هذا العضو؟", "Delete this member?")');">
+                                            <i class="bi bi-trash me-1"></i>@T("حذف", "Delete")
+                                        </button>
+                                    </form>
+                                }
                             </div>
-                        }
+                        </div>
                     </div>
                 </div>
             }
@@ -141,56 +161,98 @@
     </div>
 </section>
 
-@section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        (function () {
-            // نستخدم capture ليمنع الـstretched-link من سرقة الضغط
-            document.addEventListener('click', function (ev) {
-                const btn = ev.target.closest('.js-delete-btn');
-                if (!btn) return;
-
-                ev.preventDefault();
-                ev.stopPropagation();
-
-                const form = btn.closest('.js-delete-form');
-                if (!form) return;
-
-                const rtl = document.documentElement.dir === 'rtl';
-
-                Swal.fire({
-                    title: rtl ? 'تأكيد الحذف؟' : 'Confirm delete?',
-                    text:  rtl ? 'لا يمكن التراجع بعد الحذف.' : 'This action cannot be undone.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: rtl ? 'نعم، احذف' : 'Yes, delete',
-                    cancelButtonText:   rtl ? 'إلغاء' : 'Cancel',
-                    reverseButtons: rtl,
-                    focusCancel: true,
-                    customClass: {
-                        confirmButton: 'btn btn-danger',
-                        cancelButton:  'btn btn-secondary ms-2'
-                    },
-                    buttonsStyling: false
-                }).then(res => {
-                    if (res.isConfirmed) form.submit();
-                });
-            }, true);
-        })();
-    </script>
-
+@section Styles {
     <style>
-        /* ضمان عدم تغطية زرار الإدارة من الـ stretched-link */
-        .card .admin-actions {
-            z-index: 20;
+        /* صفحة أعضاء هيئة التدريس – تحسينات خفيفة وعصرية */
+        .faculty-page .title-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,#0d6efd, #6ea8fe);
+            box-shadow: 0 0 0 4px rgba(13,110,253,.12);
         }
 
-        .stretched-link::after {
-            z-index: 1;
+        .soft-shadow {
+            box-shadow: 0 6px 18px rgba(16,24,40,.08) !important;
         }
 
-        .admin-actions, .admin-actions * {
-            pointer-events: auto !important;
+        .filter-card .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
+            padding: .35rem .6rem;
+            border-radius: 999px;
+            font-size: .825rem;
+            background: #f3f6fb;
+            color: #475467;
+            border: 1px solid #e6eefc;
+        }
+
+        .avatar-lg {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 16px;
+            background: #f2f4f7;
+            border: 1px solid #eef2f7;
+        }
+
+        .faculty-card {
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+            .faculty-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 14px 28px rgba(16,24,40,.12);
+            }
+
+        .lift-sm {
+            transition: transform .12s ease, box-shadow .12s ease;
+        }
+
+            .lift-sm:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 18px rgba(16,24,40,.12);
+            }
+
+        .lift-xs {
+            transition: transform .12s ease;
+        }
+
+            .lift-xs:hover {
+                transform: translateY(-1px);
+            }
+
+        .empty-state {
+            background: linear-gradient(180deg,#fff, #fafbff);
+            border: 1px dashed #e4e7ec;
+        }
+
+            .empty-state .empty-ill {
+                width: 64px;
+                height: 64px;
+                border-radius: 16px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background: #f3f6fb;
+                color: #6b7a99;
+                font-size: 1.6rem;
+                border: 1px solid #e6eefc;
+            }
+
+        /* تحسينات RTL بسيطة */
+        html[dir="rtl"] .input-group .input-group-text {
+            border-radius: 0 .5rem .5rem 0 !important;
+        }
+
+        html[dir="rtl"] .input-group .form-control {
+            border-radius: .5rem 0 0 .5rem !important;
+        }
+
+        /* توازن مسافات */
+        .after-hero {
+            padding-top: .75rem;
         }
     </style>
 }

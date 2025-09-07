@@ -10,15 +10,18 @@ namespace MutaEngineering.Controllers
     public class AlertsController : Controller
     {
         private readonly AppDbContext _db;
-        private readonly IConfiguration _config;
 
-        public AlertsController(AppDbContext db, IConfiguration config)
+        public AlertsController(AppDbContext db)
         {
             _db = db;
-            _config = config;
         }
 
-        private bool IsAdmin() => _config.GetValue<bool>("Admin:Enabled");
+        // ✅ الصلاحية الآن من الـSession
+        private bool IsAdmin()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            return role == "Admin";
+        }
 
         // ===== Index (List + Filters) =====
         public async Task<IActionResult> Index(int? depId, string? q, bool upcomingOnly = true)
