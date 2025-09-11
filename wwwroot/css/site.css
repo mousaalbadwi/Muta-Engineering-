@@ -158,68 +158,44 @@ html, body {
 
 
 
-/* ===== Hero ===== */
-.home-hero {
-    --hero-img: url('/img/logo2.jpg'); /* صورة الخلفية العامة (اختياري) */
-    background: linear-gradient(180deg, rgba(7,23,45,.75), rgba(7,23,45,.55)), var(--hero-img);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-    min-height: 58vh;
+/* الهيرو الطويل + يظل ثابت */
+.hero-sticky {
+    position: sticky;
+    top: 0; /* يلتصق بالأعلى */
+    z-index: 0;
+    min-height: 70vh; /* أطول تقريباً ملء الشاشة */
+    border-radius: 0 0 32px 32px;
+    overflow: hidden;
 }
 
-    .home-hero .container {
-        padding-top: clamp(2.5rem, 6vh, 5rem);
-    }
-
-.text-white-75 {
-    color: rgba(255,255,255,.85) !important;
-}
-
-.wave-bottom {
+/* الخلفية */
+.hero-bg {
     position: absolute;
-    inset-inline: 0;
-    bottom: -1px;
-    line-height: 0;
+    inset: 0;
+    overflow: hidden;
 }
 
-    .wave-bottom svg {
-        display: block;
-        width: 100%;
-        height: 90px;
-    }
-
-    .wave-bottom path {
-        fill: #fff;
-    }
-
-/* ===== Illustration box (right) ===== */
-.home-illust {
-    background: linear-gradient(135deg,#eef4ff,#ffffff);
-    height: 340px;
-    display: grid;
-}
-
-.home-illust-img {
+.hero-bg-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scale(1.05);
+    transition: transform .7s ease;
 }
 
-.home-illust-fallback {
-    display: none;
-    place-items: center;
-    gap: 12px;
-    background: radial-gradient(120px 80px at 30% 30%, #e9f1ff, transparent 60%);
+/* التعتيم */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    pointer-events: none;
 }
 
-    .home-illust-fallback .bubble {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        background: linear-gradient(135deg,#6c63ff,#86a8e7);
-        filter: drop-shadow(0 6px 16px rgba(108,99,255,.25));
-    }
+/* الزووم عند الهوفر داخل المربع */
+.hero-sticky:hover .hero-bg-img {
+    transform: scale(1.18);
+}
+
 
 /* ===== Quick tiles (cards) ===== */
 .card-tile {

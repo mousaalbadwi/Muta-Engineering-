@@ -7,7 +7,16 @@
 }
 
 <!-- HERO -->
-<section class="home-hero position-relative text-white">
+<section class="home-hero hero-sticky position-relative text-white">
+    <!-- صورة الخلفية -->
+    <div class="hero-bg">
+        <img src="~/img/logo2.jpg" alt="Mutah Engineering" class="hero-bg-img" />
+    </div>
+
+    <!-- طبقة التعتيم -->
+    <div class="hero-overlay"></div>
+
+    <!-- النصوص والأزرار -->
     <div class="container py-5 py-lg-6 position-relative" style="z-index:2">
         <div class="row align-items-center g-4">
             <div class="col-12 col-lg-7">
@@ -29,29 +38,10 @@
                     </a>
                 </div>
             </div>
-
-            <div class="col-12 col-lg-5 d-none d-lg-block">
-                <!-- صندوق الصورة -->
-                <div class="home-illust shadow-sm rounded-4 overflow-hidden">
-                    <!-- غير المسار للصورة اللي بدك تعرضها -->
-                    <img src="~/img/MutahEng.jpeg" alt="Engineering"
-                         class="home-illust-img"
-                         onerror="this.style.display='none'; document.getElementById('heroFallback').style.display='grid';" />
-                    <div id="heroFallback" class="home-illust-fallback">
-                        <div class="bubble"></div>
-                        <div class="bubble"></div>
-                        <div class="bubble"></div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-
-    <!-- موجة -->
-    <div class="wave-bottom">
-        <svg viewBox="0 0 1440 150" preserveAspectRatio="none"><path d="M0,64L48,74.7C96,85,192,107,288,106.7C384,107,480,85,576,85.3C672,85,768,107,864,117.3C960,128,1056,128,1152,117.3C1248,107,1344,85,1392,74.7L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>
-    </div>
 </section>
+
 
 <!-- QUICK ACTIONS -->
 <section class="py-5">

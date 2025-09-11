@@ -1,0 +1,63 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "coreclr",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/bin/Debug/net9.0/MutaEngineering.dll",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_CLI_UI_LANGUAGE": "en-US",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "logging": {
+        "moduleLoad": false
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      },
+      "name": "MutaEngineering [http]",
+      "preLaunchTask": "MutaEngineering",
+      "args": [],
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+https?://\\S",
+        "uriFormat": "http://localhost:5250"
+      }
+    },
+    {
+      "type": "coreclr",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/bin/Debug/net9.0/MutaEngineering.dll",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_CLI_UI_LANGUAGE": "en-US",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "logging": {
+        "moduleLoad": false
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      },
+      "name": "MutaEngineering [https]",
+      "preLaunchTask": "MutaEngineering",
+      "args": [],
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+https?://\\S",
+        "uriFormat": "https://localhost:7003"
+      }
+    },
+    {
+      "name": "Attach to a .NET Process",
+      "type": "coreclr",
+      "request": "attach",
+      "logging": {
+        "moduleLoad": false
+      }
+    }
+  ]
+}
