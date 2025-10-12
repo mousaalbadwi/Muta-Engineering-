@@ -1,0 +1,39 @@
+﻿@model MutaEngineering.Models.Exam
+@{
+    var departments = ViewBag.Departments as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="CourseCode" class="form-label">Course Code</label>
+        <input asp-for="CourseCode" class="form-control" />
+        <span asp-validation-for="CourseCode" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="CourseNameEn" class="form-label">Course Name (EN)</label>
+        <input asp-for="CourseNameEn" class="form-control" id="courseNameEn" />
+        <span asp-validation-for="CourseNameEn" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DepartmentId" class="form-label">Department</label>
+        <select asp-for="DepartmentId" class="form-select" asp-items="departments"></select>
+        <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DateTime" class="form-label">Date & Time</label>
+        <input asp-for="DateTime" type="datetime-local" class="form-control"
+               value="@(Model.DateTime == default ? "" : Model.DateTime.ToString("yyyy-MM-ddTHH:mm"))" />
+        <span asp-validation-for="DateTime" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Mode" class="form-label">Mode</label>
+        <input asp-for="Mode" class="form-control" />
+        <span asp-validation-for="Mode" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Location" class="form-label">Location</label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger small"></span>
+    </div>
+</div>
+
+<input type="hidden" asp-for="CourseNameAr" id="courseNameAr" />

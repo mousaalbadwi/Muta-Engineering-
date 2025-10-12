@@ -1,0 +1,51 @@
+﻿@model MutaEngineering.Models.AcademicAlert
+@{
+    var departments = ViewBag.Departments as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+<div class="row g-3">
+    <div class="col-md-6">
+        <label asp-for="TitleEn" class="form-label">Title (EN)</label>
+        <input asp-for="TitleEn" class="form-control" id="titleEn" />
+        <span asp-validation-for="TitleEn" class="text-danger small"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Location" class="form-label">Location</label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="DepartmentId" class="form-label">Department</label>
+        <select asp-for="DepartmentId" class="form-select" asp-items="departments"></select>
+        <span asp-validation-for="DepartmentId" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Date" class="form-label">Date</label>
+        <input asp-for="Date" type="datetime-local" class="form-control" />
+        <span asp-validation-for="Date" class="text-danger small"></span>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label d-block">Important</label>
+        <div class="form-check form-switch">
+            <input asp-for="IsImportant" class="form-check-input" />
+            <label class="form-check-label" asp-for="IsImportant">Mark as important</label>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden AR title to satisfy [Required] -->
+<input type="hidden" asp-for="TitleAr" id="titleAr" />
+
+@section Scripts {
+    <script>
+        (function () {
+          const en = document.getElementById('titleEn');
+          const ar = document.getElementById('titleAr');
+          if (en && ar) {
+            const sync = () => { ar.value = en.value; };
+            en.addEventListener('input', sync);
+            sync();
+          }
+        })();
+    </script>
+    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
+}

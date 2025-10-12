@@ -1,0 +1,66 @@
+﻿@model MutaEngineering.ViewModels.DashboardViewModel
+
+<div class="row mt-4 g-4">
+   
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h6 class="text-muted mb-3">Weekly Activity</h6>
+            <div style="height:300px;">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h6 class="text-muted mb-3">Overall Statistics</h6>
+            <div style="height:306px;">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const pieCtx = document.getElementById('pieChart');
+        if (pieCtx) {
+            new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Departments', 'Faculty', 'Exams', 'Alerts', 'News'],
+                    datasets: [{
+                        data: [@Model.DepartmentsCount, @Model.FacultyCount, @Model.ExamsCount, @Model.AlertsCount, @Model.NewsCount],
+                        backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1'],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        const lineCtx = document.getElementById('lineChart');
+        if (lineCtx) {
+            new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+                    datasets: [{
+                        label: 'Activity',
+                        data: [3, 5, 2, 7, 4, 6, 3],
+                        borderColor: '#0d6efd',
+                        tension: 0.3,
+                        fill: false
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    });
+</script>

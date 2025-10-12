@@ -1,0 +1,10 @@
+﻿@model MutaEngineering.ViewModels.DashboardViewModel
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+@await Html.PartialAsync("CardsSummary", Model)
+@await Html.PartialAsync("ChartsOverview", Model)
+@await Html.PartialAsync("RecentActivities", Model)

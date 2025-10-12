@@ -1,0 +1,195 @@
+﻿<style>
+    .admin-topbar-wrap {
+        padding: .75rem .75rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 1030;
+    }
+
+    .admin-topbar {
+        --bg: rgba(255,255,255,.88);
+        --bd: #e9eef5;
+        --shadow: 0 10px 30px rgba(16,24,40,.08);
+        background: var(--bg);
+        backdrop-filter: saturate(140%) blur(10px);
+        -webkit-backdrop-filter: saturate(140%) blur(10px);
+        border: 1px solid var(--bd);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+    }
+
+    .admin-title {
+        letter-spacing: .2px;
+        gap: .6rem;
+    }
+
+        .admin-title i {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #eef4ff;
+            color: #0d6efd;
+        }
+
+    .role-chip {
+        background: #f1f5f9;
+        color: #475569;
+        border-radius: 999px;
+        font-size: .78rem;
+        padding: .35rem .6rem;
+    }
+
+    .topbar-divider {
+        width: 1px;
+        height: 28px;
+        background: #e7edf3;
+        margin: 0 .75rem;
+    }
+
+    .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 10px rgba(16,24,40,.08);
+        object-fit: cover;
+    }
+
+    .top-actions .btn {
+        border-radius: 10px;
+    }
+
+    .btn-ghost {
+        background: #ffffff;
+        border: 1px solid #e9eef5;
+    }
+
+        .btn-ghost:hover {
+            background: #f8fafc;
+        }
+
+    .search-wrap {
+        background: #fff;
+        border: 1px solid #e9eef5;
+        border-radius: 12px;
+        padding: .35rem .6rem;
+        gap: .4rem;
+        min-width: 260px;
+    }
+
+        .search-wrap input {
+            border: 0;
+            outline: 0;
+            width: 100%;
+            background: transparent;
+        }
+
+        .search-wrap i {
+            color: #6b7280;
+        }
+
+    /* Dropdown basics (Bootstrap-compatible) */
+    .dropdown-menu {
+        border-radius: 12px;
+        border: 1px solid #e9eef5;
+        box-shadow: 0 10px 30px rgba(16,24,40,.08);
+    }
+
+    .dropdown-item {
+        border-radius: 8px;
+    }
+
+        .dropdown-item:active, .dropdown-item:hover {
+            background: #f5f7fb;
+        }
+
+    /* RTL tweaks */
+    [dir="rtl"] .admin-title i {
+        margin-left: 0;
+    }
+    @@media (max-width: 575.98px) {
+        .search-wrap
+
+    {
+        display: none;
+    }
+    /* اختصر بالهاتف */
+    .topbar-divider {
+        display: none;
+    }
+
+    }
+</style>
+
+<div class="admin-topbar-wrap">
+    <nav class="admin-topbar navbar navbar-expand px-3 py-2">
+        <div class="container-fluid justify-content-between">
+
+            <!-- Left: Title + Breadcrumb -->
+            <div class="d-flex align-items-center gap-3">
+                <div class="admin-title d-flex align-items-center">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <div class="d-flex flex-column">
+                        <h5 class="m-0 fw-semibold">Dashboard</h5>
+                        <small class="text-muted">
+                            <i class="fa-solid fa-house-chimney me-1"></i>
+                            Admin / Dashboard
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center: Search -->
+            <div class="d-none d-md-flex align-items-center flex-grow-1 justify-content-center px-3">
+                <div class="search-wrap d-flex align-items-center w-50">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Search…" aria-label="Search" />
+                </div>
+            </div>
+
+            <!-- Right: Actions -->
+            <div class="top-actions d-flex align-items-center gap-2">
+                <!-- View Site -->
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="btn btn-ghost btn-sm">
+                    <i class="fa-solid fa-house me-2"></i> View Site
+                </a>
+
+                <!-- Notifications (placeholder) -->
+                <button type="button" class="btn btn-ghost btn-sm position-relative" title="Notifications">
+                    <i class="fa-regular fa-bell"></i>
+                    <!-- optional badge -->
+                    @* <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span> *@
+                </button>
+
+                <div class="topbar-divider d-none d-sm-block"></div>
+
+                <!-- Role chip -->
+                <span class="role-chip d-none d-sm-inline">Admin</span>
+
+                <!-- Profile dropdown -->
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://ui-avatars.com/api/?name=Admin" alt="Admin Avatar" class="avatar">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end mt-2">
+                        <li>
+                            <h6 class="dropdown-header">
+                                Signed in as<br />
+                                <span class="fw-semibold">@User?.Identity?.Name ?? "admin@domain.com"</span>
+                            </h6>
+                        </li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa-regular fa-user me-2"></i> Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear me-2"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item text-danger" href="/Account/Logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+</div>

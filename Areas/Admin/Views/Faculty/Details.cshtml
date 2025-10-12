@@ -1,0 +1,21 @@
+﻿@model MutaEngineering.Models.FacultyMember
+
+<div class="card p-4">
+    <h5 class="mb-3">Faculty Details</h5>
+    <dl class="row">
+        <dt class="col-sm-3">Name</dt>
+        <dd class="col-sm-9">@Model.FullNameEn</dd>
+        <dt class="col-sm-3">Title</dt>
+        <dd class="col-sm-9">@Model.TitleEn</dd>
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.Email</dd>
+        <dt class="col-sm-3">Department</dt>
+        <dd class="col-sm-9">@Model.Department?.NameEn</dd>
+        <dt class="col-sm-3">Office</dt>
+        <dd class="col-sm-9">@Model.Office</dd>
+    </dl>
+    <div class="d-flex gap-2">
+        <a asp-area="Admin" asp-controller="Faculty" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-area="Admin" asp-controller="Faculty" asp-action="Index" class="btn btn-light">Back</a>
+    </div>
+</div>

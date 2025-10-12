@@ -1,0 +1,143 @@
+﻿@model IEnumerable<MutaEngineering.Models.Exam>
+
+<style>
+    .exams-admin .card {
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        box-shadow: 0 6px 22px rgba(16,24,40,.06);
+        overflow: hidden;
+    }
+
+    .exams-admin .card-header {
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .exams-admin .title-wrap h5 {
+        font-weight: 700;
+        letter-spacing: .2px;
+    }
+
+    .exams-admin .btn-add {
+        border-radius: 10px;
+    }
+
+    .exams-admin .table thead th {
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #475569;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        background: #f8fafc;
+        z-index: 1;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    .exams-admin .table tbody td {
+        vertical-align: middle;
+    }
+
+    .exams-admin .truncate {
+        max-width: 360px;
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    @@media (max-width: 1200px) {
+        .exams-admin .truncate
+
+    {
+        max-width: 240px;
+    }
+
+    }
+
+    .exams-admin .mode-badge {
+        border-radius: 999px;
+        font-weight: 600;
+        padding: .35rem .6rem;
+    }
+
+    .exams-admin .actions .btn {
+        border-radius: 8px;
+    }
+</style>
+
+<div class="exams-admin">
+    <div class="card">
+        <div class="card-header p-3 p-md-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="title-wrap d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-file-lines text-primary"></i>
+                    <h5 class="m-0">Exams (Admin)</h5>
+                </div>
+                <a asp-area="Admin" asp-controller="Exams" asp-action="Create"
+                   class="btn btn-primary btn-sm btn-add">
+                    <i class="fa fa-plus me-1"></i> Add Exam
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Course</th>
+                            <th>Dept</th>
+                            <th>Date</th>
+                            <th>Mode</th>
+                            <th>Location</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="truncate" title="@($"{e.CourseCode} — {e.CourseNameEn}")">
+                                        @e.CourseCode — @e.CourseNameEn
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="truncate" title="@e.Department?.NameEn">@e.Department?.NameEn</span>
+                                </td>
+                                <td>@e.DateTime.ToString("dd MMM yyyy · HH:mm")</td>
+                                <td>
+                                    <span class="badge text-bg-secondary mode-badge" title="@e.Mode">@e.Mode</span>
+                                </td>
+                                <td>
+                                    <span class="truncate" title="@e.Location">@e.Location</span>
+                                </td>
+                                <td class="text-end actions">
+                                    <a asp-area="Admin" asp-controller="Exams" asp-action="Edit" asp-route-id="@e.Id"
+                                       class="btn btn-outline-secondary btn-sm me-1">
+                                        <i class="fa-regular fa-pen-to-square me-1"></i> Edit
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="Exams" asp-action="Details" asp-route-id="@e.Id"
+                                       class="btn btn-outline-info btn-sm me-1">
+                                        <i class="fa-regular fa-eye me-1"></i> Details
+                                    </a>
+                                    <form id="del-@e.Id" asp-area="Admin" asp-controller="Exams" asp-action="Delete" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@e.Id" />
+                                        <button type="button" class="btn btn-outline-danger btn-sm js-delete"
+                                                data-form="del-@e.Id" data-name="@e.CourseNameEn">
+                                            Delete
+                                        </button>
+                                    </form>
+
+                                  
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,24 @@
+﻿@model MutaEngineering.ViewModels.DashboardViewModel
+
+<div class="card mt-4 p-3">
+    <h6 class="text-muted mb-3">Recent Activities</h6>
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Title</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.RecentActivities)
+            {
+                <tr>
+                    <td>@item.Type</td>
+                    <td>@item.Title</td>
+                    <td>@item.Date.ToString("dd MMM yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -106,8 +106,13 @@ app.UseSession();
 app.UseAuthentication();   // مهم
 app.UseAuthorization();
 
-// Static Web Assets (قالبك يدعمها)
+// Static Web Assets 
 app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
 
 app.MapControllerRoute(
     name: "default",

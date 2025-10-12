@@ -80,6 +80,20 @@
                                 Privacy
                             </a>
                         </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            var isDashActive =
+                            string.Equals(currentController, "Admin", StringComparison.OrdinalIgnoreCase) &&
+                            string.Equals(currentAction, "Dashboard", StringComparison.OrdinalIgnoreCase);
+
+                            <li class="nav-item">
+                                <a class="nav-link @(isDashActive ? "active fw-semibold" : "fw-semibold")"
+                                   asp-controller="Admin" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2 me-1"></i> @(isRtl ? "لوحة التحكم" : "Dashboard")
+                                </a>
+                            </li>
+                        }
+
                     </ul>
 
                     <div class="d-flex align-items-center gap-2">

@@ -1,0 +1,28 @@
+﻿@model MutaEngineering.ViewModels.DashboardViewModel
+
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6 class="text-muted">Departments</h6>
+            <h3>@Model.DepartmentsCount</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6 class="text-muted">Faculty Members</h6>
+            <h3>@Model.FacultyCount</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6 class="text-muted">Exams</h6>
+            <h3>@Model.ExamsCount</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6 class="text-muted">News</h6>
+            <h3>@Model.NewsCount</h3>
+        </div>
+    </div>
+</div>

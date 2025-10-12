@@ -1,0 +1,19 @@
+﻿@model MutaEngineering.Models.NewsItem
+
+<div class="card p-4">
+    <h5 class="mb-3">News Details</h5>
+    <dl class="row">
+        <dt class="col-sm-3">Title</dt>
+        <dd class="col-sm-9">@Model.TitleEn</dd>
+        <dt class="col-sm-3">Category</dt>
+        <dd class="col-sm-9">@Model.Category</dd>
+        <dt class="col-sm-3">Publish Date</dt>
+        <dd class="col-sm-9">@Model.PublishDate.ToString("dd MMM yyyy")</dd>
+        <dt class="col-sm-3">Published</dt>
+        <dd class="col-sm-9">@((Model.IsPublished) ? "Yes" : "No")</dd>
+    </dl>
+    <div class="d-flex gap-2">
+        <a asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-area="Admin" asp-controller="News" asp-action="Index" class="btn btn-light">Back</a>
+    </div>
+</div>

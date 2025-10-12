@@ -1,0 +1,56 @@
+﻿@* تحديد المكان الحالي *@
+@{
+    var currentArea = ViewContext.RouteData.Values["area"]?.ToString() ?? "";
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+
+    Func<string, string, bool> isActive = (area, ctrl) =>
+        currentArea.Equals(area, StringComparison.OrdinalIgnoreCase)
+        && currentController.Equals(ctrl, StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="sidebar d-flex flex-column">
+    <h5 class="fw-semibold mb-4 ps-2">Admin Panel</h5>
+
+    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
+       class="@(isActive("Admin", "Dashboard") ? "active" : "")">
+        <i class="fa-solid fa-chart-line me-2"></i> Dashboard
+    </a>
+
+    <a asp-area="Admin" asp-controller="Departments" asp-action="Index"
+       class="@(isActive("Admin", "Departments") ? "active" : "")">
+        <i class="fa-solid fa-building-columns me-2"></i> Departments
+    </a>
+
+    <a asp-area="Admin" asp-controller="Faculty" asp-action="Index"
+       class="@(isActive("Admin", "Faculty") ? "active" : "")">
+        <i class="fa-solid fa-user-graduate me-2"></i> Faculty
+    </a>
+
+    <a asp-area="Admin" asp-controller="Exams" asp-action="Index"
+       class="@(isActive("Admin", "Exams") ? "active" : "")">
+        <i class="fa-solid fa-file-lines me-2"></i> Exams
+    </a>
+
+    <a asp-area="Admin" asp-controller="Alerts" asp-action="Index"
+       class="@(isActive("Admin", "Alerts") ? "active" : "")">
+        <i class="fa-solid fa-bell me-2"></i> Alerts
+    </a>
+
+    <a asp-area="Admin" asp-controller="News" asp-action="Index"
+       class="@(isActive("Admin", "News") ? "active" : "")">
+        <i class="fa-solid fa-newspaper me-2"></i> News
+    </a>
+
+    <hr />
+    <a asp-area="" asp-controller="Home" asp-action="Index"
+       class="@(isActive("", "Home") ? "active" : "")">
+        <i class="fa-solid fa-house me-2"></i> View Site
+    </a>
+
+
+    <a href="/Account/Logout" class="text-danger">
+        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+    </a>
+
+    
+</div>

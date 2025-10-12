@@ -1,0 +1,21 @@
+﻿@model MutaEngineering.Models.Exam
+
+<div class="card p-4">
+    <h5 class="mb-3">Exam Details</h5>
+    <dl class="row">
+        <dt class="col-sm-3">Course</dt>
+        <dd class="col-sm-9">@Model.CourseCode — @Model.CourseNameEn</dd>
+        <dt class="col-sm-3">Department</dt>
+        <dd class="col-sm-9">@Model.Department?.NameEn</dd>
+        <dt class="col-sm-3">Date & Time</dt>
+        <dd class="col-sm-9">@Model.DateTime.ToString("dd MMM yyyy HH:mm")</dd>
+        <dt class="col-sm-3">Mode</dt>
+        <dd class="col-sm-9">@Model.Mode</dd>
+        <dt class="col-sm-3">Location</dt>
+        <dd class="col-sm-9">@Model.Location</dd>
+    </dl>
+    <div class="d-flex gap-2">
+        <a asp-area="Admin" asp-controller="Exams" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-area="Admin" asp-controller="Exams" asp-action="Index" class="btn btn-light">Back</a>
+    </div>
+</div>

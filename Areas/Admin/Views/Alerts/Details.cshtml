@@ -1,0 +1,21 @@
+﻿@model MutaEngineering.Models.AcademicAlert
+
+<div class="card p-4">
+    <h5 class="mb-3">Alert Details</h5>
+    <dl class="row">
+        <dt class="col-sm-3">Title</dt>
+        <dd class="col-sm-9">@Model.TitleEn</dd>
+        <dt class="col-sm-3">Date</dt>
+        <dd class="col-sm-9">@(Model.Date?.ToString("dd MMM yyyy HH:mm") ?? "-")</dd>
+        <dt class="col-sm-3">Location</dt>
+        <dd class="col-sm-9">@Model.Location</dd>
+        <dt class="col-sm-3">Department</dt>
+        <dd class="col-sm-9">@Model.Department?.NameEn</dd>
+        <dt class="col-sm-3">Important</dt>
+        <dd class="col-sm-9">@((Model.IsImportant) ? "Yes" : "No")</dd>
+    </dl>
+    <div class="d-flex gap-2">
+        <a asp-area="Admin" asp-controller="Alerts" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-area="Admin" asp-controller="Alerts" asp-action="Index" class="btn btn-light">Back</a>
+    </div>
+</div>

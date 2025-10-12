@@ -1,0 +1,161 @@
+﻿@model IEnumerable<MutaEngineering.Models.Department>
+
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Departments";
+}
+
+<style>
+    .depts-admin .card {
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        box-shadow: 0 6px 22px rgba(16,24,40,.06);
+        overflow: hidden;
+    }
+
+    .depts-admin .card-header {
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .depts-admin .title-wrap h5 {
+        font-weight: 700;
+        letter-spacing: .2px;
+    }
+
+    .depts-admin .btn-add {
+        border-radius: 10px;
+    }
+
+    .depts-admin .table thead th {
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #475569;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        background: #f8fafc;
+        z-index: 1;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    .depts-admin .table tbody td {
+        vertical-align: middle;
+    }
+
+    .depts-admin .truncate {
+        max-width: 320px;
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    @@media (max-width: 1200px) {
+        .depts-admin .truncate
+
+    {
+        max-width: 220px;
+    }
+
+    }
+
+    .depts-admin .count-badge {
+        border-radius: 999px;
+        font-weight: 600;
+        padding: .35rem .6rem;
+    }
+
+    .depts-admin .actions .btn {
+        border-radius: 8px;
+    }
+</style>
+
+<div class="depts-admin">
+    <div class="card">
+        <div class="card-header p-3 p-md-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="title-wrap d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-primary"></i>
+                    <h5 class="m-0">Departments (Admin)</h5>
+                </div>
+                <a asp-area="Admin" asp-controller="Departments" asp-action="Create"
+                   class="btn btn-primary btn-sm btn-add">
+                    <i class="fa fa-plus me-1"></i> Add Department
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Name (EN)</th>
+                            <th>Name (AR)</th>
+                            <th>Faculty</th>
+                            <th>Exams</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model)
+                        {
+                            var facultyCount = d.FacultyMembers?.Count ?? 0;
+                            var examsCount = d.Exams?.Count ?? 0;
+
+                            <tr>
+                                <td>
+                                    <span class="badge text-bg-secondary">@d.Code</span>
+                                </td>
+
+                                <td>
+                                    <span class="truncate" title="@d.NameEn">@d.NameEn</span>
+                                </td>
+
+                                <td dir="rtl">
+                                    <span class="truncate" title="@d.NameAr">@d.NameAr</span>
+                                </td>
+
+                                <td>
+                                    <span class="badge text-bg-primary count-badge" title="Faculty Count">
+                                        <i class="fa-solid fa-user-graduate me-1"></i>@facultyCount
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge text-bg-info count-badge" title="Exams Count">
+                                        <i class="fa-regular fa-file-lines me-1"></i>@examsCount
+                                    </span>
+                                </td>
+
+                                <td class="text-end actions">
+                                    <a asp-area="Admin" asp-controller="Departments" asp-action="Details" asp-route-id="@d.Id"
+                                       class="btn btn-outline-info btn-sm me-1">
+                                        <i class="fa-regular fa-eye me-1"></i> Details
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="Departments" asp-action="Edit" asp-route-id="@d.Id"
+                                       class="btn btn-outline-secondary btn-sm me-1">
+                                        <i class="fa-regular fa-pen-to-square me-1"></i> Edit
+                                    </a>
+                                    <form id="del-@d.Id" asp-area="Admin" asp-controller="Departments" asp-action="Delete" method="post"
+                                          class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@d.Id" />
+                                        <button type="button"
+                                                class="btn btn-outline-danger btn-sm js-delete"
+                                                data-form="del-@d.Id"
+                                                data-name="@d.NameEn">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

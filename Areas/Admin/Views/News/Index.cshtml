@@ -1,0 +1,145 @@
+﻿@model IEnumerable<MutaEngineering.Models.NewsItem>
+
+<style>
+    .news-admin .card {
+        border: 1px solid #e9ecef;
+        border-radius: 14px;
+        box-shadow: 0 6px 22px rgba(16,24,40,.06);
+        overflow: hidden;
+    }
+
+    .news-admin .card-header {
+        background: linear-gradient(180deg,#f8fafc 0%,#f1f5f9 100%);
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .news-admin .title-wrap h5 {
+        font-weight: 700;
+        letter-spacing: .2px;
+    }
+
+    .news-admin .btn-add {
+        border-radius: 10px;
+    }
+
+    .news-admin .table thead th {
+        font-size: .85rem;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        color: #475569;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    .news-admin .table tbody td {
+        vertical-align: middle;
+    }
+
+    .news-admin .truncate {
+        max-width: 420px;
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    @@media (max-width:1200px) {
+        .news-admin .truncate
+
+    {
+        max-width: 280px;
+    }
+
+    }
+
+    .news-admin .cat-badge {
+        border-radius: 999px;
+        padding: .35rem .6rem;
+        font-weight: 600;
+        background: #eef2ff;
+        color: #3730a3;
+    }
+
+    .news-admin .actions .btn {
+        border-radius: 8px;
+    }
+</style>
+
+<div class="news-admin">
+    <div class="card">
+        <div class="card-header p-3 p-md-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="title-wrap d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-newspaper text-primary"></i>
+                    <h5 class="m-0">News (Admin)</h5>
+                </div>
+                <a asp-area="Admin" asp-controller="News" asp-action="Create"
+                   class="btn btn-primary btn-sm btn-add">
+                    <i class="fa fa-plus me-1"></i> Add News
+                </a>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Title (EN)</th>
+                            <th>Category</th>
+                            <th>Publish Date</th>
+                            <th>Published</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var n in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="truncate" title="@n.TitleEn">@n.TitleEn</span>
+                                </td>
+                                <td>
+                                    <span class="cat-badge" title="@n.Category">@n.Category</span>
+                                </td>
+                                <td>@n.PublishDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    @if (n.IsPublished)
+                                    {
+                                        <span class="badge text-bg-success">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge text-bg-secondary">No</span>
+                                    }
+                                </td>
+                                <td class="text-end actions">
+                                    <a asp-area="Admin" asp-controller="News" asp-action="Edit" asp-route-id="@n.Id"
+                                       class="btn btn-outline-secondary btn-sm me-1">
+                                        <i class="fa-regular fa-pen-to-square me-1"></i> Edit
+                                    </a>
+                                    <a asp-area="Admin" asp-controller="News" asp-action="Details" asp-route-id="@n.Id"
+                                       class="btn btn-outline-info btn-sm me-1">
+                                        <i class="fa-regular fa-eye me-1"></i> Details
+                                    </a>
+                                    <form id="del-@n.Id" asp-area="Admin" asp-controller="News" asp-action="Delete" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@n.Id" />
+                                        <button type="button" class="btn btn-outline-danger btn-sm js-delete"
+                                                data-form="del-@n.Id" data-name="@n.TitleEn">
+                                            Delete
+                                        </button>
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

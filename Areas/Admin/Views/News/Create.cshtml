@@ -1,0 +1,85 @@
+﻿@model MutaEngineering.Models.NewsItem
+@{
+    ViewData["Title"] = "Create News";
+}
+
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="m-0">@ViewData["Title"]</h5>
+        <a asp-area="Admin" asp-controller="News" asp-action="Index" class="btn btn-light">Back</a>
+    </div>
+
+    <form asp-area="Admin" asp-controller="News" asp-action="Create" method="post" novalidate>
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="TitleEn" class="form-label">Title (EN)</label>
+                <input asp-for="TitleEn" class="form-control" id="newsTitleEn" />
+                <span asp-validation-for="TitleEn" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="Category" class="form-label">Category</label>
+                <select asp-for="Category" class="form-select"
+                        asp-items="Html.GetEnumSelectList<MutaEngineering.Models.NewsCategory>()"></select>
+                <span asp-validation-for="Category" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="PublishDate" class="form-label">Publish Date</label>
+                <input asp-for="PublishDate" type="date" class="form-control" />
+                <span asp-validation-for="PublishDate" class="text-danger small"></span>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="BodyEn" class="form-label">Content (EN)</label>
+                <textarea asp-for="BodyEn" rows="4" class="form-control" id="newsBodyEn"></textarea>
+                <span asp-validation-for="BodyEn" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="ImagePath" class="form-label">Image Path</label>
+                <input asp-for="ImagePath" class="form-control" />
+                <span asp-validation-for="ImagePath" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end">
+                <div class="form-check form-switch">
+                    <input asp-for="IsPublished" class="form-check-input" />
+                    <label class="form-check-label" asp-for="IsPublished">Published</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- hidden AR to satisfy [Required] -->
+        <input type="hidden" asp-for="TitleAr" id="newsTitleAr" />
+        <input type="hidden" asp-for="BodyAr" id="newsBodyAr" />
+
+        <div class="mt-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="fa fa-save me-1"></i> Save</button>
+            <a asp-area="Admin" asp-controller="News" asp-action="Index" class="btn btn-light">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        // mirror EN -> AR (لو تعطل JS، الـController عامل fallback)
+        (function () {
+          const titleEn = document.getElementById('newsTitleEn');
+          const titleAr = document.getElementById('newsTitleAr');
+          const bodyEn  = document.getElementById('newsBodyEn');
+          const bodyAr  = document.getElementById('newsBodyAr');
+          const sync = () => {
+            if (titleAr) titleAr.value = titleEn?.value || "";
+            if (bodyAr)  bodyAr.value  = bodyEn?.value  || "";
+          };
+          titleEn && titleEn.addEventListener('input', sync);
+          bodyEn  && bodyEn.addEventListener('input',  sync);
+          sync();
+        })();
+    </script>
+    <partial name="~/Views/Shared/_ValidationScriptsPartial.cshtml" />
+}
