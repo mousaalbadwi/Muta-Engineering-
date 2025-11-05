@@ -77,6 +77,10 @@ if (!string.IsNullOrWhiteSpace(ghId) && !string.IsNullOrWhiteSpace(ghSec))
     });
 }
 
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
+
+
 var app = builder.Build();
 
 // -------- Pipeline --------

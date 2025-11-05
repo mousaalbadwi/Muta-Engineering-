@@ -40,6 +40,12 @@
        class="@(isActive("Admin", "News") ? "active" : "")">
         <i class="fa-solid fa-newspaper me-2"></i> News
     </a>
+    <a asp-area="Admin"
+       asp-controller="SupportTickets"
+       asp-action="Index"
+       class="@(isActive("Admin", "SupportTickets") ? "active" : "")">
+        <i class="fa-solid fa-headset me-2"></i> Support Tickets
+    </a>
 
     <hr />
     <a asp-area="" asp-controller="Home" asp-action="Index"
@@ -47,10 +53,7 @@
         <i class="fa-solid fa-house me-2"></i> View Site
     </a>
 
-
     <a href="/Account/Logout" class="text-danger">
         <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
     </a>
-
-    
 </div>

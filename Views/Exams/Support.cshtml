@@ -177,43 +177,51 @@
                             <span class="badge rounded-pill text-bg-secondary">@((isRtl ? "وقت الاستجابة المعتاد: 15–30 دقيقة" : "Typical response: 15–30 min"))</span>
                         </div>
 
-                        <form method="post" action="#" enctype="multipart/form-data">
+                        <form asp-controller="Support" asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
+
+                            @Html.AntiForgeryToken()
                             <div class="row g-3">
                                 <div class="col-12 col-md-6">
                                     <label class="form-label">@((isRtl ? "الاسم الكامل" : "Full name"))</label>
-                                    <input class="form-control" name="fullName" required />
+                                    <input type="text" id="FullName" name="FullName" class="form-control"
+                                           required maxlength="200" />
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label class="form-label">@((isRtl ? "الرقم الجامعي" : "University ID"))</label>
-                                    <input class="form-control" name="studentId" required />
+                                    <input type="text" id="UniversityId" name="UniversityId" class="form-control"
+                                           maxlength="50" />
                                 </div>
 
                                 <div class="col-12 col-md-6">
                                     <label class="form-label">@((isRtl ? "البريد الإلكتروني" : "Email"))</label>
-                                    <input type="email" class="form-control" name="email" required />
+                                    <input type="email" id="Email" name="Email" class="form-control"
+                                           required maxlength="320" />
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <label class="form-label">@((isRtl ? "المساق/الامتحان" : "Course/Exam"))</label>
-                                    <input class="form-control" name="course" />
+                                    <input type="text" id="CourseExam" name="CourseExam" class="form-control"
+                                           maxlength="200" />
                                 </div>
 
                                 <div class="col-12 col-md-6">
                                     <label class="form-label">@((isRtl ? "نوع المشكلة" : "Issue type"))</label>
-                                    <select class="form-select" name="issueType">
-                                        <option>@(isRtl ? "لا أستطيع الدخول" : "Cannot access exam")</option>
-                                        <option>@(isRtl ? "انقطاع اتصال" : "Connection drop")</option>
-                                        <option>@(isRtl ? "الكاميرا/المايك لا يعمل" : "Camera/Mic not working")</option>
-                                        <option>@(isRtl ? "مشكلة تقنية أخرى" : "Other technical issue")</option>
+                                    <select id="IssueType" name="IssueType" class="form-select">
+                                        <option value="0">@(isRtl ? "لا أستطيع الدخول" : "Cannot access exam")</option>
+                                        <option value="1">@(isRtl ? "مشكلة حساب" : "Account problem")</option>
+                                        <option value="2">@(isRtl ? "خطأ في المحتوى" : "Content error")</option>
+                                        <option value="9">@(isRtl ? "مشكلة أخرى" : "Other")</option> <!-- بدل 3 -->
                                     </select>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label">@((isRtl ? "لقطة شاشة (اختياري)" : "Screenshot (optional)"))</label>
-                                    <input type="file" class="form-control" name="screenshot" accept=".png,.jpg,.jpeg,.pdf" />
+                                    <label for="Screenshot" class="form-label">@((isRtl ? "لقطة شاشة (اختياري)" : "Screenshot (optional)"))</label>
+                                    <input type="file" id="Screenshot" name="Screenshot" class="form-control"
+                                           accept=".png,.jpg,.jpeg,.pdf" />
                                 </div>
 
                                 <div class="col-12">
                                     <label class="form-label">@((isRtl ? "وصف مختصر" : "Short description"))</label>
-                                    <textarea class="form-control" rows="3" name="details"
+                                    <textarea id="Description" name="Description" class="form-control" rows="5"
+                                              required maxlength="2000"
                                               placeholder="@((isRtl ? "اعطني رسالة الخطأ وخطوات الوصول للمشكلة" : "Provide the error message and steps to reproduce"))"></textarea>
                                 </div>
                             </div>
@@ -222,7 +230,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="bi bi-send me-1"></i> @(isRtl ? "إرسال البلاغ" : "Submit report")
                                 </button>
-                                <a href="mailto:exams@mutah.edu.jo" class="btn btn-outline-secondary">
+                                <a href="mailto:suport@mutah.edu.jo" class="btn btn-outline-secondary">
                                     <i class="bi bi-envelope me-1"></i> @(isRtl ? "إرسال عبر الإيميل" : "Send via email")
                                 </a>
                             </div>
@@ -417,4 +425,26 @@
             display: inline-block;
         }
     </style>
+
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const icon  = @Html.Raw(Json.Serialize(TempData["SwalIcon"] ?? ""));
+            const title = @Html.Raw(Json.Serialize(TempData["SwalTitle"] ?? ""));
+            const text  = @Html.Raw(Json.Serialize(TempData["SwalText"] ?? ""));
+
+            if (icon && title) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true
+                });
+                Toast.fire({ icon, title, text });
+            }
+        });
+    </script>
 }

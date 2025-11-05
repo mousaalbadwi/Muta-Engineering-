@@ -1,0 +1,123 @@
+﻿@model MutaEngineering.Models.SupportTicket
+@{
+    ViewData["Title"] = "Ticket #" + Model.Id;
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <a asp-area="Admin" asp-controller="SupportTickets" asp-action="Index" class="btn btn-link ps-0 text-decoration-none">
+            <i class="bi bi-chevron-left me-1"></i> Back to tickets
+        </a>
+        <h2 class="mb-0 fw-bold text-dark">Ticket <span class="text-primary">#@Model.Id</span></h2>
+    </div>
+    <div>
+        @if (Model.IsResolved)
+        {
+            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6">Resolved</span>
+        }
+        else
+        {
+            <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 fs-6">Open</span>
+        }
+    </div>
+</div>
+
+@if (TempData["Ok"] != null)
+{
+    <div class="alert alert-success shadow-sm rounded-pill px-4 py-2 small">
+        <i class="bi bi-check-circle me-2"></i> @TempData["Ok"]
+    </div>
+}
+
+<div class="row g-4">
+    <!-- Left column: Ticket info -->
+    <div class="col-lg-7">
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-header bg-white fw-semibold border-bottom rounded-top-4">
+                <i class="bi bi-person-circle me-1 text-primary"></i> Student Information
+            </div>
+            <div class="card-body pt-4 pb-1">
+                <div class="row small gy-3">
+                    <div class="col-sm-5 text-muted">Full name</div><div class="col-sm-7 text-dark fw-medium">@Model.FullName</div>
+                    <div class="col-sm-5 text-muted">University ID</div><div class="col-sm-7 text-dark fw-medium">@Model.UniversityId</div>
+                    <div class="col-sm-5 text-muted">Email</div>
+                    <div class="col-sm-7">
+                        <a href="mailto:@Model.Email" class="text-decoration-none text-dark">@Model.Email</a>
+                    </div>
+                    <div class="col-sm-5 text-muted">Course / Exam</div><div class="col-sm-7 text-dark">@Model.CourseExam</div>
+                    <div class="col-sm-5 text-muted">Issue type</div><div class="col-sm-7 text-dark">@Model.IssueType</div>
+                    <div class="col-sm-5 text-muted">Created</div>
+                    <div class="col-sm-7">
+                        <span title="@Model.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")">
+                            @Model.CreatedAt.ToLocalTime().ToString("MMMM dd, yyyy - HH:mm")
+                        </span>
+                    </div>
+                    @if (Model.RepliedAt != null)
+                    {
+                        <div class="col-sm-5 text-muted">Replied</div>
+                        <div class="col-sm-7">
+                            <span title="@Model.RepliedAt.Value.ToLocalTime().ToString("yyyy/MM/dd HH:mm")">
+                                @Model.RepliedAt.Value.ToLocalTime().ToString("MMMM dd, yyyy - HH:mm")
+                            </span>
+                        </div>
+                    }
+                </div>
+
+                <hr class="my-4" />
+
+                <h6 class="fw-semibold text-dark mb-2"><i class="bi bi-chat-dots me-1 text-primary"></i> Description</h6>
+                <p class="text-body mb-0" style="white-space:pre-wrap">@Model.Description</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ScreenshotPath))
+        {
+            <div class="card shadow border-0 rounded-4 mt-4">
+                <div class="card-header bg-white fw-semibold border-bottom rounded-top-4">
+                    <i class="bi bi-image me-1 text-primary"></i> Screenshot
+                </div>
+                <div class="card-body pt-4">
+                    <a href="@Url.Content(Model.ScreenshotPath)" target="_blank" class="text-decoration-none text-primary">
+                        View full image
+                    </a>
+                    <div class="mt-3">
+                        <img src="@Url.Content(Model.ScreenshotPath)"
+                             class="img-fluid rounded border shadow-sm"
+                             alt="screenshot"
+                             onerror="this.style.display='none';" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Right column: Reply form -->
+    <div class="col-lg-5">
+        <div class="card shadow border-0 rounded-4">
+            <div class="card-header bg-white fw-semibold border-bottom rounded-top-4">
+                <i class="bi bi-reply me-1 text-primary"></i> Reply to Student
+            </div>
+            <div class="card-body pt-4">
+                <form asp-area="Admin" asp-controller="SupportTickets" asp-action="Reply" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Your reply</label>
+                        <textarea name="reply" class="form-control shadow-sm rounded-3" rows="8" required>@Model.AdminReply</textarea>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="markResolved" name="markResolved" @(Model.IsResolved ? "checked" : "") />
+                        <label class="form-check-label" for="markResolved">Mark as resolved</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+                        <i class="bi bi-send-fill"></i> Send Email
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

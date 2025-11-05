@@ -7,77 +7,92 @@
     }
 
     .admin-topbar {
-        --bg: rgba(255,255,255,.88);
-        --bd: #e9eef5;
-        --shadow: 0 10px 30px rgba(16,24,40,.08);
+        --bg: rgba(255, 255, 255, 0.85);
+        --bd: #e2e8f0;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         background: var(--bg);
-        backdrop-filter: saturate(140%) blur(10px);
-        -webkit-backdrop-filter: saturate(140%) blur(10px);
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
         border: 1px solid var(--bd);
-        border-radius: 14px;
+        border-radius: 16px;
         box-shadow: var(--shadow);
+        transition: all 0.25s ease-in-out;
     }
 
     .admin-title {
-        letter-spacing: .2px;
-        gap: .6rem;
+        letter-spacing: .3px;
+        gap: .75rem;
     }
 
         .admin-title i {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
-            background: #eef4ff;
+            border-radius: 12px;
+            background: #eff6ff;
             color: #0d6efd;
+            font-size: 1.25rem;
+            box-shadow: inset 0 0 0 1px #dbeafe;
         }
 
     .role-chip {
         background: #f1f5f9;
-        color: #475569;
+        color: #334155;
         border-radius: 999px;
         font-size: .78rem;
-        padding: .35rem .6rem;
+        padding: .4rem .8rem;
+        font-weight: 500;
     }
 
     .topbar-divider {
         width: 1px;
-        height: 28px;
-        background: #e7edf3;
+        height: 32px;
+        background: #e2e8f0;
         margin: 0 .75rem;
     }
 
     .avatar {
-        width: 38px;
-        height: 38px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        border: 3px solid #fff;
-        box-shadow: 0 2px 10px rgba(16,24,40,.08);
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
         object-fit: cover;
+        transition: transform 0.2s ease;
     }
+
+        .avatar:hover {
+            transform: scale(1.05);
+        }
 
     .top-actions .btn {
         border-radius: 10px;
+        font-weight: 500;
+        padding: .4rem .8rem;
     }
 
     .btn-ghost {
         background: #ffffff;
-        border: 1px solid #e9eef5;
+        border: 1px solid #e2e8f0;
+        color: #374151;
+        transition: all 0.2s ease;
     }
 
         .btn-ghost:hover {
-            background: #f8fafc;
+            background: #f9fafb;
+            color: #111827;
         }
 
     .search-wrap {
         background: #fff;
-        border: 1px solid #e9eef5;
-        border-radius: 12px;
-        padding: .35rem .6rem;
-        gap: .4rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: .4rem .75rem;
+        gap: .5rem;
         min-width: 260px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
         .search-wrap input {
@@ -85,44 +100,56 @@
             outline: 0;
             width: 100%;
             background: transparent;
+            font-size: 0.875rem;
+            color: #111827;
         }
 
         .search-wrap i {
             color: #6b7280;
         }
 
-    /* Dropdown basics (Bootstrap-compatible) */
     .dropdown-menu {
-        border-radius: 12px;
-        border: 1px solid #e9eef5;
-        box-shadow: 0 10px 30px rgba(16,24,40,.08);
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+        font-size: 0.875rem;
+        min-width: 220px;
     }
 
     .dropdown-item {
         border-radius: 8px;
+        padding: .5rem .75rem;
+        transition: background 0.15s ease;
     }
 
-        .dropdown-item:active, .dropdown-item:hover {
-            background: #f5f7fb;
+        .dropdown-item:hover,
+        .dropdown-item:active {
+            background: #f1f5f9;
         }
 
-    /* RTL tweaks */
-    [dir="rtl"] .admin-title i {
-        margin-left: 0;
-    }
+    /* Responsive */
     @@media (max-width: 575.98px) {
         .search-wrap
 
     {
         display: none;
     }
-    /* اختصر بالهاتف */
+
     .topbar-divider {
+        display: none;
+    }
+
+    .admin-title h5 {
+        font-size: 1rem;
+    }
+
+    .role-chip {
         display: none;
     }
 
     }
 </style>
+
 
 <div class="admin-topbar-wrap">
     <nav class="admin-topbar navbar navbar-expand px-3 py-2">
@@ -157,11 +184,9 @@
                     <i class="fa-solid fa-house me-2"></i> View Site
                 </a>
 
-                <!-- Notifications (placeholder) -->
+                <!-- Notifications -->
                 <button type="button" class="btn btn-ghost btn-sm position-relative" title="Notifications">
                     <i class="fa-regular fa-bell"></i>
-                    <!-- optional badge -->
-                    @* <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span> *@
                 </button>
 
                 <div class="topbar-divider d-none d-sm-block"></div>

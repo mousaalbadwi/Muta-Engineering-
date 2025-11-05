@@ -15,6 +15,7 @@ namespace MutaEngineering.Data
         public DbSet<NewsItem> NewsItems => Set<NewsItem>();
         // ملاحظة: لا نضيف StudyPlan كـ DbSet إذا كان يعتمد على ملفات PDF فقط.
         public DbSet<User> Users => Set<User>();
+        public DbSet<SupportTicket> SupportTickets => Set<SupportTicket>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

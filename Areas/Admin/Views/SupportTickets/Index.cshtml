@@ -1,0 +1,271 @@
+﻿@model MutaEngineering.ViewModels.PagedResult<MutaEngineering.Models.SupportTicket>
+@{
+    ViewData["Title"] = "Support";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var q = Model.Query ?? "";
+}
+
+<style>
+    /* ====== Modern polish (لا يغيّر أي لوجيك) ====== */
+    .page-shell {
+        gap: 1rem;
+    }
+
+    .page-title {
+        letter-spacing: .2px;
+    }
+
+    .card-modern {
+        border: 1px solid var(--bs-border-color);
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .table-modern thead th {
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+        background: var(--bs-tertiary-bg);
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .table-modern tbody tr:hover {
+        background: color-mix(in srgb, var(--bs-primary), #fff 92%);
+    }
+    /* keep action buttons always side-by-side */
+    .actions {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        flex-wrap: nowrap;
+    }
+    /* compact, rounded buttons */
+    .btn-soft {
+        --bs-btn-border-color: var(--bs-border-color);
+        --bs-btn-bg: #fff;
+        --bs-btn-hover-bg: var(--bs-light);
+        --bs-btn-active-bg: var(--bs-light);
+        border-radius: 999px;
+        box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    }
+
+    /* search input group */
+    .search-wrap .form-control {
+        border-radius: 999px 0 0 999px !important;
+        padding-left: .9rem;
+    }
+
+    .search-wrap .input-group-text {
+        border-radius: 0 999px 999px 0 !important;
+        background: #fff;
+        border-left: 0;
+    }
+
+    .search-wrap .form-control:focus {
+        box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .1);
+    }
+
+    /* pagination */
+    .pagination.pill .page-link {
+        border-radius: 999px !important;
+        min-width: 36px;
+        text-align: center;
+        border: 0;
+        box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    }
+
+    .pagination.pill .page-item.active .page-link {
+        background: var(--bs-primary);
+        color: #fff;
+    }
+
+    .pagination.pill {
+        background: #fff;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 999px;
+        padding: .25rem;
+        box-shadow: 0 6px 16px rgba(0,0,0,.06);
+    }
+
+    /* subtle status pills */
+    .badge-pill {
+        border-radius: 999px;
+        padding: .35rem .75rem;
+        font-weight: 600;
+        letter-spacing: .2px;
+    }
+
+    /* improve empty state */
+    .empty-state {
+        color: var(--bs-secondary-color);
+    }
+</style>
+
+<div class="d-flex align-items-center justify-content-between mb-4 page-shell">
+    <h2 class="fw-semibold text-primary mb-0 page-title">
+        <i class="bi bi-ticket-perforated-fill me-2"></i> Support Tickets
+    </h2>
+
+    <form class="search-wrap" method="get" asp-area="Admin" asp-controller="SupportTickets" asp-action="Index">
+        <input type="hidden" name="pageSize" value="@Model.PageSize" />
+        <div class="input-group input-group-sm">
+            <input class="form-control shadow-sm" style="min-width: 280px;"
+                   type="search" name="q" value="@q" placeholder="Search name/email/course..." />
+            <span class="input-group-text shadow-sm pe-2">
+                <button class="btn btn-sm btn-soft d-flex align-items-center gap-1 px-3" type="submit">
+                    <i class="bi bi-search"></i>
+                    <span class="d-none d-sm-inline">Search</span>
+                </button>
+            </span>
+        </div>
+    </form>
+</div>
+
+@if (TempData["Ok"] != null)
+{
+    <div class="alert alert-success shadow-sm rounded-3">@TempData["Ok"]</div>
+}
+
+<div class="card card-modern shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 table-modern">
+                <thead class="border-bottom">
+                    <tr>
+                        <th style="width:70px">#</th>
+                        <th>Created</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Issue</th>
+                        <th>Status</th>
+                        <th class="text-end" style="width:180px">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Items.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 empty-state">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                No tickets found
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var t in Model.Items)
+                        {
+                            <tr>
+                                <td>@t.Id</td>
+                                <td title="@t.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")">
+                                    @t.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")
+                                </td>
+                                <td class="fw-semibold">@t.FullName</td>
+                                <td>
+                                    <a href="mailto:@t.Email" class="text-decoration-none">@t.Email</a>
+                                </td>
+                                <td>@t.IssueType</td>
+                                <td>
+                                    @if (t.IsResolved)
+                                    {
+                                        <span class="badge badge-pill bg-success-subtle text-success border border-success-subtle">Resolved</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-pill bg-warning-subtle text-warning border border-warning-subtle">Open</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="actions">
+                                        <a class="btn btn-sm btn-outline-primary px-3"
+                                           asp-area="Admin" asp-controller="SupportTickets" asp-action="Details" asp-route-id="@t.Id">
+                                            <i class="bi bi-eye me-1"></i> Details
+                                        </a>
+
+                                        <form asp-area="Admin" asp-controller="SupportTickets" asp-action="Delete"
+                                              method="post" class="m-0">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@t.Id" />
+                                            <input type="hidden" name="page" value="@Model.Page" />
+                                            <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                                            <input type="hidden" name="q" value="@q" />
+                                            <button type="button" class="btn btn-sm btn-outline-danger px-3 js-delete-btn">
+                                                <i class="bi bi-trash me-1"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@if (Model.TotalCount > 0)
+{
+    <nav class="mt-4 d-flex justify-content-center">
+        <ul class="pagination pagination-sm pill">
+            @{
+                int start = Math.Max(1, Model.Page - 2);
+                int end = Math.Min(Model.TotalPages, Model.Page + 2);
+                string qs(string p) => $"?page={p}&pageSize={Model.PageSize}&q={System.Net.WebUtility.UrlEncode(Model.Query ?? "")}";
+            }
+            <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                <a class="page-link" href="@qs((Model.Page - 1).ToString())" aria-label="Previous">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            @for (int i = start; i <= end; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link px-3" href="@qs(i.ToString())">@i</a>
+                </li>
+            }
+            <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="@qs((Model.Page + 1).ToString())" aria-label="Next">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.js-delete-btn');
+            if (!btn) return;
+
+            const form = btn.closest('form');
+            if (!form) return;
+
+            e.preventDefault();
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Delete ticket?',
+                text: 'This action cannot be undone.',
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel'
+            }).then(function (res) {
+                if (res.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        (function () {
+            const icon = @Html.Raw(Json.Serialize(TempData["SwalIcon"] ?? ""));
+            const title = @Html.Raw(Json.Serialize(TempData["SwalTitle"] ?? ""));
+            const text = @Html.Raw(Json.Serialize(TempData["SwalText"] ?? ""));
+            if (icon && title) {
+                Swal.fire({ icon, title, text });
+            }
+        })();
+    </script>
+}
