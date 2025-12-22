@@ -7,7 +7,7 @@
 
     var title = isRtl ? Pick(new[] { Model?.NameAr, Model?.NameEn }) : Pick(new[] { Model?.NameEn, Model?.NameAr });
     var desc = isRtl ? Pick(new[] { Model?.DescriptionAr, Model?.DescriptionEn }) : Pick(new[] { Model?.DescriptionEn, Model?.DescriptionAr });
-
+    
     var imgPath = !string.IsNullOrWhiteSpace(Model?.ImagePath) ? Url.Content(Model.ImagePath) : Url.Content("~/img/departments/default.jpg");
     bool hasCustomImage = !string.IsNullOrWhiteSpace(Model?.ImagePath);
 
@@ -21,6 +21,8 @@
         .Split(' ', StringSplitOptions.RemoveEmptyEntries)
         .Take(2).Select(w => w[0]).ToArray()).ToUpperInvariant();
 
+    bool showCircuitButton = Model?.Id == 3 || Model?.Id == 4;
+
     ViewData["Title"] = title;
 }
 
@@ -28,7 +30,6 @@
 <section class="dept-hero">
     <div class="container py-5">
         <div class="row align-items-center g-4">
-            <!-- زوّدنا z-index هنا -->
             <div class="col-12 col-lg-8 position-relative" style="z-index:2">
                 <nav aria-label="breadcrumb" class="mb-2">
                     <ol class="breadcrumb small">
@@ -47,26 +48,40 @@
                     }
                     else
                     {
-
-                        @(isRtl ? "نبذة القسم ستُضاف قريبًا. يقدم القسم برامج ومختبرات ومشاريع تخرّج متميّزة."
-                                            : "Department summary coming soon. Offers quality labs, projects, and learning outcomes.")
-                                        }
+                        @(isRtl
+                            ? "نبذة القسم ستُضاف قريبًا. يقدم القسم برامج ومختبرات ومشاريع تخرّج متميّزة."
+                            : "Department summary coming soon. Offers quality labs, projects, and learning outcomes.")
+                    }
                 </p>
 
-                <!-- شريط الأزرار الجديد -->
+                <!-- شريط الأزرار -->
                 <div class="action-bar mt-4">
                     <a class="btn btn-primary" asp-controller="Faculty" asp-action="Index" asp-route-departmentId="@Model?.Id">
                         <i class="bi bi-people me-1"></i>@(isRtl ? "هيئة التدريس" : "Faculty")
                     </a>
+
                     <a class="btn btn-outline-primary" asp-controller="Exams" asp-action="Index" asp-route-departmentId="@Model?.Id">
                         <i class="bi bi-card-checklist me-1"></i>@(isRtl ? "الامتحانات" : "Exams")
                     </a>
+
                     <a class="btn btn-outline-secondary" asp-controller="Exams" asp-action="Archive" asp-route-departmentId="@Model?.Id">
                         <i class="bi bi-archive me-1"></i>@(isRtl ? "الأرشيف" : "Archive")
                     </a>
+
                     <a class="btn btn-outline-secondary" asp-controller="StudyPlans" asp-action="Index" asp-route-departmentId="@Model?.Id">
                         <i class="bi bi-journal-bookmark me-1"></i>@(isRtl ? "الخطط الدراسية" : "Study Plans")
                     </a>
+
+                    @if (showCircuitButton)
+                    {
+                        <a class="btn btn-success"
+                           asp-controller="Simulator"
+                           asp-action="Circuit">
+                            <i class="bi bi-lightning-charge-fill me-1"></i>
+                            @(isRtl ? "محاكي الدوائر الإلكترونية" : "Circuit Simulator")
+                        </a>
+                    }
+
                     @if (isAdmin)
                     {
                         <a class="btn btn-outline-dark" asp-controller="Departments" asp-action="Edit" asp-route-id="@Model?.Id">
@@ -74,9 +89,20 @@
                         </a>
                     }
                 </div>
+
+                @if (showCircuitButton)
+                {
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            @(isRtl
+                                ? "هذا الزر يفتح محاكي دوائر تفاعلي يساعدك على بناء وتجربة الدوائر (مقاومات، مكثفات، ترانزستورات، Op-Amp، AC/DC) مباشرة من المتصفح."
+                                : "This button opens an interactive circuit simulator to build and test circuits (resistors, capacitors, transistors, op-amps, AC/DC) directly in the browser.")
+                        </small>
+                    </div>
+                }
             </div>
 
-            <!-- صورة القسم: خفّضنا z-index حتى ما تغطي الأزرار -->
+            <!-- صورة القسم -->
             <div class="col-12 col-lg-4 d-none d-lg-block">
                 <div class="dept-photo card border-0 shadow-sm rounded-4 overflow-hidden position-relative" style="z-index:1">
                     <img src="@imgPath" alt="@title" onerror="this.closest('.dept-photo').classList.add('no-img'); this.remove();" />
@@ -133,7 +159,6 @@
                             }
                             else
                             {
-
                                 @(isRtl ? "سيتم تحديث النص التعريفي لاحقًا. استعرض الروابط أعلاه." : "Intro will be updated. Use the quick links above.")
                             }
                         </p>
@@ -172,7 +197,9 @@
 @section Styles {
     <style>
         .dept-hero {
-            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%), radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%), linear-gradient(180deg, #f8fbff, #ffffff);
+            background: radial-gradient(900px 480px at 10% -20%, #cfe7ff 0%, transparent 65%),
+                        radial-gradient(700px 380px at 90% 120%, #e6eaff 0%, transparent 60%),
+                        linear-gradient(180deg, #f8fbff, #ffffff);
             border-radius: 0 0 24px 24px;
             position: relative;
         }
@@ -184,78 +211,75 @@
             fill: #fff;
         }
 
-        /* الأزرار داخل الهيرو */
         .action-bar {
             display: flex;
             flex-wrap: wrap;
             gap: .6rem;
         }
 
-            .action-bar .btn {
-                white-space: nowrap;
-                padding: .6rem .9rem;
-                border-radius: 10px;
-                box-shadow: 0 6px 16px rgba(13,110,253,.08);
-                transition: transform .15s ease, box-shadow .15s ease;
-            }
+        .action-bar .btn {
+            white-space: nowrap;
+            padding: .6rem .9rem;
+            border-radius: 10px;
+            box-shadow: 0 6px 16px rgba(13,110,253,.08);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
 
-                .action-bar .btn:hover {
-                    transform: translateY(-1px);
-                    box-shadow: 0 10px 22px rgba(13,110,253,.12);
-                }
+        .action-bar .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(13,110,253,.12);
+        }
 
-        /* بطاقة الصورة */
         .dept-photo {
             min-height: 220px;
             background: #fff;
         }
 
-            .dept-photo img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                display: block;
-                filter: saturate(1.02) contrast(1.02);
-            }
+        .dept-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: saturate(1.02) contrast(1.02);
+        }
 
-            .dept-photo .img-badge {
-                position: absolute;
-                top: .6rem;
-                inset-inline-end: .6rem;
-                box-shadow: 0 8px 18px rgba(15,23,42,.16);
-                backdrop-filter: blur(4px);
-            }
+        .dept-photo .img-badge {
+            position: absolute;
+            top: .6rem;
+            inset-inline-end: .6rem;
+            box-shadow: 0 8px 18px rgba(15,23,42,.16);
+            backdrop-filter: blur(4px);
+        }
 
-            .dept-photo.no-img {
-                display: grid;
-                place-items: center;
-                padding: 1.25rem;
-            }
+        .dept-photo.no-img {
+            display: grid;
+            place-items: center;
+            padding: 1.25rem;
+        }
 
-            .dept-photo .no-img-fallback {
-                display: none;
-                text-align: center;
-            }
+        .dept-photo .no-img-fallback {
+            display: none;
+            text-align: center;
+        }
 
-            .dept-photo.no-img .no-img-fallback {
-                display: block;
-            }
+        .dept-photo.no-img .no-img-fallback {
+            display: block;
+        }
 
-            .dept-photo .avatar {
-                width: 92px;
-                height: 92px;
-                border-radius: 50%;
-                display: grid;
-                place-items: center;
-                margin-bottom: .35rem;
-                background: linear-gradient(135deg,#93c5fd,#c7d2fe);
-                color: #0f172a;
-                font-weight: 700;
-                font-size: 1.25rem;
-                box-shadow: 0 10px 22px rgba(15,23,42,.08);
-            }
+        .dept-photo .avatar {
+            width: 92px;
+            height: 92px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            margin-bottom: .35rem;
+            background: linear-gradient(135deg,#93c5fd,#c7d2fe);
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: 0 10px 22px rgba(15,23,42,.08);
+        }
 
-        /* البلاطات والإحصاءات */
         .hi-tile {
             display: flex;
             gap: .8rem;
@@ -267,16 +291,16 @@
             transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
         }
 
-            .hi-tile i {
-                color: #0d6efd;
-                font-size: 1.2rem;
-            }
+        .hi-tile i {
+            color: #0d6efd;
+            font-size: 1.2rem;
+        }
 
-            .hi-tile:hover {
-                transform: translateY(-2px);
-                border-color: #dbe7ff;
-                box-shadow: 0 8px 18px rgba(13,110,253,.08);
-            }
+        .hi-tile:hover {
+            transform: translateY(-2px);
+            border-color: #dbe7ff;
+            box-shadow: 0 8px 18px rgba(13,110,253,.08);
+        }
 
         .stat-number {
             font-weight: 700;
