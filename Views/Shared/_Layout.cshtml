@@ -45,6 +45,8 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site2.css" asp-append-version="true" />
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
     @RenderSection("Styles", required: false)
@@ -119,20 +121,7 @@
                                 <span class="badge rounded-pill @(isAdmin ? "text-bg-primary" : "text-bg-secondary")">@userRole</span>
                             </div>
 
-                            @if (isAdmin)
-                            {
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        @(isRtl ? "إدارة" : "Admin")
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li><a class="dropdown-item" asp-controller="Departments" asp-action="Index"><i class="bi bi-diagram-3 me-2"></i>@(isRtl ? "الأقسام" : "Departments")</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Faculty" asp-action="Index"><i class="bi bi-people me-2"></i>@(isRtl ? "هيئة التدريس" : "Faculty")</a></li>
-                                        <li><a class="dropdown-item" asp-controller="News" asp-action="Index"><i class="bi bi-newspaper me-2"></i>@(isRtl ? "الأخبار" : "News")</a></li>
-                                        <li><a class="dropdown-item" asp-controller="Exams" asp-action="Index"><i class="bi bi-journal-text me-2"></i>@(isRtl ? "الامتحانات" : "Exams")</a></li>
-                                    </ul>
-                                </div>
-                            }
+                          
 
                             <form id="logoutForm" asp-controller="Account" asp-action="DeleteAndLogout" method="post" class="d-inline ms-1">
                                 @Html.AntiForgeryToken()

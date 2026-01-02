@@ -107,7 +107,7 @@ app.UseRequestLocalization(locOptions);
 
 app.UseRouting();
 app.UseSession();
-app.UseAuthentication();   // مهم
+app.UseAuthentication();  
 app.UseAuthorization();
 
 // Static Web Assets 
