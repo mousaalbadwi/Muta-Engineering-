@@ -5,35 +5,448 @@
 @{
     var isRtl = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft;
     string T(string ar, string en) => isRtl ? ar : en;
+
     var name = isRtl ? Model.FullNameAr : Model.FullNameEn;
     var title = isRtl ? Model.TitleAr : Model.TitleEn;
-    var deptName = Model.Department == null ? "" : (isRtl ? Model.Department.NameAr : Model.Department.NameEn);
+    var deptName = Model.Department == null
+        ? ""
+        : (isRtl ? Model.Department.NameAr : Model.Department.NameEn);
+
     ViewData["Title"] = name;
+
+    var researchTags = new List<string>();
+
+    if (deptName.Contains("Computer"))
+    {
+        researchTags.AddRange(new[] { "Artificial Intelligence", "Software Engineering", "Networks" });
+    }
+    else if (deptName.Contains("Electrical"))
+    {
+        researchTags.AddRange(new[] { "Power Systems", "Electronics", "Control Systems" });
+    }
+    else
+    {
+        researchTags.AddRange(new[] { "Engineering Education", "Applied Research" });
+    }
+
+    
+
 }
 
-<section class="container after-hero">
-    <h2 class="h4 mb-3">@name</h2>
+<!-- ================= PROFILE HERO ================= -->
+<section class="faculty-hero">
+   
+    <nav class="faculty-breadcrumb mt-3 "style="margin-left:30px ;font-size:20px">
+        <a href="/Faculty">@T("أعضاء هيئة التدريس", "Faculty")</a>
+        <span>/</span>
+        <span>@name</span>
+    </nav>
 
-    <div class="card border-0 shadow-sm rounded-4 p-3">
-        <div class="d-flex gap-3">
-            <img src="@Url.Content(Model.PhotoPath ?? "~/img/faculty/avatar-placeholder.svg")"
-                 onerror="this.src='@Url.Content("~/img/faculty/avatar-placeholder.svg")';"
-                 class="rounded-3" style="width:96px;height:96px;object-fit:cover" alt="@name" />
-            <div class="flex-grow-1">
-                @if (!string.IsNullOrWhiteSpace(title))
-                {
-                    <div class="mb-1">@title</div>
-                }
-                <div class="text-muted small">@deptName</div>
-                @if (!string.IsNullOrWhiteSpace(Model.Email))
-                {
-                    <div class="small"><i class="bi bi-envelope me-1"></i>@Model.Email</div>
-                }
-                @if (!string.IsNullOrWhiteSpace(Model.Office))
-                {
-                    <div class="small"><i class="bi bi-geo-alt me-1"></i>@Model.Office</div>
-                }
+    <div class="container">
+
+        <div class="hero-card rounded-4 shadow-sm">
+            <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                <img src="@Url.Content(Model.PhotoPath ?? "~/img/faculty/avatar-placeholder.svg")"
+                     onerror="this.src='@Url.Content("~/img/faculty/avatar-placeholder.svg")';"
+                     class="hero-avatar"
+                     alt="@name" />
+
+                <div class="text-center text-md-start">
+                    <h1 class="faculty-name">@name</h1>
+                    <button onclick="window.print()" class="print-btn">
+                        <i class="bi bi-printer"></i>
+                        @T("طباعة الملف", "Print Profile")
+                    </button>
+
+                    @if (!string.IsNullOrWhiteSpace(title))
+                    {
+                        <div class="faculty-title">@title</div>
+                    }
+
+                    <div class="faculty-dept">@deptName</div>
+                    <div class="faculty-actions">
+                        <button class="scholar-btn" disabled>
+                            <i class="bi bi-mortarboard"></i>
+                            Google Scholar
+                        </button>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- ================= CONTENT ================= -->
+<section class="container faculty-details-content">
+
+    <div class="row g-4">
+
+        <!-- ===== Academic Bio ===== -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h5 class="section-title">@T("نبذة أكاديمية", "Academic Biography")</h5>
+
+                <p class="text-muted mb-0">
+                    @T(
+                    "هذا العضو من أعضاء هيئة التدريس في كلية الهندسة بجامعة مؤتة، ويتمتع بخبرة أكاديمية ومهنية في مجاله، ويساهم في التدريس والبحث العلمي وخدمة المجتمع الجامعي.",
+                                        "This faculty member is part of the Faculty of Engineering at Mutah University, contributing to teaching, academic research, and university community service."
+                                        )
+                </p>
+            </div>
+        </div>
+        <!-- ===== Research Interests ===== -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mt-4">
+            <h5 class="section-title">@T("مجالات البحث", "Research Interests")</h5>
+
+            <div class="research-tags">
+                @foreach (var tag in researchTags)
+                {
+                    <span class="research-tag">@tag</span>
+                }
+            </div>
+        </div>
+        <!-- ===== Publications ===== -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 mt-4">
+            <h5 class="section-title">@T("الأبحاث والمنشورات", "Publications")</h5>
+
+            <ul class="publication-list">
+                <li>
+                    <strong>Journal of Engineering Research</strong><br />
+                    <span class="text-muted small">
+                        @T("نموذج بحثي في الهندسة التطبيقية", "A Research Model in Applied Engineering")
+                    </span>
+                </li>
+
+                <li>
+                    <strong>International Conference on Engineering</strong><br />
+                    <span class="text-muted small">
+                        @T("تطبيقات حديثة في التعليم الهندسي", "Recent Applications in Engineering Education")
+                    </span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ===== Contact & Office ===== -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                <h5 class="section-title">@T("معلومات التواصل", "Contact Information")</h5>
+
+                <ul class="list-unstyled contact-list mb-0">
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Email))
+                    {
+                        <li>
+                            <i class="bi bi-envelope"></i>
+                            <span>@Model.Email</span>
+                        </li>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Office))
+                    {
+                        <li>
+                            <i class="bi bi-geo-alt"></i>
+                            <span>@Model.Office</span>
+                        </li>
+                    }
+
+                    <li>
+                        <i class="bi bi-clock"></i>
+                        <span>@T("ساعات الدوام الرسمية", "Official Office Hours")</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+@section Styles {
+    <style>
+        /* ===============================
+           FACULTY DETAILS – GLOBAL STYLE
+           =============================== */
+
+        .faculty-hero {
+            background: linear-gradient(180deg, #faf7f8, #ffffff);
+            padding: 3rem 0 2rem;
+        }
+
+        .hero-card {
+            background: #ffffff;
+            padding: 2rem;
+            border: 1px solid #eef1f5;
+        }
+
+        .hero-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,.12);
+            background: #f3f4f6;
+        }
+
+        .faculty-name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: .25rem;
+        }
+
+        .faculty-title {
+            font-size: .95rem;
+            color: #8b1538;
+            font-weight: 600;
+            margin-bottom: .25rem;
+        }
+
+        .faculty-dept {
+            font-size: .85rem;
+            color: #667085;
+        }
+
+        /* ================= Content ================= */
+
+        .faculty-details-content {
+            padding-top: 1.5rem;
+            padding-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            padding-left: .75rem;
+        }
+
+            .section-title::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 4px;
+                width: 4px;
+                height: 18px;
+                background: #8b1538;
+                border-radius: 4px;
+            }
+
+        /* ================= Contact ================= */
+
+        .contact-list li {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            margin-bottom: .75rem;
+            font-size: .9rem;
+            color: #344054;
+        }
+
+        .contact-list i {
+            color: #8b1538;
+            font-size: 1rem;
+        }
+
+        /* ================= RTL ================= */
+
+        html[dir="rtl"] .section-title {
+            padding-left: 0;
+            padding-right: .75rem;
+        }
+
+            html[dir="rtl"] .section-title::before {
+                left: auto;
+                right: 0;
+            }
+        /* ================= Back to Faculty ================= */
+
+        .back-to-faculty {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            margin-bottom: 1rem;
+            font-size: .85rem;
+            color: #475467;
+            text-decoration: none;
+            transition: all .2s ease;
+        }
+
+            .back-to-faculty i {
+                transition: transform .2s ease;
+            }
+
+            .back-to-faculty:hover {
+                color: #8b1538;
+            }
+
+                .back-to-faculty:hover i {
+                    transform: translateX(-4px);
+                }
+
+        /* entry animation */
+        .back-to-faculty {
+            opacity: 0;
+            transform: translateY(-6px);
+            animation: backIn .5s ease forwards;
+        }
+
+        @@keyframes backIn {
+            to
+
+        {
+            opacity: 1;
+            transform: none;
+        }
+
+        }
+        /* ================= Print Button ================= */
+
+        .print-btn {
+            margin-top: .75rem;
+            background: transparent;
+            border: 1px solid #d0d5dd;
+            padding: .3rem .7rem;
+            font-size: .8rem;
+            border-radius: 6px;
+            color: #475467;
+            cursor: pointer;
+            transition: all .2s ease;
+        }
+
+            .print-btn:hover {
+                border-color: #8b1538;
+                color: #8b1538;
+            }
+        /* ================= Print Friendly ================= */
+
+        @@media print {
+            body
+
+        {
+            background: #fff !important;
+        }
+
+        .faculty-hero {
+            padding: 0;
+            background: none;
+        }
+
+        .hero-card {
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0;
+        }
+
+        .back-to-faculty,
+        .print-btn,
+        .card-footer,
+        nav,
+        footer {
+            display: none !important;
+        }
+
+        .faculty-name {
+            font-size: 1.4rem;
+        }
+
+        .section-title::before {
+            background: #000;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+        }
+
+        }
+
+        /* ================= Research Tags ================= */
+
+        .research-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+        }
+
+        .research-tag {
+            font-size: .75rem;
+            padding: .35rem .7rem;
+            border-radius: 999px;
+            background: #f8f9fb;
+            border: 1px solid #e4e7ec;
+            color: #344054;
+            transition: all .2s ease;
+        }
+
+            .research-tag:hover {
+                background: #8b1538;
+                color: #fff;
+                border-color: #8b1538;
+            }
+        /* ================= Breadcrumb ================= */
+
+        .faculty-breadcrumb {
+            font-size: .8rem;
+            margin-bottom: 1rem;
+            color: #667085;
+        }
+
+            .faculty-breadcrumb a {
+                text-decoration: none;
+                color: #475467;
+            }
+
+                .faculty-breadcrumb a:hover {
+                    color: #8b1538;
+                }
+
+            .faculty-breadcrumb span {
+                margin: 0 .25rem;
+            }
+        /* ================= Publications ================= */
+
+        .publication-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+            .publication-list li {
+                padding-left: 1rem;
+                margin-bottom: 1rem;
+                border-left: 3px solid #8b1538;
+            }
+
+        html[dir="rtl"] .publication-list li {
+            padding-left: 0;
+            padding-right: 1rem;
+            border-left: none;
+            border-right: 3px solid #8b1538;
+        }
+        /* ================= Google Scholar Button ================= */
+
+        .faculty-actions {
+            margin-top: .75rem;
+        }
+
+        .scholar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-size: .8rem;
+            padding: .35rem .75rem;
+            border-radius: 6px;
+            background: #f8f9fb;
+            border: 1px solid #d0d5dd;
+            color: #344054;
+            cursor: not-allowed;
+        }
+
+            .scholar-btn i {
+                color: #8b1538;
+            }
+
+    </style>
+}

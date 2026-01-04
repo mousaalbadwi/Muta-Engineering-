@@ -1,0 +1,467 @@
+﻿/* ===============================
+   HOME PAGE ONLY – SAFE CSS
+   =============================== */
+
+/* ---------- HERO ---------- */
+.hero-global {
+    position: relative;
+    min-height: 90vh;
+    overflow: hidden;
+    color: #fff;
+}
+
+.hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient( 90deg, rgba(122, 20, 50, 0.85) 0%, rgba(122, 20, 50, 0.65) 35%, rgba(122, 20, 50, 0.25) 65%, rgba(122, 20, 50, 0.05) 100% );
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+}
+
+.hero-title,
+.hero-text {
+    color: #fff;
+}
+
+.hero-wave {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    fill: #fff;
+    z-index: 3;
+}
+
+/* ---------- STATS ---------- */
+.stats-section {
+    margin-top: -20px; /* كان كثير */
+    padding-top: 2.5rem;
+    padding-bottom: 4rem;
+    position: relative;
+    z-index: 5;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.8rem 1rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+    .stat-card h3 {
+        color: #7a1432;
+        font-weight: 700;
+        margin-bottom: .25rem;
+    }
+
+    .stat-card span {
+        color: #555;
+        font-size: .95rem;
+    }
+
+/* Alerts – soft important badge */
+.badge-important,
+.alerts-section .badge {
+    background: rgba(220, 53, 69, 0.12);
+    color: #b02a37;
+    border: 1px solid rgba(220, 53, 69, 0.35);
+    font-weight: 600;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    font-size: .75rem;
+}
+
+/* ---------- ABOUT ---------- */
+.section-title {
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.bg-light {
+    background-color: #fafafa !important;
+}
+.about-section {
+    padding-bottom: 2rem;
+}
+
+.vision-mission-section {
+    padding-top: 0;
+    margin-top: -1rem;
+}
+
+/* ---------- VISION / MISSION ---------- */
+.info-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    border-left: 5px solid #7a1432;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+}
+
+    .info-box h5 {
+        font-weight: 700;
+        margin-bottom: .75rem;
+    }
+
+/* ---------- SERVICES (IMPORTANT FIX) ---------- */
+.services-section {
+    padding: 5rem 0;
+}
+
+    .services-section .row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+/* THIS IS THE FIX */
+.service-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    transition: transform .3s ease, box-shadow .3s ease;
+}
+
+    .service-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+    }
+
+    .service-card i {
+        font-size: 2rem;
+        color: #7a1432;
+        margin-bottom: 1rem;
+    }
+
+    .service-card h6 {
+        font-weight: 700;
+        margin-bottom: .4rem;
+    }
+
+    .service-card p {
+        font-size: .95rem;
+        color: #666;
+    }
+
+/* ---------- ALERTS ---------- */
+.alerts-section {
+    padding: 4rem 0;
+}
+
+    .alerts-section h4 {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+/* ---------- GENERAL FIXES ---------- */
+a {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+/* ===============================
+   MICRO ANIMATIONS – GLOBAL STYLE
+   =============================== */
+
+/* Base animation */
+.fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .8s ease, transform .8s ease;
+}
+
+    .fade-up.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+/* Delay helpers */
+.delay-1 {
+    transition-delay: .1s;
+}
+
+.delay-2 {
+    transition-delay: .2s;
+}
+
+.delay-3 {
+    transition-delay: .3s;
+}
+
+.delay-4 {
+    transition-delay: .4s;
+}
+
+/* Hover card (MIT style) */
+.service-card,
+.info-box,
+.stat-card {
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+    .service-card:hover,
+    .info-box:hover,
+    .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 45px rgba(0,0,0,.08);
+    }
+
+/* Subtle underline title */
+.section-title {
+    position: relative;
+    display: inline-block;
+    padding-bottom: .5rem;
+}
+
+    .section-title::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 60%;
+        height: 3px;
+        background: #7a1432;
+        border-radius: 4px;
+    }
+/* ===== Academic Divider – Line ===== */
+.academic-divider {
+    width: 100%;
+    max-width: 1100px;
+    height: 1px;
+    margin: 4rem auto;
+    background: linear-gradient( to right, transparent, rgba(122, 20, 50, 0.35), transparent );
+}
+/* ===== Academic Divider – Title ===== */
+.academic-divider-title {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin: 4rem 0 2.5rem;
+}
+
+    .academic-divider-title::before {
+        content: "";
+        width: 60px;
+        height: 3px;
+        background-color: #7a1432;
+        border-radius: 3px;
+    }
+
+    .academic-divider-title span {
+        font-weight: 600;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        font-size: .85rem;
+        color: #7a1432;
+    }
+/* ===============================
+   ACADEMIC SECTION HEADER
+   =============================== */
+
+.academic-header {
+    max-width: 760px;
+    margin: 5rem auto 3rem;
+    text-align: center;
+}
+
+.academic-kicker {
+    display: inline-block;
+    font-size: .75rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #7a1432;
+    font-weight: 600;
+    margin-bottom: .8rem;
+}
+
+.academic-header h2 {
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.academic-header p {
+    color: #6b7280;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+/* ===============================
+   RESEARCH SECTION
+   =============================== */
+
+.research-section {
+    padding: 5rem 0;
+    background: #fafafa;
+}
+
+.research-card {
+    background: #fff;
+    padding: 2.2rem;
+    border-radius: 14px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.06);
+    border-left: 4px solid #7a1432;
+}
+
+    .research-card h5 {
+        font-weight: 600;
+        margin-bottom: .6rem;
+    }
+
+    .research-card p {
+        color: #6b7280;
+        line-height: 1.6;
+    }
+/* ===============================
+   FACULTY CARDS
+   =============================== */
+
+.faculty-section {
+    padding: 5rem 0;
+}
+
+.faculty-card {
+    background: #fff;
+    padding: 2.5rem 1.5rem;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 18px 45px rgba(0,0,0,.07);
+}
+
+    .faculty-card img {
+        width: 110px;
+        height: 110px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 1.2rem;
+    }
+
+    .faculty-card h6 {
+        font-weight: 600;
+        margin-bottom: .3rem;
+    }
+
+    .faculty-card span {
+        font-size: .9rem;
+        color: #7a1432;
+    }
+/* ===============================
+   RESEARCH COUNTERS
+   =============================== */
+
+.research-stats {
+    padding: 4rem 0;
+    background: #ffffff;
+    border-top: 1px solid #eee;
+}
+
+.research-stat h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #7a1432;
+    margin-bottom: .4rem;
+}
+
+.research-stat span {
+    font-size: .95rem;
+    color: #6b7280;
+    letter-spacing: .02em;
+}
+/* ===============================
+   ALUMNI SECTION
+   =============================== */
+
+.alumni-section {
+    padding: 5rem 0;
+    background: #fafafa;
+}
+
+.alumni-card {
+    background: #ffffff;
+    padding: 2.2rem;
+    border-radius: 16px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.06);
+    border-top: 4px solid #7a1432;
+}
+
+    .alumni-card h5 {
+        font-weight: 600;
+        margin-bottom: .8rem;
+    }
+
+    .alumni-card p {
+        color: #6b7280;
+        line-height: 1.6;
+    }
+/* ===============================
+   EMPLOYMENT STATS
+   =============================== */
+
+.employment-section {
+    padding: 5rem 0;
+    background: #ffffff;
+}
+
+.employment-stat h3 {
+    font-size: 2.3rem;
+    font-weight: 700;
+    color: #7a1432;
+    margin-bottom: .3rem;
+}
+
+.employment-stat span {
+    font-size: .95rem;
+    color: #6b7280;
+}
+/* ===============================
+   ACCREDITATION SECTION
+   =============================== */
+
+.accreditation-section {
+    padding: 5rem 0;
+    background: #fafafa;
+}
+
+.accreditation-box {
+    background: #ffffff;
+    padding: 2.3rem;
+    border-radius: 16px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.06);
+    border-left: 5px solid #7a1432;
+}
+
+    .accreditation-box h5 {
+        font-weight: 600;
+        margin-bottom: .8rem;
+    }
+
+    .accreditation-box p {
+        color: #6b7280;
+        line-height: 1.6;
+    }
+
+

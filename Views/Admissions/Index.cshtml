@@ -119,6 +119,85 @@
                     right: -.9rem;
                     left: auto;
                 }
+
+        /* ================= Floating Local Video ================= */
+
+        .floating-video {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 340px;
+            height: 200px;
+            background: #000;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,.25);
+            z-index: 9999;
+            animation: videoIn .6s ease;
+        }
+
+            .floating-video video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
+
+        /* Close button */
+        .video-close {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: rgba(0,0,0,.65);
+            border: none;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        /* Entry animation */
+        @@keyframes videoIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(40px) scale(.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+
+        }
+
+        /* RTL */
+        [dir="rtl"] .floating-video {
+            right: auto;
+            left: 20px;
+        }
+
+        /* Mobile */
+        @@media (max-width: 768px) {
+            .floating-video
+
+        {
+            width: 280px;
+            height: 170px;
+            bottom: 15px;
+            right: 15px;
+        }
+
+        [dir="rtl"] .floating-video {
+            left: 15px;
+            right: auto;
+        }
+
+        }
     </style>
 }
 
@@ -226,3 +305,48 @@
         </div>
     </div>
 </section>
+<!-- ================= Floating Admissions Video ================= -->
+
+<div class="floating-video" id="admissionsVideo">
+    <button class="video-close" type="button" onclick="closeAdmissionsVideo()">×</button>
+
+    <video id="admissionsPlayer"
+           autoplay
+           muted
+           playsinline
+           controls>
+        <source src="~/videos/admissions.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+
+@section Scripts {
+    <script>
+        function closeAdmissionsVideo() {
+            const wrap = document.getElementById("admissionsVideo");
+            const player = document.getElementById("admissionsPlayer");
+
+            if (player) {
+                player.pause();
+                player.currentTime = 0;
+            }
+            if (wrap) wrap.style.display = "none";
+        }
+
+        // Try to enforce autoplay (some browsers need a play() attempt)
+        window.addEventListener("load", function () {
+            const player = document.getElementById("admissionsPlayer");
+            if (!player) return;
+
+            const p = player.play();
+            if (p && typeof p.catch === "function") {
+                p.catch(() => {
+                    // autoplay might be blocked if not muted (we already muted)
+                    // if still blocked, user can press play
+                });
+            }
+        });
+    </script>
+}
+

@@ -22,7 +22,7 @@
 
         @if (isAdmin)
         {
-            <a class="btn btn-primary lift-sm"
+            <a class="btn btn-primary lift-sm  mt-3" 
                asp-action="Create"
                asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
                 <i class="bi bi-person-plus me-1"></i>@T("إضافة عضو", "Add Member")
@@ -93,6 +93,18 @@
             }
         </div>
     </div>
+    <div id="faculty-skeleton" class="row g-3 g-md-4">
+        @for (int i = 0; i < 8; i++)
+        {
+            <div class="col-12 col-sm-6 col-lg-4 col-xxl-3">
+                <div class="skeleton-card rounded-4 p-3">
+                    <div class="skeleton-avatar mb-3"></div>
+                    <div class="skeleton-line w-75"></div>
+                    <div class="skeleton-line w-50"></div>
+                </div>
+            </div>
+        }
+    </div>
 
     <!-- Grid -->
     <div class="row g-3 g-md-4">
@@ -115,38 +127,58 @@
                 var depNamePair = (Model.Departments.TryGetValue(m.Department?.Code ?? (m.DepartmentId.ToString()), out var val) ? val : "|").Split('|');
                 var depName = isRtl ? depNamePair[0] : depNamePair[1];
                 var img = Url.Content(string.IsNullOrWhiteSpace(m.PhotoPath) ? "~/img/faculty/avatar-placeholder.svg" : m.PhotoPath);
+                var isFeatured = Model.Members.First() == m;
 
                 <div class="col-12 col-sm-6 col-lg-4 col-xxl-3">
-                    <div class="card faculty-card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                    <div class="card faculty-card border-0 shadow-sm rounded-4 h-100 overflow-hidden @(isFeatured ? "featured-faculty" : "")"
+                         data-bs-toggle="modal"
+                         data-bs-target="#facultyModal"
+                         data-name="@full"
+                         data-title="@title"
+                         data-dep="@depName"
+                         data-img="@img">
+
+                        @if (isFeatured)
+                        {
+                            <span class="featured-badge">@T("مميز", "Featured")</span>
+                        }
+
                         <div class="card-body p-3">
-                            <div class="d-flex align-items-center gap-3">
+                            <div class="d-flex flex-column align-items-center gap-2">
                                 <img src="@img" alt="@full" class="avatar-lg" />
-                                <div class="flex-grow-1 min-w-0">
+                                <div class="flex-grow-1 min-w-0 text-center">
                                     <div class="small text-muted text-truncate">@depName</div>
                                     <h5 class="mb-0 text-truncate">@full</h5>
+
                                     @if (!string.IsNullOrWhiteSpace(title))
                                     {
-                                        <div class="text-muted small text-truncate">@title</div>
+                                        <div class="faculty-title text-muted small">@title</div>
                                     }
                                 </div>
                             </div>
                         </div>
 
                         <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
-                            <div class="d-flex flex-wrap gap-2">
-                                <a class="btn btn-sm btn-outline-primary rounded-3 lift-xs" asp-action="Details" asp-route-id="@m.Id">
+                            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                <a class="btn btn-sm btn-outline-primary rounded-3 lift-xs"
+                                   asp-action="Details"
+                                   asp-route-id="@m.Id">
                                     <i class="bi bi-info-circle me-1"></i>@T("التفاصيل", "Details")
                                 </a>
 
                                 @if (isAdmin)
                                 {
-                                    <a class="btn btn-sm btn-warning rounded-3 lift-xs" asp-action="Edit" asp-route-id="@m.Id"
+                                    <a class="btn btn-sm btn-warning rounded-3 lift-xs"
+                                       asp-action="Edit"
+                                       asp-route-id="@m.Id"
                                        asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
                                         <i class="bi bi-pencil-square me-1"></i>@T("تعديل", "Edit")
                                     </a>
+
                                     <form asp-action="Delete" asp-route-id="@m.Id" method="post" class="d-inline">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-danger rounded-3 lift-xs"
+                                        <button type="submit"
+                                                class="btn btn-sm btn-danger rounded-3 lift-xs"
                                                 onclick="return confirm('@T("حذف هذا العضو؟", "Delete this member?")');">
                                             <i class="bi bi-trash me-1"></i>@T("حذف", "Delete")
                                         </button>
@@ -155,104 +187,287 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             }
         }
     </div>
+    <div class="modal fade" id="facultyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0">
+                <div class="modal-body text-center p-4">
+                    <img id="mImg" class="avatar-lg mb-3" />
+                    <h5 id="mName"></h5>
+                    <div id="mTitle" class="text-muted small"></div>
+                    <div id="mDep" class="small mt-1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
 
 @section Styles {
     <style>
-        /* صفحة أعضاء هيئة التدريس – تحسينات خفيفة وعصرية */
-        .faculty-page .title-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: linear-gradient(135deg,#0d6efd, #6ea8fe);
-            box-shadow: 0 0 0 4px rgba(13,110,253,.12);
+        /* ===============================
+           FACULTY – IVY LEAGUE STYLE
+           Inspired by Harvard / Stanford
+           =============================== */
+
+        .faculty-page {
+            --accent: #8b1538; /* Burgundy academic tone */
         }
 
-        .soft-shadow {
-            box-shadow: 0 6px 18px rgba(16,24,40,.08) !important;
+            /* Header dot */
+            .faculty-page .title-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: var(--accent);
+                box-shadow: 0 0 0 6px rgba(139,21,56,.12);
+            }
+
+        /* Filter card */
+        .filter-card {
+            background: #ffffff;
+            border: 1px solid #eef1f5;
         }
 
-        .filter-card .chip {
-            display: inline-flex;
-            align-items: center;
-            gap: .35rem;
-            padding: .35rem .6rem;
-            border-radius: 999px;
-            font-size: .825rem;
-            background: #f3f6fb;
-            color: #475467;
-            border: 1px solid #e6eefc;
-        }
-
-        .avatar-lg {
-            width: 64px;
-            height: 64px;
-            object-fit: cover;
-            border-radius: 16px;
-            background: #f2f4f7;
-            border: 1px solid #eef2f7;
-        }
-
+        /* Faculty Card */
         .faculty-card {
-            transition: transform .18s ease, box-shadow .18s ease;
+            background: #ffffff;
+            border: 1px solid #eef1f5;
+            transition: all .25s ease;
+            position: relative;
         }
+
+            .faculty-card::after {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 0;
+                height: 3px;
+                background: var(--accent);
+                transition: width .25s ease;
+            }
+
+            .faculty-card:hover::after {
+                width: 100%;
+            }
 
             .faculty-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 14px 28px rgba(16,24,40,.12);
+                transform: translateY(-4px);
+                box-shadow: 0 20px 40px rgba(0,0,0,.08);
             }
 
-        .lift-sm {
-            transition: transform .12s ease, box-shadow .12s ease;
+        /* Avatar */
+        .avatar-lg {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #fff;
+            box-shadow: 0 6px 18px rgba(0,0,0,.12);
+            background: #f3f4f6;
         }
 
-            .lift-sm:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 18px rgba(16,24,40,.12);
-            }
-
-        .lift-xs {
-            transition: transform .12s ease;
+        /* Card body layout */
+        .faculty-card .card-body {
+            text-align: center;
+            padding-top: 1.5rem;
         }
 
-            .lift-xs:hover {
-                transform: translateY(-1px);
-            }
+        .faculty-card h5 {
+            font-weight: 600;
+            letter-spacing: .2px;
+        }
 
+        .faculty-card .text-muted {
+            font-size: .85rem;
+        }
+
+        /* Footer buttons */
+        .faculty-card .card-footer {
+            justify-content: center;
+        }
+
+        /* Buttons */
+        .faculty-card .btn {
+            font-size: .8rem;
+            padding: .35rem .7rem;
+        }
+
+        /* Empty state */
         .empty-state {
-            background: linear-gradient(180deg,#fff, #fafbff);
-            border: 1px dashed #e4e7ec;
+            background: #ffffff;
+            border: 1px dashed #d0d5dd;
         }
 
-            .empty-state .empty-ill {
-                width: 64px;
-                height: 64px;
-                border-radius: 16px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                background: #f3f6fb;
-                color: #6b7a99;
-                font-size: 1.6rem;
-                border: 1px solid #e6eefc;
+        .empty-ill {
+            background: #f8f9fb;
+            color: var(--accent);
+        }
+
+        /* Chips */
+        .chip {
+            background: #f8f9fb;
+            border: 1px solid #e4e7ec;
+        }
+
+        /* RTL fixes */
+        html[dir="rtl"] .faculty-card {
+            text-align: center;
+        }
+        /* Hover reveal title */
+        .faculty-card .faculty-title {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all .25s ease;
+        }
+
+        .faculty-card:hover .faculty-title {
+            max-height: 40px;
+            opacity: 1;
+        }
+        /* Overlay effect */
+        .faculty-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient( to bottom, rgba(255,255,255,0) 40%, rgba(0,0,0,0.04) );
+            opacity: 0;
+            transition: opacity .25s ease;
+            pointer-events: none;
+        }
+
+        .faculty-card:hover::before {
+            opacity: 1;
+        }
+        /* Featured Faculty */
+        .featured-faculty {
+            border: 1px solid var(--accent);
+            background: linear-gradient( 180deg, #fff, #faf7f8 );
+        }
+
+            .featured-faculty::after {
+                width: 100% !important;
             }
 
-        /* تحسينات RTL بسيطة */
-        html[dir="rtl"] .input-group .input-group-text {
-            border-radius: 0 .5rem .5rem 0 !important;
+            /* Badge */
+            .featured-faculty .featured-badge {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                background: var(--accent);
+                color: #fff;
+                font-size: .7rem;
+                padding: .25rem .5rem;
+                border-radius: 999px;
+            }
+        /* ================= Skeleton ================= */
+
+        .skeleton-card {
+            background: #fff;
+            border: 1px solid #eef1f5;
         }
 
-        html[dir="rtl"] .input-group .form-control {
-            border-radius: .5rem 0 0 .5rem !important;
+        .skeleton-avatar {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            margin: auto;
+            background: #e9edf3;
         }
 
-        /* توازن مسافات */
-        .after-hero {
-            padding-top: .75rem;
+        .skeleton-line {
+            height: 10px;
+            background: #e9edf3;
+            border-radius: 6px;
+            margin: 10px auto;
+        }
+
+        /* shimmer animation */
+        .skeleton-avatar,
+        .skeleton-line {
+            position: relative;
+            overflow: hidden;
+        }
+
+            .skeleton-avatar::after,
+            .skeleton-line::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                transform: translateX(-100%);
+                background: linear-gradient( 90deg, transparent, rgba(255,255,255,.6), transparent );
+                animation: shimmer 1.4s infinite;
+            }
+
+        @@keyframes shimmer {
+            100%
+
+        {
+            transform: translateX(100%);
+        }
+
+        }
+
+        /* ================= Entry Animation ================= */
+
+        .faculty-card {
+            opacity: 0;
+            transform: translateY(16px);
+            animation: cardIn .6s ease forwards;
+        }
+
+            .faculty-card:nth-child(1) {
+                animation-delay: .05s;
+            }
+
+            .faculty-card:nth-child(2) {
+                animation-delay: .1s;
+            }
+
+            .faculty-card:nth-child(3) {
+                animation-delay: .15s;
+            }
+
+            .faculty-card:nth-child(4) {
+                animation-delay: .2s;
+            }
+
+        @@keyframes cardIn {
+            to
+
+        {
+            opacity: 1;
+            transform: none;
+        }
+
         }
     </style>
 }
+@section Scripts {
+    <script>
+        // Hide skeleton after load
+        window.addEventListener("load", function () {
+            const sk = document.getElementById("faculty-skeleton");
+            if (sk) sk.style.display = "none";
+        });
+
+        // Faculty modal binding
+        const modal = document.getElementById('facultyModal');
+        if (modal) {
+            modal.addEventListener('show.bs.modal', function (event) {
+                const card = event.relatedTarget;
+                document.getElementById("mImg").src = card.dataset.img;
+                document.getElementById("mName").textContent = card.dataset.name;
+                document.getElementById("mTitle").textContent = card.dataset.title;
+                document.getElementById("mDep").textContent = card.dataset.dep;
+            });
+        }
+    </script>
+}
+
