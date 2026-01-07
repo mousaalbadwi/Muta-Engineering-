@@ -128,8 +128,13 @@ namespace MutaEngineering.Controllers
             ViewBag.ReturnUrl = returnUrl ?? Url.Action("Index", "Home");
             if (!ModelState.IsValid) return View(vm);
 
-            var phone = (vm.PhoneNumber ?? "").Trim();
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == phone);
+            var identifier = (vm.PhoneNumber ?? "").Trim();
+            
+            // البحث عن المستخدم باستخدام رقم الهاتف (Username) أو الاسم الكامل
+            var user = await _db.Users.FirstOrDefaultAsync(u => 
+                u.Username == identifier || 
+                (u.FullName != null && u.FullName.Trim() == identifier));
+
             if (user == null || string.IsNullOrEmpty(user.PasswordHash) || !BCrypt.Net.BCrypt.Verify(vm.Password, user.PasswordHash))
             {
                 ModelState.AddModelError(string.Empty, "بيانات الدخول غير صحيحة.");
