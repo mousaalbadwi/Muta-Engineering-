@@ -1,7 +1,6 @@
-﻿/* ===============================
+﻿﻿ /* ===============================
    HOME PAGE ONLY – SAFE CSS
    =============================== */
-
 /* ---------- HERO ---------- */
 .hero-global {
     position: relative;
@@ -96,6 +95,7 @@
 .bg-light {
     background-color: #fafafa !important;
 }
+
 .about-section {
     padding-bottom: 2rem;
 }
@@ -463,5 +463,3 @@ img {
         color: #6b7280;
         line-height: 1.6;
     }
-
-

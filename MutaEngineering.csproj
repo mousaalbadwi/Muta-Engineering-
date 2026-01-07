@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <None Include="wwwroot\img\illustrations\Architect-bro.svg" />
+    <Content Remove="wwwroot\css\home.css" />
+    <None Remove="wwwroot\css\home.css" />
   </ItemGroup>
 
   <ItemGroup>

@@ -90,7 +90,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // معطل مؤقتاً لتجنب مشاكل الشهادات development
+
 app.UseStaticFiles();
 
 // اللغات: عربي افتراضي + إنجليزي
@@ -123,6 +124,14 @@ app.MapControllerRoute(
    pattern: "{controller=Welcome}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-await DbSeeder.SeedAsync(app.Services);
+try 
+{
+    await DbSeeder.SeedAsync(app.Services);
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred while seeding the database.");
+}
 
 app.Run();

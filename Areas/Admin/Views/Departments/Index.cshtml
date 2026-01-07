@@ -1,161 +1,544 @@
 ﻿@model IEnumerable<MutaEngineering.Models.Department>
 
 @{
-    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    ViewData["Title"] = "Departments";
+    ViewData["Title"] = "Departments Management";
+    var totalDepts = Model.Count();
+    var totalFaculty = Model.Sum(d => d.FacultyMembers?.Count ?? 0);
+    var totalExams = Model.Sum(d => d.Exams?.Count ?? 0);
 }
 
 <style>
-    .depts-admin .card {
-        border: 1px solid #e9ecef;
-        border-radius: 14px;
-        box-shadow: 0 6px 22px rgba(16,24,40,.06);
-        overflow: hidden;
+    :root {
+        --admin-primary: #7a1e2d;
+        --admin-bg: #f8f9fa;
+        --glass-border: rgba(255, 255, 255, 0.6);
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     }
 
-    .depts-admin .card-header {
-        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-        border-bottom: 1px solid #e9ecef;
+    .admin-container {
+        padding: 2rem 0;
+        background-color: var(--admin-bg);
+        min-height: 85vh;
     }
 
-    .depts-admin .title-wrap h5 {
+    .page-header {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .header-title h1 {
+        font-size: 1.75rem;
         font-weight: 700;
-        letter-spacing: .2px;
+        color: #1e293b;
+        margin: 0;
     }
 
-    .depts-admin .btn-add {
-        border-radius: 10px;
+    .header-title p {
+        color: #64748b;
+        margin: 0.25rem 0 0;
+        font-size: 0.95rem;
     }
 
-    .depts-admin .table thead th {
-        font-size: .85rem;
+    /* Stats Cards */
+    .stat-card-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(122, 30, 45, 0.1);
+        color: var(--admin-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-info h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .stat-info p {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin: 0;
+        font-weight: 500;
         text-transform: uppercase;
-        letter-spacing: .5px;
-        color: #475569;
-        white-space: nowrap;
-        position: sticky;
-        top: 0;
-        background: #f8fafc;
-        z-index: 1;
-        border-bottom: 1px solid #e2e8f0 !important;
+        letter-spacing: 0.05em;
     }
 
-    .depts-admin .table tbody td {
-        vertical-align: middle;
-    }
-
-    .depts-admin .truncate {
-        max-width: 320px;
-        display: inline-block;
-        white-space: nowrap;
+    /* Main Content Card */
+    .content-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #e2e8f0;
         overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    @@media (max-width: 1200px) {
-        .depts-admin .truncate
-
-    {
-        max-width: 220px;
     }
 
+    .table-toolbar {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
-    .depts-admin .count-badge {
-        border-radius: 999px;
-        font-weight: 600;
-        padding: .35rem .6rem;
+    .search-box {
+        position: relative;
+        min-width: 280px;
     }
 
-    .depts-admin .actions .btn {
+    .search-box input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        border: 1px solid #cbd5e1;
         border-radius: 8px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .search-box input:focus {
+        border-color: var(--admin-primary);
+        box-shadow: 0 0 0 3px rgba(122, 30, 45, 0.1);
+    }
+
+    .search-box i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    /* Table Styling */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .modern-table th {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+    }
+
+    .modern-table td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.95rem;
+        color: #334155;
+    }
+
+    .modern-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .modern-table tr:hover td {
+        background-color: #fcfcfc;
+    }
+
+    /* Badges */
+    .badge-modern {
+        padding: 0.35rem 0.75rem;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .badge-code {
+        background-color: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        font-family: monospace;
+        font-size: 0.85rem;
+    }
+
+    .badge-count-primary {
+        background-color: #f0f9ff;
+        color: #0369a1;
+        border: 1px solid #e0f2fe;
+    }
+
+    .badge-count-info {
+        background-color: #f0fdf4;
+        color: #15803d;
+        border: 1px solid #dcfce7;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: #64748b;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        background: transparent;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .action-btn:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    .action-btn.edit:hover {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .action-btn.delete:hover {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .btn-create {
+        background: var(--admin-primary);
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+        border: none;
+        text-decoration: none;
+    }
+
+    .btn-create:hover {
+        background: #5f1623;
+        transform: translateY(-1px);
+        color: #fff;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-btn {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+        background: #f8fafc;
+        color: #0f172a;
+        border-color: #cbd5e1;
+    }
+
+    .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .page-info {
+        font-size: 0.9rem;
+        color: #64748b;
     }
 </style>
 
-<div class="depts-admin">
-    <div class="card">
-        <div class="card-header p-3 p-md-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="title-wrap d-flex align-items-center gap-2">
-                    <i class="fa-solid fa-building-columns text-primary"></i>
-                    <h5 class="m-0">Departments (Admin)</h5>
-                </div>
-                <a asp-area="Admin" asp-controller="Departments" asp-action="Create"
-                   class="btn btn-primary btn-sm btn-add">
-                    <i class="fa fa-plus me-1"></i> Add Department
+<div class="admin-container">
+    <div class="container-fluid px-lg-5">
+
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-title">
+                <h1>Departments</h1>
+                <p>Manage academic departments and related structure.</p>
+            </div>
+            <div>
+                <a asp-action="Create" class="btn-create shadow-sm">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>New Department</span>
                 </a>
             </div>
         </div>
 
-        <div class="card-body p-0">
+        <!-- Stats -->
+        <div class="stat-card-row">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>@totalDepts</h3>
+                    <p>Total Departments</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>@totalFaculty</h3>
+                    <p>Total Faculty</p>
+                </div>
+                <div class="stat-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>@totalExams</h3>
+                    <p>Exams Created</p>
+                </div>
+                <div class="stat-icon" style="background: rgba(22, 163, 74, 0.1); color: #16a34a;">
+                    <i class="fa-solid fa-file-circle-check"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-card">
+            <!-- Toolbar -->
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="deptSearch" placeholder="Search departments..." onkeyup="filterTable()">
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-light text-secondary border-secondary-subtle btn-sm">
+                        <i class="fa-solid fa-filter"></i> Filter
+                    </button>
+                    <button class="btn btn-outline-light text-secondary border-secondary-subtle btn-sm">
+                        <i class="fa-solid fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
             <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle mb-0">
-                    <thead class="table-light">
+                <table class="modern-table" id="deptTable">
+                    <thead>
                         <tr>
                             <th>Code</th>
                             <th>Name (EN)</th>
                             <th>Name (AR)</th>
-                            <th>Faculty</th>
-                            <th>Exams</th>
+                            <th>Stats</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tableBody">
                         @foreach (var d in Model)
                         {
                             var facultyCount = d.FacultyMembers?.Count ?? 0;
                             var examsCount = d.Exams?.Count ?? 0;
 
-                            <tr>
+                            <tr class="data-row">
                                 <td>
-                                    <span class="badge text-bg-secondary">@d.Code</span>
+                                    <span class="badge-modern badge-code">@d.Code</span>
                                 </td>
-
                                 <td>
-                                    <span class="truncate" title="@d.NameEn">@d.NameEn</span>
+                                    <strong>@d.NameEn</strong>
                                 </td>
-
                                 <td dir="rtl">
-                                    <span class="truncate" title="@d.NameAr">@d.NameAr</span>
+                                    @d.NameAr
                                 </td>
-
                                 <td>
-                                    <span class="badge text-bg-primary count-badge" title="Faculty Count">
-                                        <i class="fa-solid fa-user-graduate me-1"></i>@facultyCount
-                                    </span>
+                                    <div class="d-flex gap-2">
+                                        <span class="badge-modern badge-count-primary" title="Faculty Count">
+                                            <i class="fa-solid fa-user-graduate"></i> @facultyCount
+                                        </span>
+                                        <span class="badge-modern badge-count-info" title="Exams Count">
+                                            <i class="fa-regular fa-file-lines"></i> @examsCount
+                                        </span>
+                                    </div>
                                 </td>
-
-                                <td>
-                                    <span class="badge text-bg-info count-badge" title="Exams Count">
-                                        <i class="fa-regular fa-file-lines me-1"></i>@examsCount
-                                    </span>
-                                </td>
-
-                                <td class="text-end actions">
-                                    <a asp-area="Admin" asp-controller="Departments" asp-action="Details" asp-route-id="@d.Id"
-                                       class="btn btn-outline-info btn-sm me-1">
-                                        <i class="fa-regular fa-eye me-1"></i> Details
+                                <td class="text-end">
+                                    <a asp-action="Edit" asp-route-id="@d.Id" class="action-btn edit" title="Edit">
+                                        <i class="fa-regular fa-pen-to-square"></i>
                                     </a>
-                                    <a asp-area="Admin" asp-controller="Departments" asp-action="Edit" asp-route-id="@d.Id"
-                                       class="btn btn-outline-secondary btn-sm me-1">
-                                        <i class="fa-regular fa-pen-to-square me-1"></i> Edit
+                                    <a asp-action="Details" asp-route-id="@d.Id" class="action-btn" title="View Details">
+                                        <i class="fa-regular fa-eye"></i>
                                     </a>
-                                    <form id="del-@d.Id" asp-area="Admin" asp-controller="Departments" asp-action="Delete" method="post"
-                                          class="d-inline">
+                                    <button type="button" class="action-btn delete" title="Delete"
+                                        onclick="confirmDelete('@d.Id', '@d.NameEn')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+
+                                    <form id="del-@d.Id" asp-action="Delete" method="post" style="display:none;">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@d.Id" />
-                                        <button type="button"
-                                                class="btn btn-outline-danger btn-sm js-delete"
-                                                data-form="del-@d.Id"
-                                                data-name="@d.NameEn">
-                                            Delete
-                                        </button>
                                     </form>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <div class="mb-3 text-muted opacity-50">
+                            <i class="fa-solid fa-building-columns" style="font-size: 3rem;"></i>
+                        </div>
+                        <h6 class="text-muted">No departments found.</h6>
+                        <a asp-action="Create" class="btn btn-sm btn-outline-primary mt-2">Add First Department</a>
+                    </div>
+                }
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-wrapper" id="paginationControls">
+                <div class="page-info">
+                    Showing <span id="startRow">0</span> to <span id="endRow">0</span> of <span id="totalRows">0</span>
+                    entries
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="page-btn" id="prevBtn" onclick="changePage(-1)" disabled>Previous</button>
+                    <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Delete Confirmation
+    function confirmDelete(id, name) {
+        Swal.fire({
+            title: 'Delete Department?',
+            text: `Are you sure you want to remove "${name}"? This cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`del-${id}`).submit();
+            }
+        })
+    }
+
+    // Search Filter
+    function filterTable() {
+        const input = document.getElementById("deptSearch");
+        const filter = input.value.toUpperCase();
+        const rows = document.querySelectorAll(".data-row");
+
+        rows.forEach(row => {
+            const text = row.innerText || row.textContent;
+            if (text.toUpperCase().indexOf(filter) > -1) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        if (filter === "") {
+            renderPagination();
+        } else {
+            document.getElementById("paginationControls").style.display = "none";
+        }
+    }
+
+    // Client-Side Pagination Logic
+    const rowsPerPage = 6;
+    let currentPage = 1;
+    let rows = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const tbody = document.getElementById("tableBody");
+        rows = Array.from(tbody.getElementsByClassName("data-row"));
+
+        if (rows.length > 0) {
+            renderPagination();
+        } else {
+            document.getElementById("paginationControls").style.display = "none";
+        }
+    });
+
+    function renderPagination() {
+        const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+        // Ensure bounds
+        if (currentPage < 1) currentPage = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        rows.forEach((row, index) => {
+            if (index >= start && index < end) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // Update Info
+        document.getElementById("startRow").innerText = rows.length > 0 ? start + 1 : 0;
+        document.getElementById("endRow").innerText = Math.min(end, rows.length);
+        document.getElementById("totalRows").innerText = rows.length;
+        document.getElementById("paginationControls").style.display = "flex";
+
+        // Update Buttons
+        document.getElementById("prevBtn").disabled = currentPage === 1;
+        document.getElementById("nextBtn").disabled = currentPage === totalPages || totalPages === 0;
+    }
+
+    function changePage(delta) {
+        currentPage += delta;
+        renderPagination();
+    }
+</script>

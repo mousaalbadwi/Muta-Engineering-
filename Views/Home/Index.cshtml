@@ -6,595 +6,311 @@
     ViewData["Title"] = isRtl ? "الرئيسية" : "Home";
 }
 
-<!-- ================= HERO ================= -->
+@section Styles {
+    <link rel="stylesheet" href="~/css/home-premium.css" asp-append-version="true" />
+}
 
-<section class="hero-global">
-    <video autoplay muted loop playsinline class="hero-video">
-        <source src="~/videos/engineering-hero.mp4" type="video/mp4" />
-    </video>
-
-    <div class="hero-overlay"></div>
-
-    <div class="container hero-content">
-        <div class="row">
-            <div class="col-lg-7">
-                <span class="badge hero-badge mb-3">
-                    @(isRtl ? "جامعة مؤتة" : "Mutah University")
-                </span>
-
-                <h1 class="display-5 fw-bold hero-title mb-3">
-                    @(isRtl
-                                        ? "كلية الهندسة – تعليم هندسي بمعايير عالمية"
-                                        : "Faculty of Engineering – Global Standards in Engineering Education")
-                </h1>
-
-                <p class="lead hero-text mb-4">
-                    @(isRtl
-                                        ? "برامج أكاديمية معتمدة، كوادر متميزة، وبيئة تعليمية حديثة لإعداد مهندسي المستقبل."
-                                        : "Accredited programs, distinguished faculty, and a modern learning environment.")
-                </p>
-
-                <div class="d-flex gap-3 flex-wrap">
-                    <a asp-controller="Departments" asp-action="Index"
-                       class="btn btn-primary btn-lg">
-                        @(isRtl ? "الأقسام الأكاديمية" : "Academic Departments")
-                    </a>
-
-                    <a asp-controller="Admissions" asp-action="Index"
-                       class="btn btn-outline-light btn-lg">
-                        @(isRtl ? "القبول" : "Admissions")
-                    </a>
-                </div>
-            </div>
-        </div>
+<!-- ================= HERO SECTION (Full Screen) ================= -->
+<section class="modern-hero">
+    <div class="hero-video-bg">
+        <video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;">
+            <source src="~/videos/engineering-hero.mp4" type="video/mp4" />
+        </video>
+        <div class="hero-overlay-gradient"></div>
     </div>
 
-    <svg class="hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none">
+    <div class="hero-content-wrapper">
+        <span class="hero-badge" style="background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; text-transform:uppercase; letter-spacing:2px; font-size:0.8rem; border:1px solid rgba(255,255,255,0.2);">
+            @(isRtl ? "جامعة مؤتة" : "Mutah University")
+        </span>
+        
+        <h1 class="hero-title-main">
+            @(isRtl
+                ? "كلية الهندسة – تعليم هندسي بمعايير عالمية"
+                : "Faculty of Engineering – Global Standards in Engineering Education")
+        </h1>
+
+        <p class="hero-subtitle">
+            @(isRtl
+                ? "برامج أكاديمية معتمدة، كوادر متميزة، وبيئة تعليمية حديثة لإعداد مهندسي المستقبل."
+                : "Accredited programs, distinguished faculty, and a modern learning environment.")
+        </p>
+
+        <div class="hero-actions">
+            <a asp-controller="Departments" asp-action="Index" class="btn-modern btn-modern-primary">
+                @(isRtl ? "الأقسام الأكاديمية" : "Academic Departments")
+            </a>
+            <a asp-controller="Admissions" asp-action="Index" class="btn-modern btn-modern-glass">
+                @(isRtl ? "القبول" : "Admissions")
+            </a>
+        </div>
+    </div>
+    
+    <svg class="hero-wave-bottom" viewBox="0 0 1440 120" preserveAspectRatio="none">
         <path d="M0,60 C240,120 480,0 720,20 960,40 1200,100 1440,60 L1440,120 L0,120 Z" />
     </svg>
 </section>
 
-<!-- ================= STATS ================= -->
-<div class="academic-header fade-up">
-    <span class="academic-kicker">Stats Overview</span>
-    <h2>@(isRtl ? "حول الإحصائيات" : "About the Stats")</h2>
-    <p>
-        Learn more about the Stats, and academic excellence of the
-        Faculty of Engineering at Mutah University.
-    </p>
-</div>
-
-<section class="stats-section">
-    <div class="container">
-        <div class="row g-4 text-center">
-            <div class="col-6 col-lg-3">
-                <div class="stat-card">
-                    <h3 class="counter" data-target="7">0</h3>
-                    <span>@(isRtl ? "أقسام هندسية" : "Engineering Departments")</span>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="stat-card">
-                    <h3 class="counter" data-target="120">+0</h3>
-                    <span>@(isRtl ? "أعضاء هيئة تدريس" : "Faculty Members")</span>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="stat-card">
-                    <h3 class="counter" data-target="8000">+0</h3>
-                    <span>@(isRtl ? "طالب" : "Students")</span>
-                </div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="stat-card">
-                    <h3 class="counter" data-target="1996">0</h3>
-                    <span>@(isRtl ? "سنة التأسيس" : "Established")</span>
-                </div>
-            </div>
+<!-- ================= FLOATING STATS ================= -->
+<div class="container stats-floating-bar">
+    <div class="glass-stats">
+        <div class="stat-item-modern">
+            <span class="stat-number-modern counter" data-target="7">0</span>
+            <span class="stat-label-modern">@(isRtl ? "أقسام هندسية" : "Departments")</span>
+        </div>
+        <div class="stat-item-modern">
+             <span class="stat-number-modern counter" data-target="120">+0</span>
+            <span class="stat-label-modern">@(isRtl ? "أعضاء هيئة تدريس" : "Faculty")</span>
+        </div>
+        <div class="stat-item-modern">
+             <span class="stat-number-modern counter" data-target="8000">+0</span>
+            <span class="stat-label-modern">@(isRtl ? "طالب" : "Students")</span>
+        </div>
+        <div class="stat-item-modern">
+             <span class="stat-number-modern counter" data-target="1996">0</span>
+            <span class="stat-label-modern">@(isRtl ? "سنة التأسيس" : "Established")</span>
         </div>
     </div>
-</section>
-<div class="academic-divider"></div>
-<!-- ================= SERVICES ================= -->
-<div class="academic-header fade-up">
-    <span class="academic-kicker">Services Overview</span>
-    <h2>@(isRtl ? "الخدمات الأكاديمية" : "Academic Services")</h2>
-    <p>
-        Learn more about the Services, and academic excellence of the
-        Faculty of Engineering at Mutah University.
-    </p>
 </div>
 
-<section class="services-section">
+<!-- ================= SERVICES (BENTO GRID) ================= -->
+<section class="modern-section" id="services">
     <div class="container">
         <div class="text-center mb-5">
-            <div class="academic-divider-title">
-                <span>Services Overview</span>
-            </div>
-
+            <span class="section-label">Services Overview</span>
+            <h2 class="section-heading-big">@(isRtl ? "الخدمات الأكاديمية" : "Academic Services")</h2>
+            <p class="text-muted" style="max-width: 600px; margin: 0 auto;">
+                Learn more about the Services, and academic excellence of the Faculty of Engineering at Mutah University.
+            </p>
         </div>
 
-        <div class="row g-4">
-
-            <!-- Departments -->
-            <div class="col-md-6 col-lg-4 fade-up delay-1">
-                <a asp-controller="Departments" asp-action="Index" class="service-card">
-                    <i class="bi bi-building"></i>
-                    <h6>@(isRtl ? "الأقسام" : "Departments")</h6>
-                    <p>@(isRtl ? "التخصصات الهندسية المعتمدة" : "Accredited engineering disciplines")</p>
-                </a>
-            </div>
+        <div class="bento-grid">
+            <!-- Departments (Span 2) -->
+            <a asp-controller="Departments" asp-action="Index" class="bento-card bento-span-2 accent-card fade-up">
+                <i class="bi bi-building bento-icon"></i>
+                <h3 class="bento-title">@(isRtl ? "الأقسام الأكاديمية" : "Departments")</h3>
+                <p class="bento-text">@(isRtl ? "التخصصات الهندسية المعتمدة" : "Accredited engineering disciplines")</p>
+            </a>
 
             <!-- Study Plans -->
-            <div class="col-md-6 col-lg-4 fade-up delay-2">
-                <a asp-controller="StudyPlans" asp-action="Index" class="service-card">
-                    <i class="bi bi-journal-text"></i>
-                    <h6>@(isRtl ? "الخطط الدراسية" : "Study Plans")</h6>
-                    <p>@(isRtl ? "الخطط المعتمدة لجميع التخصصات" : "Approved academic study plans")</p>
-                </a>
-            </div>
+            <a asp-controller="StudyPlans" asp-action="Index" class="bento-card fade-up delay-1">
+                <i class="bi bi-journal-text bento-icon"></i>
+                <h3 class="bento-title">@(isRtl ? "الخطط الدراسية" : "Study Plans")</h3>
+                <p class="bento-text">@(isRtl ? "الخطط المعتمدة لجميع التخصصات" : "Approved academic study plans")</p>
+            </a>
 
             <!-- Faculty -->
-            <div class="col-md-6 col-lg-4 fade-up delay-3">
-                <a asp-controller="Faculty" asp-action="Index" class="service-card">
-                    <i class="bi bi-people"></i>
-                    <h6>@(isRtl ? "الهيئة التدريسية" : "Faculty")</h6>
-                    <p>@(isRtl ? "أعضاء هيئة تدريس مؤهلين" : "Highly qualified academic staff")</p>
-                </a>
-            </div>
+            <a asp-controller="Faculty" asp-action="Index" class="bento-card fade-up delay-2">
+                <i class="bi bi-people bento-icon"></i>
+                <h3 class="bento-title">@(isRtl ? "الهيئة التدريسية" : "Faculty")</h3>
+                <p class="bento-text">@(isRtl ? "أعضاء هيئة تدريس مؤهلين" : "Highly qualified academic staff")</p>
+            </a>
 
-            <!-- Exams -->
-            <div class="col-md-6 col-lg-4 fade-up delay-1">
-                <a asp-controller="Exams" asp-action="Index" class="service-card">
-                    <i class="bi bi-clipboard-check"></i>
-                    <h6>@(isRtl ? "الامتحانات" : "Exams")</h6>
-                    <p>@(isRtl ? "جداول وتعليمات الامتحانات" : "Exam schedules and instructions")</p>
-                </a>
-            </div>
+            <!-- Exams (Dark) -->
+            <a asp-controller="Exams" asp-action="Index" class="bento-card dark-card fade-up delay-3">
+                <i class="bi bi-clipboard-check bento-icon"></i>
+                <h3 class="bento-title">@(isRtl ? "الامتحانات" : "Exams")</h3>
+                <p class="bento-text">@(isRtl ? "جداول وتعليمات الامتحانات" : "Exam schedules and instructions")</p>
+            </a>
 
-            <!-- Exam Archive -->
-            <div class="col-md-6 col-lg-4 fade-up delay-2">
-                <a asp-controller="Exams" asp-action="Archive" class="service-card">
-                    <i class="bi bi-archive"></i>
-                    <h6>@(isRtl ? "أرشيف الامتحانات" : "Exam Archive")</h6>
-                    <p>@(isRtl ? "نماذج امتحانات سابقة" : "Previous exam samples")</p>
-                </a>
-            </div>
+            <!-- Archives -->
+            <a asp-controller="Exams" asp-action="Archive" class="bento-card fade-up delay-4">
+                <i class="bi bi-archive bento-icon"></i>
+                <h3 class="bento-title">@(isRtl ? "أرشيف الامتحانات" : "Exam Archive")</h3>
+                <p class="bento-text">@(isRtl ? "نماذج امتحانات سابقة" : "Previous exam samples")</p>
+            </a>
 
-            <!-- Admissions -->
-            <div class="col-md-6 col-lg-4 fade-up delay-3">
-                <a asp-controller="Admissions" asp-action="Index" class="service-card">
-                    <i class="bi bi-mortarboard"></i>
-                    <h6>@(isRtl ? "القبول" : "Admissions")</h6>
-                    <p>@(isRtl ? "شروط وإجراءات القبول" : "Admission requirements and process")</p>
-                </a>
-            </div>
-
+             <!-- Admissions -->
+            <a asp-controller="Admissions" asp-action="Index" class="bento-card fade-up delay-4">
+                <i class="bi bi-mortarboard bento-icon"></i>
+                <h3 class="bento-title">@(isRtl ? "القبول" : "Admissions")</h3>
+                <p class="bento-text">@(isRtl ? "شروط وإجراءات القبول" : "Admission requirements and process")</p>
+            </a>
         </div>
     </div>
 </section>
-<div class="academic-divider"></div>
-<!-- ================= ABOUT ================= -->
-<div class="academic-header fade-up">
-    <span class="academic-kicker">Faculty Overview</span>
-    <h2>@(isRtl ? "حول الكلية" : "About the Faculty")</h2>
-    <p>
-        Learn more about the Faculty, and academic excellence of the
-        Faculty of Engineering at Mutah University.
-    </p>
-</div>
 
-<section class="py-6 bg-light about-section">
+<!-- ================= ABOUT & VISION ================= -->
+<section class="modern-section" style="background-color: #fff;">
     <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6">
-                <div class="academic-divider-title">
-                    <span>Faculty Overview</span>
-                </div>
-
-                <h2 class="section-title fade-up">
+        <div class="about-split">
+            <div class="fade-up">
+                <span class="section-label">About Faculty</span>
+                <h2 class="section-heading-big" style="margin-bottom: 30px;">
                     @(isRtl ? "عن كلية الهندسة" : "About the Faculty")
                 </h2>
-
-                <p class="text-muted fade-up delay-1">
+                <p class="text-muted lead mb-4">
                     @(isRtl
-                                        ? "تُعد كلية الهندسة في جامعة مؤتة من الكليات الرائدة على مستوى المملكة، حيث تسعى إلى إعداد مهندسين مؤهلين علميًا وعمليًا، قادرين على مواكبة التطورات المتسارعة في مجالات الهندسة المختلفة."
-                                        : "The Faculty of Engineering at Mutah University is one of the leading faculties in Jordan, dedicated to preparing highly qualified engineers capable of keeping pace with rapid advancements in engineering fields.")
+                    ? "تُعد كلية الهندسة في جامعة مؤتة من الكليات الرائدة على مستوى المملكة، حيث تسعى إلى إعداد مهندسين مؤهلين علميًا وعمليًا."
+                    : "The Faculty of Engineering at Mutah University is one of the leading faculties in Jordan.")
                 </p>
-
-                <p class="text-muted fade-up delay-2">
-                    @(isRtl
-                                        ? "تركز الكلية على الدمج بين المعرفة النظرية والتطبيق العملي، وتعزيز البحث العلمي، وبناء شراكات فاعلة مع القطاعين العام والخاص لخدمة المجتمع والتنمية المستدامة."
-                                        : "The faculty emphasizes integrating theoretical knowledge with practical application, promoting scientific research, and building strong partnerships with public and private sectors to serve society and support sustainable development.")
-                </p>
+                
+                <div class="vision-cards-grid mt-5">
+                     <div class="vision-card-modern">
+                        <h5><i class="bi bi-eye text-primary"></i> @(isRtl ? "رؤيتنا" : "Our Vision")</h5>
+                         <p class="small text-muted mb-0">
+                            @(isRtl
+                            ? "الريادة والتميز في التعليم الهندسي والبحث العلمي."
+                            : "Leadership and excellence in engineering education and research.")
+                        </p>
+                     </div>
+                     <div class="vision-card-modern">
+                        <h5><i class="bi bi-bullseye text-primary"></i> @(isRtl ? "رسالتنا" : "Our Mission")</h5>
+                         <p class="small text-muted mb-0">
+                            @(isRtl
+                            ? "إعداد مهندسين مؤهلين أكاديميًا ومهنيًا."
+                            : "Prepare academically and professionally qualified engineers.")
+                        </p>
+                     </div>
+                </div>
             </div>
-
-            <div class="col-lg-6">
-                <img src="~/img/logo2.jpg"
-                     class="img-fluid rounded-4 shadow-sm" />
+            
+            <div class="about-img-wrapper fade-up delay-2">
+                <img src="~/img/logo2.jpg" class="img-fluid" alt="Faculty Building">
             </div>
         </div>
     </div>
 </section>
 
-
-<!-- ================= VISION & MISSION ================= -->
-<div class="academic-header fade-up">
-    <span class="academic-kicker">Faculty Overview</span>
-    <h2>@(isRtl ? "حول الرؤية والرسالة" : "About the Vision & Mission")</h2>
-    <p>
-        Learn more about the mission, vision, and academic excellence of the
-        Faculty of Engineering at Mutah University.
-    </p>
-</div>
-
-<section class="py-6 bg-white vision-mission-section">
+<!-- ================= ALERTS (Preserved Partial) ================= -->
+<section class="modern-section bg-light">
     <div class="container">
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div class="info-box fade-up delay-1">
-                    <h5>@(isRtl ? "رؤيتنا" : "Our Vision")</h5>
-                    <p>
-                        @(isRtl
-                                                ? "الريادة والتميز في التعليم الهندسي والبحث العلمي، والمساهمة الفاعلة في تطوير المعرفة الهندسية محليًا وإقليميًا بما يخدم المجتمع ويعزز الابتكار."
-                                                : "To achieve leadership and excellence in engineering education and scientific research, contributing effectively to the advancement of engineering knowledge locally and regionally.")
-                    </p>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="info-box fade-up delay-2">
-                    <h5>@(isRtl ? "رسالتنا" : "Our Mission")</h5>
-                    <p>
-                        @(isRtl
-                                                ? "إعداد مهندسين مؤهلين أكاديميًا ومهنيًا، يمتلكون المهارات التقنية والأخلاقية، وقادرين على تلبية احتياجات سوق العمل وخدمة المجتمع بكفاءة ومسؤولية."
-                                                : "To prepare academically and professionally qualified engineers with strong technical and ethical skills, capable of meeting labor market needs and serving society with efficiency and responsibility.")
-                    </p>
-                </div>
-            </div>
+         <div class="text-center mb-5">
+            <span class="section-label">Important Updates</span>
+            <h2 class="section-heading-big">@(isRtl ? "الإعلانات والتنبيهات" : "Alerts & Announcements")</h2>
+        </div>
+        <div class="bg-white p-4 rounded-4 shadow-sm border fade-up">
+             <partial name="_AlertsList" model="Model" />
         </div>
     </div>
 </section>
 
-<div class="academic-divider"></div>
-
-<!-- ================= ALERTS ================= -->
-<div class="academic-header fade-up">
-    <span class="academic-kicker">Alerts Overview</span>
-    <h2>@(isRtl ? "حول الاشعارات و الرسائل المهمة" : "About the Alerts")</h2>
-    <p>
-        Learn more about the Alerts, and academic excellence of the
-        Faculty of Engineering at Mutah University.
-    </p>
-</div>
-
-<section class="alerts-section">
+<!-- ================= FACULTY & RESEARCH (Dark Mode) ================= -->
+<section class="modern-section dark-section">
     <div class="container">
-        <div class="academic-divider-title">
-            <span>Alerts Overview</span>
+        <div class="text-center mb-5">
+             <span class="section-label" style="color:var(--muta-gold);">Distinguished Members</span>
+             <h2 class="section-heading-big">@(isRtl ? "أعضاء هيئة التدريس والبحث العلمي" : "Faculty & Research")</h2>
         </div>
-
-        <h4 class="mb-4">@((isRtl ? "التنبيهات الأكاديمية" : "Academic Alerts"))</h4>
-        <partial name="_AlertsList" model="Model" />
-    </div>
-</section>
-<div class="academic-divider"></div>
-<!-- ================= Research & Publications ================= -->
-
-<section class="research-section">
-    <div class="academic-header fade-up">
-        <span class="academic-kicker">Faculty</span>
-        <h2>@(isRtl ? "حول أعضاء هيئة التدريس المتميزون" : "Distinguished Faculty Members")</h2>
-        <p>
-            Our faculty members combine academic excellence with practical
-            engineering experience.
-        </p>
-    </div>
-        <div class="row g-4">
-
-            <div class="col-md-6 fade-up delay-1">
-                <div class="research-card">
-                <h2>@(isRtl ? "حول الابحاث و المنشورات الاكاديمية" : "Researchs & Publications")</h2>
-                <p>
-                        Research projects focusing on renewable energy, smart
-                        systems, and sustainable engineering solutions.
-                    </p>
+        
+        <!-- Faculty Carousel/Grid -->
+        <div class="row g-4 justify-content-center mb-5">
+             <div class="col-md-4 fade-up">
+                <div class="faculty-card-modern">
+                    <img src="~/img/faculty/mousa.jpg" class="faculty-avatar" alt="">
+                    <h5 class="faculty-name">Dr. Ahmad Al-Khaled</h5>
+                    <span class="faculty-role">Electrical Engineering</span>
                 </div>
             </div>
-
-            <div class="col-md-6 fade-up delay-2">
-                <div class="research-card">
-                    <h5>Scientific Publications</h5>
-                    <p>
-                        Faculty members publish in reputable international
-                        journals and participate in global conferences.
-                    </p>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-</section>
-<div class="academic-divider"></div>
-
-<section class="research-stats">
-    <div class="container">
-        <div class="row text-center g-4">
-
-            <div class="col-6 col-lg-3">
-                <div class="research-stat">
-                    <h3 class="counter" data-target="45">0</h3>
-                    <span>Research Projects</span>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3">
-                <div class="research-stat">
-                    <h3 class="counter" data-target="120">0</h3>
-                    <span>Publications</span>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3">
-                <div class="research-stat">
-                    <h3 class="counter" data-target="60">0</h3>
-                    <span>Conferences</span>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3">
-                <div class="research-stat">
-                    <h3 class="counter" data-target="18">0</h3>
-                    <span>Academic Partnerships</span>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-
-<div class="academic-divider"></div>
-<!-- ================= Best Faculty Profiles ================= -->
-
-<section class="faculty-section">
-    <div class="container">
-
-        <div class="academic-header fade-up">
-            <span class="academic-kicker">Faculty</span>
-            <h2>@(isRtl ? "حول أعضاء هيئة التدريس المتميزون" : "Distinguished Faculty Members")</h2>
-            <p>
-                Our faculty members combine academic excellence with practical
-                engineering experience.
-            </p>
-        </div>
-
-        <div class="row g-4 justify-content-center">
-
             <div class="col-md-4 fade-up delay-1">
-                <div class="faculty-card">
-                    <img src="~/img/faculty/mousa.jpg" alt="">
-                    <h6>Dr. Ahmad Al-Khaled</h6>
-                    <span>Electrical Engineering</span>
+                <div class="faculty-card-modern">
+                    <img src="~/img/faculty/avatar-placeholder.svg" class="faculty-avatar" alt="">
+                    <h5 class="faculty-name">Dr. Lina Al-Majali</h5>
+                    <span class="faculty-role">Civil Engineering</span>
                 </div>
             </div>
-
-            <div class="col-md-4 fade-up delay-2">
-                <div class="faculty-card">
-                    <img src="~/img/faculty/avatar-placeholder.svg" alt="">
-                    <h6>Dr. Lina Al-Majali</h6>
-                    <span>Civil Engineering</span>
+             <div class="col-md-4 fade-up delay-2">
+                <div class="faculty-card-modern">
+                    <img src="~/img/faculty/avatar-placeholder.svg" class="faculty-avatar" alt="">
+                    <h5 class="faculty-name">Dr. Omar Al-Rawashdeh</h5>
+                    <span class="faculty-role">Mechanical Engineering</span>
                 </div>
             </div>
-
-            <div class="col-md-4 fade-up delay-3">
-                <div class="faculty-card">
-                    <img src="~/img/faculty/avatar-placeholder.svg" alt="">
-                    <h6>Dr. Omar Al-Rawashdeh</h6>
-                    <span>Mechanical Engineering</span>
-                </div>
-            </div>
-
+        </div>
+        
+        <!-- Research Stats -->
+        <div class="row text-center mt-5">
+             <div class="col-6 col-lg-3 fade-up">
+                 <div class="research-stat-circle counter" data-target="45">0</div>
+                 <span class="text-light">Research Projects</span>
+             </div>
+             <div class="col-6 col-lg-3 fade-up delay-1">
+                 <div class="research-stat-circle counter" data-target="120">0</div>
+                 <span class="text-light">Publications</span>
+             </div>
+             <div class="col-6 col-lg-3 fade-up delay-2">
+                 <div class="research-stat-circle counter" data-target="60">0</div>
+                 <span class="text-light">Conferences</span>
+             </div>
+             <div class="col-6 col-lg-3 fade-up delay-3">
+                 <div class="research-stat-circle counter" data-target="18">0</div>
+                 <span class="text-light">Partnerships</span>
+             </div>
         </div>
     </div>
 </section>
-<div class="academic-divider"></div>
-<!-- ================= Alumni & Outcomes ================= -->
-<section id="alumni" class="alumni-section">
+
+<!-- ================= ALUMNI & EMPLOYMENT ================= -->
+<section class="modern-section">
     <div class="container">
-
-        <div class="academic-header fade-up">
-            <span class="academic-kicker">Alumni</span>
-            <h2>Alumni & Outcomes</h2>
-            <p>
-                Graduates of the Faculty of Engineering at Mutah University
-                contribute effectively to industry, research, and public sectors.
-            </p>
+         <div class="text-center mb-5">
+            <span class="section-label">Our Impact</span>
+            <h2 class="section-heading-big">Alumni & Outcomes</h2>
         </div>
-
-        <div class="row g-4">
-
-            <div class="col-md-4 fade-up delay-1">
-                <div class="alumni-card">
-                    <h5>Industry Leaders</h5>
-                    <p>
-                        Our alumni work in leading engineering firms,
-                        construction companies, and technology organizations
-                        locally and internationally.
-                    </p>
-                </div>
+        
+        <div class="bento-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="bento-card fade-up">
+                <h4 class="mb-3">Industry Leaders</h4>
+                <p class="bento-text"> Our alumni work in leading engineering firms, construction companies, and technology organizations locally and internationally.</p>
             </div>
-
-            <div class="col-md-4 fade-up delay-2">
-                <div class="alumni-card">
-                    <h5>Public & Government Sector</h5>
-                    <p>
-                        Graduates contribute to national infrastructure projects
-                        and governmental engineering institutions.
-                    </p>
-                </div>
+            <div class="bento-card fade-up delay-1">
+                 <h4 class="mb-3">Research & Higher Ed</h4>
+                <p class="bento-text">Many alumni pursue postgraduate studies and research careers in reputable universities worldwide.</p>
             </div>
-
-            <div class="col-md-4 fade-up delay-3">
-                <div class="alumni-card">
-                    <h5>Research & Higher Education</h5>
-                    <p>
-                        Many alumni pursue postgraduate studies and research
-                        careers in reputable universities worldwide.
-                    </p>
-                </div>
-            </div>
-
+        </div>
+        
+        <!-- Employment Stats Small -->
+        <div class="row g-4 mt-5 text-center">
+             <div class="col-6 col-md-3">
+                 <h2 class="text-primary fw-bold counter" data-target="85">0</h2>
+                 <small class="text-muted text-uppercase fw-bold">Employment Rate %</small>
+             </div>
+              <div class="col-6 col-md-3">
+                 <h2 class="text-primary fw-bold counter" data-target="70">0</h2>
+                 <small class="text-muted text-uppercase fw-bold">Within 1 Year %</small>
+             </div>
+             <div class="col-6 col-md-3">
+                 <h2 class="text-primary fw-bold counter" data-target="40">0</h2>
+                 <small class="text-muted text-uppercase fw-bold">Private Sector %</small>
+             </div>
+              <div class="col-6 col-md-3">
+                 <h2 class="text-primary fw-bold counter" data-target="30">0</h2>
+                 <small class="text-muted text-uppercase fw-bold">Public Sector %</small>
+             </div>
         </div>
     </div>
 </section>
-<section class="employment-section">
+
+<!-- ================= ACCREDITATION ================= -->
+<section class="py-5 text-center bg-white border-top">
     <div class="container">
-
-        <div class="academic-header fade-up">
-            <span class="academic-kicker">Outcomes</span>
-            <h2>Graduate Employment Statistics</h2>
-            <p>
-                Our graduates demonstrate strong employment outcomes
-                across multiple engineering sectors.
-            </p>
-        </div>
-
-        <div class="row text-center g-4">
-
-            <div class="col-6 col-lg-3 fade-up delay-1">
-                <div class="employment-stat">
-                    <h3 class="counter" data-target="85">0</h3>
-                    <span>Employment Rate (%)</span>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3 fade-up delay-2">
-                <div class="employment-stat">
-                    <h3 class="counter" data-target="70">0</h3>
-                    <span>Employed Within 1 Year (%)</span>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3 fade-up delay-3">
-                <div class="employment-stat">
-                    <h3 class="counter" data-target="40">0</h3>
-                    <span>Private Sector (%)</span>
-                </div>
-            </div>
-
-            <div class="col-6 col-lg-3 fade-up delay-4">
-                <div class="employment-stat">
-                    <h3 class="counter" data-target="30">0</h3>
-                    <span>Public Sector (%)</span>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</section>
-<div class="academic-divider"></div>
-<!-- ================= Accreditation & Quality Assurance ================= -->
-<section id="accreditation" class="accreditation-section">
-    <div class="container">
-
-        <div class="academic-header fade-up">
-            <span class="academic-kicker">Quality</span>
-            <h2>Accreditation & Quality Assurance</h2>
-            <p>
-                The Faculty of Engineering is committed to maintaining
-                high academic standards through continuous quality assurance
-                and accredited programs.
-            </p>
-        </div>
-
-        <div class="row g-4">
-
-            <div class="col-md-6 fade-up delay-1">
-                <div class="accreditation-box">
-                    <h5>Program Accreditation</h5>
-                    <p>
-                        Engineering programs are accredited and regularly
-                        reviewed to ensure compliance with national and
-                        international academic standards.
-                    </p>
-                </div>
-            </div>
-
-            <div class="col-md-6 fade-up delay-2">
-                <div class="accreditation-box">
-                    <h5>Continuous Quality Improvement</h5>
-                    <p>
-                        The faculty applies systematic evaluation and feedback
-                        mechanisms to enhance teaching quality, curriculum
-                        development, and learning outcomes.
-                    </p>
-                </div>
-            </div>
-
-        </div>
+         <span class="section-label">Quality Assurance</span>
+         <h3 class="fw-bold mb-4">Accreditation & Quality</h3>
+         <p class="text-muted mx-auto" style="max-width:700px;">
+             The Faculty of Engineering is committed to maintaining high academic standards through continuous quality assurance and accredited programs.
+         </p>
+         <div class="d-flex justify-content-center gap-4 mt-4 opacity-50">
+             <!-- Placeholders for partner logos if any (using text for now) -->
+             <i class="bi bi-shield-check display-4"></i>
+             <i class="bi bi-award display-4"></i>
+             <i class="bi bi-patch-check display-4"></i>
+         </div>
     </div>
 </section>
 
-
-<!-- ================= JS ================= -->
+<!-- ================= SCRIPTS ================= -->
 <script>
+    // Counter Animation
     document.addEventListener("DOMContentLoaded", () => {
         const counters = document.querySelectorAll(".counter");
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                counters.forEach(counter => {
-                    const target = +counter.dataset.target;
-                    let current = 0;
-                    const step = Math.ceil(target / 100);
-                    const run = () => {
-                        current += step;
-                        if (current < target) {
-                            counter.innerText = current;
-                            requestAnimationFrame(run);
-                        } else {
-                            counter.innerText = target.toLocaleString();
-                        }
-                    };
-                    run();
-                });
-                observer.disconnect();
-            }
-        }, { threshold: 0.5 });
-        observer.observe(counters[0]);
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const elements = document.querySelectorAll(".fade-up");
-
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("show");
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.15 });
-
-        elements.forEach(el => observer.observe(el));
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-
-        const counters = document.querySelectorAll(".counter");
-
         const observer = new IntersectionObserver(entries => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !entry.target.classList.contains("counted")) {
                     const counter = entry.target;
                     counter.classList.add("counted");
-
                     const target = +counter.dataset.target;
                     let current = 0;
-                    const step = Math.max(1, Math.ceil(target / 100));
-
+                    const step = Math.max(1, Math.ceil(target / 80)); // Faster
                     const update = () => {
                         current += step;
                         if (current < target) {
@@ -607,9 +323,19 @@
                     update();
                 }
             });
-        }, { threshold: 0.6 });
-
+        }, { threshold: 0.5 });
         counters.forEach(c => observer.observe(c));
+
+        // Fade Up Animation
+        const fades = document.querySelectorAll(".fade-up");
+        const fadeObs = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add("show");
+                    fadeObs.unobserve(entry.target);
+                }
+            });
+        }, {threshold: 0.1});
+        fades.forEach(f => fadeObs.observe(f));
     });
 </script>
-

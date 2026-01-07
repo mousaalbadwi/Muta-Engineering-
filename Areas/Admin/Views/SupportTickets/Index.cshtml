@@ -1,271 +1,455 @@
 ﻿@model MutaEngineering.ViewModels.PagedResult<MutaEngineering.Models.SupportTicket>
 @{
-    ViewData["Title"] = "Support";
+    ViewData["Title"] = "Support Tickets";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     var q = Model.Query ?? "";
 }
 
 <style>
-    /* ====== Modern polish (لا يغيّر أي لوجيك) ====== */
-    .page-shell {
+    :root {
+        --admin-primary: #7a1e2d;
+        --admin-bg: #f8f9fa;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    .admin-container {
+        padding: 2rem 0;
+        background-color: var(--admin-bg);
+        min-height: 85vh;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
         gap: 1rem;
     }
 
-    .page-title {
-        letter-spacing: .2px;
+    .header-title h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
     }
 
-    .card-modern {
-        border: 1px solid var(--bs-border-color);
-        border-radius: 1rem;
+    .header-title p {
+        color: #64748b;
+        margin: 0.25rem 0 0;
+        font-size: 0.95rem;
+    }
+
+    /* Stats Row (Mockup based on available data or just layout) */
+    .stat-card-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(122, 30, 45, 0.1);
+        color: var(--admin-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .stat-info h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .stat-info p {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin: 0;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Content Card */
+    .content-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #e2e8f0;
         overflow: hidden;
     }
 
-    .table-modern thead th {
-        font-weight: 600;
-        color: var(--bs-secondary-color);
-        background: var(--bs-tertiary-bg);
-        position: sticky;
-        top: 0;
-        z-index: 1;
+    .table-toolbar {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
-    .table-modern tbody tr:hover {
-        background: color-mix(in srgb, var(--bs-primary), #fff 92%);
+    .search-wrap {
+        position: relative;
+        min-width: 280px;
     }
-    /* keep action buttons always side-by-side */
-    .actions {
+
+    .search-wrap input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .search-wrap input:focus {
+        border-color: var(--admin-primary);
+        box-shadow: 0 0 0 3px rgba(122, 30, 45, 0.1);
+    }
+
+    .search-wrap i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+    }
+
+    /* Table */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .modern-table th {
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+    }
+
+    .modern-table td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.95rem;
+        color: #334155;
+    }
+
+    .modern-table tr:hover td {
+        background-color: #fcfcfc;
+    }
+
+    /* Status Badges */
+    .badge-modern {
+        padding: 0.35rem 0.75rem;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+
+    .badge-resolved {
+        background-color: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #dcfce7;
+    }
+
+    .badge-open {
+        background-color: #fefce8;
+        color: #ca8a04;
+        border: 1px solid #fef9c3;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        width: 32px;
+        height: 32px;
         display: inline-flex;
         align-items: center;
-        gap: .5rem;
-        flex-wrap: nowrap;
-    }
-    /* compact, rounded buttons */
-    .btn-soft {
-        --bs-btn-border-color: var(--bs-border-color);
-        --bs-btn-bg: #fff;
-        --bs-btn-hover-bg: var(--bs-light);
-        --bs-btn-active-bg: var(--bs-light);
-        border-radius: 999px;
-        box-shadow: 0 1px 1px rgba(0,0,0,.04);
+        justify-content: center;
+        border-radius: 8px;
+        color: #64748b;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        background: transparent;
+        text-decoration: none;
+        cursor: pointer;
     }
 
-    /* search input group */
-    .search-wrap .form-control {
-        border-radius: 999px 0 0 999px !important;
-        padding-left: .9rem;
+    .action-btn:hover {
+        background: #f1f5f9;
+        color: #0f172a;
     }
 
-    .search-wrap .input-group-text {
-        border-radius: 0 999px 999px 0 !important;
+    .action-btn.delete:hover {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+    
+    /* Pagination */
+    .pagination-wrapper {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .page-link-custom {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
         background: #fff;
-        border-left: 0;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-size: 0.9rem;
     }
-
-    .search-wrap .form-control:focus {
-        box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .1);
+    
+    .page-link-custom:hover {
+        background: #f8fafc;
+        color: #0f172a;
+        border-color: #cbd5e1;
     }
-
-    /* pagination */
-    .pagination.pill .page-link {
-        border-radius: 999px !important;
-        min-width: 36px;
-        text-align: center;
-        border: 0;
-        box-shadow: 0 1px 1px rgba(0,0,0,.04);
-    }
-
-    .pagination.pill .page-item.active .page-link {
-        background: var(--bs-primary);
+    
+    .page-link-custom.active {
+        background: var(--admin-primary);
         color: #fff;
+        border-color: var(--admin-primary);
+    }
+    
+    .page-link-custom.disabled {
+        opacity: 0.5;
+        pointer-events: none;
     }
 
-    .pagination.pill {
-        background: #fff;
-        border: 1px solid var(--bs-border-color);
-        border-radius: 999px;
-        padding: .25rem;
-        box-shadow: 0 6px 16px rgba(0,0,0,.06);
-    }
-
-    /* subtle status pills */
-    .badge-pill {
-        border-radius: 999px;
-        padding: .35rem .75rem;
-        font-weight: 600;
-        letter-spacing: .2px;
-    }
-
-    /* improve empty state */
-    .empty-state {
-        color: var(--bs-secondary-color);
-    }
 </style>
 
-<div class="d-flex align-items-center justify-content-between mb-4 page-shell">
-    <h2 class="fw-semibold text-primary mb-0 page-title">
-        <i class="bi bi-ticket-perforated-fill me-2"></i> Support Tickets
-    </h2>
-
-    <form class="search-wrap" method="get" asp-area="Admin" asp-controller="SupportTickets" asp-action="Index">
-        <input type="hidden" name="pageSize" value="@Model.PageSize" />
-        <div class="input-group input-group-sm">
-            <input class="form-control shadow-sm" style="min-width: 280px;"
-                   type="search" name="q" value="@q" placeholder="Search name/email/course..." />
-            <span class="input-group-text shadow-sm pe-2">
-                <button class="btn btn-sm btn-soft d-flex align-items-center gap-1 px-3" type="submit">
-                    <i class="bi bi-search"></i>
-                    <span class="d-none d-sm-inline">Search</span>
-                </button>
-            </span>
+<div class="admin-container">
+    <div class="container-fluid px-lg-5">
+        
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-title">
+                <h1>Support Tickets</h1>
+                <p>Manage and resolve student inquiries.</p>
+            </div>
+            <!-- Standard add button if needed (not usually for tickets) -->
         </div>
-    </form>
-</div>
 
-@if (TempData["Ok"] != null)
-{
-    <div class="alert alert-success shadow-sm rounded-3">@TempData["Ok"]</div>
-}
+        <!-- Stats (Optional Mockup) -->
+        <div class="stat-card-row">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3>@Model.TotalCount</h3>
+                    <p>Total Tickets</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+            </div>
+             <div class="stat-card">
+                <div class="stat-info">
+                    <h3>?</h3>
+                    <p>Open</p>
+                </div>
+                <div class="stat-icon" style="background: rgba(234, 179, 8, 0.1); color: #ca8a04;">
+                    <i class="fa-regular fa-clock"></i>
+                </div>
+            </div>
+             <div class="stat-card">
+                <div class="stat-info">
+                    <h3>?</h3>
+                    <p>Resolved</p>
+                </div>
+                <div class="stat-icon" style="background: rgba(22, 163, 74, 0.1); color: #16a34a;">
+                   <i class="fa-solid fa-check"></i>
+                </div>
+            </div>
+        </div>
 
-<div class="card card-modern shadow-sm">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 table-modern">
-                <thead class="border-bottom">
-                    <tr>
-                        <th style="width:70px">#</th>
-                        <th>Created</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Issue</th>
-                        <th>Status</th>
-                        <th class="text-end" style="width:180px">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (!Model.Items.Any())
-                    {
+        <!-- Content -->
+        <div class="content-card">
+            <!-- Toolbar with SERVER-SIDE Search -->
+            <div class="table-toolbar">
+                <form method="get" asp-area="Admin" asp-controller="SupportTickets" asp-action="Index" class="d-flex w-100">
+                    <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                    <div class="search-wrap flex-grow-1">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="q" value="@q" placeholder="Search by name, email, or issue...">
+                    </div>
+                    <div class="ms-3">
+                         <button type="submit" class="btn btn-create shadow-sm" style="padding: 0.6rem 1.5rem;">
+                             Search
+                         </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="modern-table">
+                    <thead>
                         <tr>
-                            <td colspan="7" class="text-center py-5 empty-state">
-                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                                No tickets found
-                            </td>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>User</th>
+                            <th>Issue</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
                         </tr>
-                    }
-                    else
-                    {
-                        foreach (var t in Model.Items)
+                    </thead>
+                    <tbody>
+                        @foreach (var t in Model.Items)
                         {
                             <tr>
                                 <td>@t.Id</td>
-                                <td title="@t.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")">
-                                    @t.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy")
-                                </td>
-                                <td class="fw-semibold">@t.FullName</td>
                                 <td>
-                                    <a href="mailto:@t.Email" class="text-decoration-none">@t.Email</a>
+                                    <span class="text-dark small fw-medium">@t.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</span>
+                                    <div class="text-muted" style="font-size:0.75rem">@t.CreatedAt.ToLocalTime().ToString("hh:mm tt")</div>
                                 </td>
-                                <td>@t.IssueType</td>
                                 <td>
-                                    @if (t.IsResolved)
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-dark">@t.FullName</span>
+                                        <span class="small text-muted">@t.Email</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-dark">@t.IssueType</span>
+                                </td>
+                                <td>
+                                    @if(t.IsResolved)
                                     {
-                                        <span class="badge badge-pill bg-success-subtle text-success border border-success-subtle">Resolved</span>
+                                        <span class="badge-modern badge-resolved">Resolved</span>
                                     }
                                     else
                                     {
-                                        <span class="badge badge-pill bg-warning-subtle text-warning border border-warning-subtle">Open</span>
+                                        <span class="badge-modern badge-open">Open</span>
                                     }
                                 </td>
                                 <td class="text-end">
-                                    <div class="actions">
-                                        <a class="btn btn-sm btn-outline-primary px-3"
-                                           asp-area="Admin" asp-controller="SupportTickets" asp-action="Details" asp-route-id="@t.Id">
-                                            <i class="bi bi-eye me-1"></i> Details
-                                        </a>
-
-                                        <form asp-area="Admin" asp-controller="SupportTickets" asp-action="Delete"
-                                              method="post" class="m-0">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@t.Id" />
-                                            <input type="hidden" name="page" value="@Model.Page" />
-                                            <input type="hidden" name="pageSize" value="@Model.PageSize" />
-                                            <input type="hidden" name="q" value="@q" />
-                                            <button type="button" class="btn btn-sm btn-outline-danger px-3 js-delete-btn">
-                                                <i class="bi bi-trash me-1"></i> Delete
-                                            </button>
-                                        </form>
-                                    </div>
+                                    <a asp-area="Admin" asp-controller="SupportTickets" asp-action="Details" asp-route-id="@t.Id"
+                                       class="action-btn" title="View Details">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </a>
+                                    
+                                     <button type="button" class="action-btn delete" title="Delete" 
+                                            onclick="confirmDelete('@t.Id')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                    
+                                    <form id="del-@t.Id" asp-area="Admin" asp-controller="SupportTickets" asp-action="Delete" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@t.Id" />
+                                        <input type="hidden" name="page" value="@Model.Page" />
+                                        <input type="hidden" name="pageSize" value="@Model.PageSize" />
+                                        <input type="hidden" name="q" value="@q" />
+                                    </form>
                                 </td>
                             </tr>
                         }
-                    }
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+                 @if (!Model.Items.Any())
+                {
+                    <div class="text-center py-5">
+                       <i class="fa-solid fa-ticket mb-3 text-muted opacity-50" style="font-size:3rem"></i>
+                       <h6 class="text-muted">No tickets found.</h6>
+                    </div>
+                }
+            </div>
+
+            <!-- Server-Side Pagination -->
+            @if(Model.TotalCount > 0)
+            {
+                <div class="pagination-wrapper">
+                    <div class="page-info">
+                         Showing Page @Model.Page of @Model.TotalPages (Total @Model.TotalCount items)
+                    </div>
+                    <div class="d-flex gap-1">
+                         @{
+                            int start = Math.Max(1, Model.Page - 2);
+                            int end = Math.Min(Model.TotalPages, Model.Page + 2);
+                            string qs(string p) => $"?page={p}&pageSize={Model.PageSize}&q={System.Net.WebUtility.UrlEncode(Model.Query ?? "")}";
+                        }
+                        
+                        @if(Model.Page > 1) {
+                            <a href="@qs((Model.Page - 1).ToString())" class="page-link-custom">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+                        } else {
+                             <span class="page-link-custom disabled"><i class="fa-solid fa-chevron-left"></i></span>
+                        }
+
+                        @for(int i=start; i<=end; i++)
+                        {
+                            <a href="@qs(i.ToString())" class="page-link-custom @(i == Model.Page ? "active" : "")">@i</a>
+                        }
+
+                        @if(Model.Page < Model.TotalPages) {
+                             <a href="@qs((Model.Page + 1).ToString())" class="page-link-custom">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        } else {
+                             <span class="page-link-custom disabled"><i class="fa-solid fa-chevron-right"></i></span>
+                        }
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
 
-@if (Model.TotalCount > 0)
-{
-    <nav class="mt-4 d-flex justify-content-center">
-        <ul class="pagination pagination-sm pill">
-            @{
-                int start = Math.Max(1, Model.Page - 2);
-                int end = Math.Min(Model.TotalPages, Model.Page + 2);
-                string qs(string p) => $"?page={p}&pageSize={Model.PageSize}&q={System.Net.WebUtility.UrlEncode(Model.Query ?? "")}";
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: 'Delete Ticket?',
+            text: `Are you sure you want to remove this ticket? This cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(`del-${id}`).submit();
             }
-            <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
-                <a class="page-link" href="@qs((Model.Page - 1).ToString())" aria-label="Previous">
-                    <i class="bi bi-chevron-left"></i>
-                </a>
-            </li>
-            @for (int i = start; i <= end; i++)
-            {
-                <li class="page-item @(i == Model.Page ? "active" : "")">
-                    <a class="page-link px-3" href="@qs(i.ToString())">@i</a>
-                </li>
-            }
-            <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
-                <a class="page-link" href="@qs((Model.Page + 1).ToString())" aria-label="Next">
-                    <i class="bi bi-chevron-right"></i>
-                </a>
-            </li>
-        </ul>
-    </nav>
-}
-
-@section Scripts {
-    <script>
-        document.addEventListener('click', function (e) {
-            const btn = e.target.closest('.js-delete-btn');
-            if (!btn) return;
-
-            const form = btn.closest('form');
-            if (!form) return;
-
-            e.preventDefault();
-
-            Swal.fire({
-                icon: 'warning',
-                title: 'Delete ticket?',
-                text: 'This action cannot be undone.',
-                showCancelButton: true,
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel'
-            }).then(function (res) {
-                if (res.isConfirmed) {
-                    form.submit();
-                }
-            });
-        });
-
-        (function () {
-            const icon = @Html.Raw(Json.Serialize(TempData["SwalIcon"] ?? ""));
-            const title = @Html.Raw(Json.Serialize(TempData["SwalTitle"] ?? ""));
-            const text = @Html.Raw(Json.Serialize(TempData["SwalText"] ?? ""));
-            if (icon && title) {
-                Swal.fire({ icon, title, text });
-            }
-        })();
-    </script>
-}
+        })
+    }
+</script>

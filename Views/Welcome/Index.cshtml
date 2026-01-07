@@ -3,42 +3,71 @@
     ViewData["Title"] = isRtl ? "أهلًا بك" : "Welcome";
 }
 
-<div class="welcome-hero">
-    <div class="container">
-        <div class="row align-items-center g-4">
-            <div class="col-12 col-lg-6 text-center text-lg-start">
-                <h1 class="display-5 fw-bold mb-3">
-                    @(isRtl ? "كلية الهندسة – جامعة مؤتة" : "Faculty of Engineering – Mutah University")
-                </h1>
-                <p class="lead text-muted mb-4">
-                    @(isRtl ? "بوابتك للأقسام والهيئة التدريسية والخطط والامتحانات." :
-                                        "Your portal for departments, faculty, study plans, and exams.")
-                </p>
-                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
-                    <a asp-controller="Account" asp-action="Login" class="btn btn-dark btn-lg px-4">
-                        @(isRtl ? "تسجيل الدخول" : "Login")
-                    </a>
-                    <a asp-controller="Account" asp-action="SignUp" class="btn btn-primary btn-lg px-4">
-                        @(isRtl ? "حساب جديد" : "Sign up")
-                    </a>
-                </div>
+<!-- Language Switcher Specific for this page Layout -->
+<div class="welcome-lang-corner animate-in delay-500">
+    @if (isRtl)
+    {
+            <a href="?culture=en-US&ui-culture=en-US" class="btn-lang-glass">
+                <span>English</span>
+                <i class="bi bi-globe2"></i>
+            </a>
+    }
+    else
+    {
+            <a href="?culture=ar-JO&ui-culture=ar-JO" class="btn-lang-glass">
+                <span>عربي</span>
+                <i class="bi bi-globe2"></i>
+            </a>
+    }
+</div>
 
-                <div class="d-flex gap-2 justify-content-center justify-content-lg-start mt-4">
-                    <a class="btn btn-outline-light btn-sm" href="?culture=ar-JO&ui-culture=ar-JO">عربي</a>
-                    <a class="btn btn-outline-light btn-sm" href="?culture=en-US&ui-culture=en-US">English</a>
+<div class="welcome-section">
+    <!-- Decorative Background -->
+    <div class="welcome-bg-shape"></div>
+
+    <div class="container welcome-container">
+        <div class="row align-items-center">
+
+            <!-- Text Column -->
+            <div class="col-12 col-lg-6 welcome-text-col">
+                <span class="welcome-kicker animate-in">
+                    @(isRtl ? "جامعة مؤتة" : "Mutah University")
+                </span>
+
+                <h1 class="welcome-title animate-in delay-100">
+                    @(isRtl ? "كلية الهندسة" : "Faculty of Engineering")
+                </h1>
+
+                <p class="welcome-desc animate-in delay-200">
+                    @(isRtl
+                            ? "بوابتك الرقمية الشاملة للوصول إلى الأقسام الأكاديمية، والخطط الدراسية، والخدمات الطلابية وأعضاء الهيئة التدريسية."
+                            : "Your comprehensive digital portal for academic departments, study plans, student services, and faculty members.")
+                </p>
+
+                <div class="welcome-btn-wrapper animate-in delay-300">
+                    <a asp-controller="Account" asp-action="Login" class="btn-welcome-primary">
+                        @(isRtl ? "تسجيل الدخول" : "Login")
+                        <i class="bi bi-arrow-@(isRtl ? "left" : "right")-short fs-4"></i>
+                    </a>
+
+                    <a asp-controller="Account" asp-action="SignUp" class="btn-welcome-outline">
+                        @(isRtl ? "إنشاء حساب" : "Create Account")
+                    </a>
                 </div>
             </div>
 
-            <div class="col-12 col-lg-6 d-none d-lg-block">
-                <div class="welcome-illustration-wrap">
-                    <img src="~/img/illustrations/Learning-amico.svg" alt="Illustration"
-                         class="img-fluid welcome-illustration"
-                         onerror="this.style.display='none'; document.getElementById('wel-fallback').style.display='block';" />
-                    <div id="wel-fallback" class="text-center" style="display:none;">
-                        <div class="illust-circle mx-auto mb-3"></div>
+            <!-- Image Column -->
+            <div class="col-12 col-lg-6">
+                <div class="welcome-image-col animate-in delay-300">
+                    <div class="welcome-img-glass">
+                        <img src="~/img/logo.jpg" 
+                             alt="Learning Illustration" 
+                             class="welcome-img-main"
+                             onerror="this.src='https://via.placeholder.com/600x400/f8f9fa/7a1e2d?text=Mutah+University'" />
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
-</div> 
+</div>

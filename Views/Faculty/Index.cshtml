@@ -11,463 +11,405 @@
     var q = Model.Query ?? "";
 }
 
-<section class="container after-hero faculty-page">
-    <!-- Header / Title Bar -->
-    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
-        <div class="d-flex align-items-center gap-2">
-            <div class="title-dot"></div>
-            <h2 class="h4 mb-0">@ViewData["Title"]</h2>
-            <span class="badge rounded-pill text-bg-secondary opacity-75">@Model.Members.Count</span>
+@section Styles {
+    <link rel="stylesheet" href="~/css/home-premium.css" asp-append-version="true" />
+    <style>
+        /* Specific Overrides for Faculty Page */
+        .faculty-page-header {
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .faculty-glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: var(--radius-xl);
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+
+        /* Modern Faculty Card */
+        .faculty-modern-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .faculty-modern-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--muta-maroon), var(--muta-gold));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .faculty-modern-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            border-color: rgba(0,0,0,0);
+        }
+
+        .faculty-modern-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .f-avatar-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px auto;
+        }
+
+        .f-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.4s ease;
+        }
+
+        .faculty-modern-card:hover .f-avatar {
+            transform: scale(1.1);
+            border-color: #fffaf0;
+        }
+
+        .f-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--dark-surface);
+            margin-bottom: 5px;
+        }
+
+        .f-role {
+            font-size: 0.9rem;
+            color: var(--muta-maroon);
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .f-dept-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #f8fafc;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .f-actions {
+            margin-top: auto;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .faculty-modern-card:hover .f-actions {
+            opacity: 1;
+        }
+
+        /* Chips */
+         .filter-chip {
+            background: var(--muta-maroon);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(128,0,0,0.2);
+        }
+
+        .filter-chip i { cursor: pointer; opacity: 0.8; }
+        .filter-chip i:hover { opacity: 1; }
+
+        /* Skeleton */
+        .skeleton-loader {
+            background: #f1f5f9;
+            border-radius: 20px;
+            height: 380px;
+            position: relative;
+            overflow: hidden;
+        }
+        .skeleton-loader::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        @@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+    </style>
+}
+
+<div style="background-color: #f8fafc; min-height: 100vh; padding-top: 40px; padding-bottom: 80px;">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="faculty-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <h1 class="display-6 fw-bold" style="color: var(--dark-surface);">
+                    <i class="bi bi-mortarboard-fill text-warning me-2"></i> @ViewData["Title"]
+                </h1>
+                <p class="text-muted mb-0">
+                    @T("نخبة من الأكاديميين والباحثين في مختلف التخصصات الهندسية", "Elite academics and researchers in various engineering disciplines")
+                    <span class="badge bg-light text-dark border ms-2">@Model.Members.Count</span>
+                </p>
+            </div>
+
+            @if (isAdmin)
+            {
+                <a class="btn-modern btn-modern-primary" style="font-size: 0.9rem; padding: 10px 25px;"
+                   asp-action="Create"
+                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                    <i class="bi bi-plus-lg me-1"></i> @T("إضافة عضو", "Add Member")
+                </a>
+            }
         </div>
 
-        @if (isAdmin)
+        <!-- Alerts -->
+        @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
         {
-            <a class="btn btn-primary lift-sm  mt-3" 
-               asp-action="Create"
-               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
-                <i class="bi bi-person-plus me-1"></i>@T("إضافة عضو", "Add Member")
-            </a>
+            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill fs-5"></i> <div>@ok</div>
+            </div>
         }
-    </div>
+        @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
+        {
+            <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i> <div>@err</div>
+            </div>
+        }
 
-    <!-- Alerts -->
-    @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
-    {
-        <div class="alert alert-success soft-shadow mb-3"><i class="bi bi-check-circle me-1"></i>@ok</div>
-    }
-    @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
-    {
-        <div class="alert alert-danger soft-shadow mb-3"><i class="bi bi-exclamation-triangle me-1"></i>@err</div>
-    }
-
-    <!-- Filters Card -->
-    <div class="card border-0 shadow-sm rounded-4 mb-4 filter-card">
-        <div class="card-body">
-            <form method="get" class="row g-3 align-items-end">
-                <div class="col-12 col-md-3">
-                    <label class="form-label small fw-semibold text-muted">@T("القسم", "Department")</label>
-                    <select name="dep" class="form-select rounded-3">
-                        <option value="">@T("الكل", "All")</option>
-                        @foreach (var kv in Model.Departments)
-                        {
-                            var code = kv.Key;
-                            var pair = kv.Value.Split('|');
-                            var name = isRtl ? pair[0] : pair[1];
-                            <option value="@code" selected="@(code == depCode)">@name</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-7">
-                    <label class="form-label small fw-semibold text-muted">@T("بحث بالاسم/اللقب/الإيميل", "Search name/title/email")</label>
+        <!-- Filter Panel -->
+        <div class="faculty-glass-panel">
+            <form method="get" class="row g-4 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-muted small text-uppercase">@T("القسم الأكاديمي", "Department")</label>
                     <div class="input-group">
-                        <span class="input-group-text rounded-start-3"><i class="bi bi-search"></i></span>
-                        <input class="form-control rounded-end-3" name="q" value="@q" placeholder="@T("اكتب للبحث…", "Type to search…")" />
+                        <span class="input-group-text bg-white border-end-0 rounded-start-4 ps-3"><i class="bi bi-building text-muted"></i></span>
+                        <select name="dep" class="form-select border-start-0 rounded-end-4 shadow-none bg-white py-3" style="cursor:pointer;" onchange="this.form.submit()">
+                            <option value="">@T("عرض الجميع", "View All Departments")</option>
+                            @foreach (var kv in Model.Departments)
+                            {
+                                var code = kv.Key;
+                                var pair = kv.Value.Split('|');
+                                var name = isRtl ? pair[0] : pair[1];
+                                <option value="@code" selected="@(code == depCode)">@name</option>
+                            }
+                        </select>
                     </div>
                 </div>
 
-                <div class="col-12 col-md-2 d-grid">
-                    <button class="btn btn-dark rounded-3 lift-sm" type="submit">
-                        <i class="bi bi-funnel me-1"></i>@T("تصفية", "Filter")
+                <div class="col-md-6">
+                    <label class="form-label fw-bold text-muted small text-uppercase">@T("بحث سريع", "Search Query")</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0 rounded-start-4 ps-3"><i class="bi bi-search text-muted"></i></span>
+                        <input class="form-control border-start-0 rounded-end-4 shadow-none bg-white py-3" name="q" value="@q" placeholder="@T("ابحث بالاسم، الرتبة العلمية، أو البريد الإلكتروني...", "Search by name, title, or email...")" />
+                    </div>
+                </div>
+
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-dark rounded-4 py-3" type="submit">
+                        @T("تصفية النتائج", "Apply Filters")
                     </button>
                 </div>
             </form>
 
-            @* Active Filters chips *@
             @if (!string.IsNullOrWhiteSpace(depCode) || !string.IsNullOrWhiteSpace(q))
             {
-                <div class="d-flex flex-wrap gap-2 mt-3">
+                <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top">
                     @if (!string.IsNullOrWhiteSpace(depCode) && Model.Departments.TryGetValue(depCode, out var depVal))
                     {
                         var depName = (isRtl ? depVal.Split('|')[0] : depVal.Split('|')[1]);
-                        <span class="chip">@T("القسم:", "Department:") @depName</span>
+                        <span class="filter-chip">
+                            @depName <a href="@Context.Request.Path?dep=&q=@q" class="text-white text-decoration-none ms-2"><i class="bi bi-x"></i></a>
+                        </span>
                     }
                     @if (!string.IsNullOrWhiteSpace(q))
                     {
-                        <span class="chip">@T("بحث:", "Query:") “@q”</span>
+                        <span class="filter-chip" style="background:var(--dark-surface);">
+                            "@q" <a href="@Context.Request.Path?dep=@depCode&q=" class="text-white text-decoration-none ms-2"><i class="bi bi-x"></i></a>
+                        </span>
                     }
-                    <a class="btn btn-sm btn-outline-secondary rounded-pill" href="@Context.Request.Path">
-                        <i class="bi bi-x-circle me-1"></i>@T("مسح", "Clear")
-                    </a>
+                    <a href="@Context.Request.Path" class="btn btn-sm btn-link text-muted text-decoration-none">@T("مسح الكل", "Clear All")</a>
                 </div>
             }
         </div>
-    </div>
-    <div id="faculty-skeleton" class="row g-3 g-md-4">
-        @for (int i = 0; i < 8; i++)
-        {
-            <div class="col-12 col-sm-6 col-lg-4 col-xxl-3">
-                <div class="skeleton-card rounded-4 p-3">
-                    <div class="skeleton-avatar mb-3"></div>
-                    <div class="skeleton-line w-75"></div>
-                    <div class="skeleton-line w-50"></div>
-                </div>
-            </div>
-        }
-    </div>
 
-    <!-- Grid -->
-    <div class="row g-3 g-md-4">
-        @if (!Model.Members.Any())
-        {
-            <div class="col-12">
-                <div class="empty-state text-center rounded-4 p-5 soft-shadow">
-                    <div class="empty-ill mb-3"><i class="bi bi-people"></i></div>
-                    <h5 class="mb-1">@T("لا يوجد أعضاء.", "No members.")</h5>
-                    <p class="text-muted mb-0">@T("جرّب تغيير معايير البحث أو القسم.", "Try adjusting department or search.")</p>
+        <!-- Skeleton Loader (Hidden on Load) -->
+        <div id="faculty-skeleton" class="row g-4 mb-5">
+            @for (int i = 0; i < 4; i++) {
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="skeleton-loader shadow-sm"></div>
                 </div>
-            </div>
-        }
-        else
-        {
-            @foreach (var m in Model.Members)
+            }
+        </div>
+
+        <!-- Faculty Grid -->
+        <div class="row g-4" id="faculty-grid" style="display:none;">
+            @if (!Model.Members.Any())
             {
-                var full = (isRtl ? m.FullNameAr : m.FullNameEn) ?? (m.FullNameEn ?? m.FullNameAr);
-                var title = (isRtl ? m.TitleAr : m.TitleEn) ?? (m.TitleEn ?? m.TitleAr) ?? "";
-                var depNamePair = (Model.Departments.TryGetValue(m.Department?.Code ?? (m.DepartmentId.ToString()), out var val) ? val : "|").Split('|');
-                var depName = isRtl ? depNamePair[0] : depNamePair[1];
-                var img = Url.Content(string.IsNullOrWhiteSpace(m.PhotoPath) ? "~/img/faculty/avatar-placeholder.svg" : m.PhotoPath);
-                var isFeatured = Model.Members.First() == m;
+                <div class="col-12 text-center py-5">
+                     <div class="bg-white rounded-5 p-5 shadow-sm d-inline-block">
+                        <i class="bi bi-emoji-frown display-4 text-muted mb-3 d-block"></i>
+                        <h4 class="fw-bold">@T("لم يتم العثور على نتائج", "No Members Found")</h4>
+                        <p class="text-muted">@T("حاول تغيير معايير البحث أو القسم.", "Try adjusting your search filters.")</p>
+                        <a href="@Context.Request.Path" class="btn btn-outline-primary rounded-pill mt-3">@T("إعادة تعيين", "Reset Filters")</a>
+                     </div>
+                </div>
+            }
+            else
+            {
+                @foreach (var m in Model.Members)
+                {
+                    var full = (isRtl ? m.FullNameAr : m.FullNameEn) ?? (m.FullNameEn ?? m.FullNameAr);
+                    var title = (isRtl ? m.TitleAr : m.TitleEn) ?? (m.TitleEn ?? m.TitleAr) ?? "";
+                    var depNamePair = (Model.Departments.TryGetValue(m.Department?.Code ?? (m.DepartmentId.ToString()), out var val) ? val : "|").Split('|');
+                    var depName = isRtl ? depNamePair[0] : depNamePair[1];
+                    var img = Url.Content(string.IsNullOrWhiteSpace(m.PhotoPath) ? "~/img/faculty/avatar-placeholder.svg" : m.PhotoPath);
+                    var isFeatured = Model.Members.First() == m; // Example logic
 
-                <div class="col-12 col-sm-6 col-lg-4 col-xxl-3">
-                    <div class="card faculty-card border-0 shadow-sm rounded-4 h-100 overflow-hidden @(isFeatured ? "featured-faculty" : "")"
-                         data-bs-toggle="modal"
-                         data-bs-target="#facultyModal"
-                         data-name="@full"
-                         data-title="@title"
-                         data-dep="@depName"
-                         data-img="@img">
-
-                        @if (isFeatured)
-                        {
-                            <span class="featured-badge">@T("مميز", "Featured")</span>
-                        }
-
-                        <div class="card-body p-3">
-                            <div class="d-flex flex-column align-items-center gap-2">
-                                <img src="@img" alt="@full" class="avatar-lg" />
-                                <div class="flex-grow-1 min-w-0 text-center">
-                                    <div class="small text-muted text-truncate">@depName</div>
-                                    <h5 class="mb-0 text-truncate">@full</h5>
-
-                                    @if (!string.IsNullOrWhiteSpace(title))
-                                    {
-                                        <div class="faculty-title text-muted small">@title</div>
-                                    }
+                    <div class="col-12 col-sm-6 col-lg-4 col-xl-3 fade-in-item">
+                        <div class="faculty-modern-card"
+                             data-bs-toggle="modal"
+                             data-bs-target="#facultyModal"
+                             data-name="@full"
+                             data-title="@title"
+                             data-dep="@depName"
+                             data-img="@img"
+                             role="button">
+                            
+                            @if (isFeatured)
+                            {
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="badge bg-warning text-dark rounded-pill shadow-sm"><i class="bi bi-star-fill"></i></span>
                                 </div>
+                            }
+
+                            <div class="f-avatar-wrapper">
+                                <img src="@img" alt="@full" class="f-avatar" loading="lazy" />
                             </div>
-                        </div>
 
-                        <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
-                            <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                <a class="btn btn-sm btn-outline-primary rounded-3 lift-xs"
-                                   asp-action="Details"
-                                   asp-route-id="@m.Id">
-                                    <i class="bi bi-info-circle me-1"></i>@T("التفاصيل", "Details")
+                            <div class="flex-grow-1 d-flex flex-column justify-content-center">
+                                <h5 class="f-name">@full</h5>
+                                <div class="f-role">@title</div>
+                                <div><span class="f-dept-badge">@depName</span></div>
+                            </div>
+
+                            <div class="f-actions mt-3">
+                                <a class="btn btn-sm btn-outline-dark rounded-pill px-3"
+                                   asp-action="Details" asp-route-id="@m.Id">
+                                    @T("السيرة الذاتية", "Profile")
                                 </a>
-
                                 @if (isAdmin)
                                 {
-                                    <a class="btn btn-sm btn-warning rounded-3 lift-xs"
-                                       asp-action="Edit"
-                                       asp-route-id="@m.Id"
-                                       asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
-                                        <i class="bi bi-pencil-square me-1"></i>@T("تعديل", "Edit")
+                                    <a class="btn btn-sm btn-light text-warning rounded-circle"
+                                       asp-action="Edit" asp-route-id="@m.Id" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                                        <i class="bi bi-pencil-fill"></i>
                                     </a>
-
-                                    <form asp-action="Delete" asp-route-id="@m.Id" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit"
-                                                class="btn btn-sm btn-danger rounded-3 lift-xs"
-                                                onclick="return confirm('@T("حذف هذا العضو؟", "Delete this member?")');">
-                                            <i class="bi bi-trash me-1"></i>@T("حذف", "Delete")
+                                     <form asp-action="Delete" asp-route-id="@m.Id" method="post" class="d-inline" onsubmit="return confirm('@T("حذف هذا العضو؟", "Delete this member?")');">
+                                         @Html.AntiForgeryToken()
+                                        <button class="btn btn-sm btn-light text-danger rounded-circle">
+                                            <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </form>
                                 }
                             </div>
+
                         </div>
                     </div>
-
-                </div>
+                }
             }
-        }
+        </div>
+
     </div>
-    <div class="modal fade" id="facultyModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0">
-                <div class="modal-body text-center p-4">
-                    <img id="mImg" class="avatar-lg mb-3" />
-                    <h5 id="mName"></h5>
-                    <div id="mTitle" class="text-muted small"></div>
-                    <div id="mDep" class="small mt-1"></div>
-                </div>
+</div>
+
+<!-- Bio Modal -->
+<div class="modal fade" id="facultyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">
+            <div class="modal-header border-0 bg-light">
+                 <h5 class="modal-title fw-bold">@T("بطاقة تعريفية", "Quick View")</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-5">
+                <img id="mImg" class="rounded-circle shadow mb-4" style="width:140px; height:140px; object-fit:cover; border:4px solid white;" />
+                <h3 id="mName" class="fw-bold mb-1"></h3>
+                <h5 id="mTitle" class="text-primary fw-normal mb-3"></h5>
+                <span id="mDep" class="badge bg-light text-dark border px-3 py-2 rounded-pill"></span>
             </div>
         </div>
     </div>
+</div>
 
-</section>
-
-@section Styles {
-    <style>
-        /* ===============================
-           FACULTY – IVY LEAGUE STYLE
-           Inspired by Harvard / Stanford
-           =============================== */
-
-        .faculty-page {
-            --accent: #8b1538; /* Burgundy academic tone */
-        }
-
-            /* Header dot */
-            .faculty-page .title-dot {
-                width: 10px;
-                height: 10px;
-                border-radius: 50%;
-                background: var(--accent);
-                box-shadow: 0 0 0 6px rgba(139,21,56,.12);
-            }
-
-        /* Filter card */
-        .filter-card {
-            background: #ffffff;
-            border: 1px solid #eef1f5;
-        }
-
-        /* Faculty Card */
-        .faculty-card {
-            background: #ffffff;
-            border: 1px solid #eef1f5;
-            transition: all .25s ease;
-            position: relative;
-        }
-
-            .faculty-card::after {
-                content: "";
-                position: absolute;
-                left: 0;
-                bottom: 0;
-                width: 0;
-                height: 3px;
-                background: var(--accent);
-                transition: width .25s ease;
-            }
-
-            .faculty-card:hover::after {
-                width: 100%;
-            }
-
-            .faculty-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 20px 40px rgba(0,0,0,.08);
-            }
-
-        /* Avatar */
-        .avatar-lg {
-            width: 84px;
-            height: 84px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #fff;
-            box-shadow: 0 6px 18px rgba(0,0,0,.12);
-            background: #f3f4f6;
-        }
-
-        /* Card body layout */
-        .faculty-card .card-body {
-            text-align: center;
-            padding-top: 1.5rem;
-        }
-
-        .faculty-card h5 {
-            font-weight: 600;
-            letter-spacing: .2px;
-        }
-
-        .faculty-card .text-muted {
-            font-size: .85rem;
-        }
-
-        /* Footer buttons */
-        .faculty-card .card-footer {
-            justify-content: center;
-        }
-
-        /* Buttons */
-        .faculty-card .btn {
-            font-size: .8rem;
-            padding: .35rem .7rem;
-        }
-
-        /* Empty state */
-        .empty-state {
-            background: #ffffff;
-            border: 1px dashed #d0d5dd;
-        }
-
-        .empty-ill {
-            background: #f8f9fb;
-            color: var(--accent);
-        }
-
-        /* Chips */
-        .chip {
-            background: #f8f9fb;
-            border: 1px solid #e4e7ec;
-        }
-
-        /* RTL fixes */
-        html[dir="rtl"] .faculty-card {
-            text-align: center;
-        }
-        /* Hover reveal title */
-        .faculty-card .faculty-title {
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: all .25s ease;
-        }
-
-        .faculty-card:hover .faculty-title {
-            max-height: 40px;
-            opacity: 1;
-        }
-        /* Overlay effect */
-        .faculty-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient( to bottom, rgba(255,255,255,0) 40%, rgba(0,0,0,0.04) );
-            opacity: 0;
-            transition: opacity .25s ease;
-            pointer-events: none;
-        }
-
-        .faculty-card:hover::before {
-            opacity: 1;
-        }
-        /* Featured Faculty */
-        .featured-faculty {
-            border: 1px solid var(--accent);
-            background: linear-gradient( 180deg, #fff, #faf7f8 );
-        }
-
-            .featured-faculty::after {
-                width: 100% !important;
-            }
-
-            /* Badge */
-            .featured-faculty .featured-badge {
-                position: absolute;
-                top: 12px;
-                right: 12px;
-                background: var(--accent);
-                color: #fff;
-                font-size: .7rem;
-                padding: .25rem .5rem;
-                border-radius: 999px;
-            }
-        /* ================= Skeleton ================= */
-
-        .skeleton-card {
-            background: #fff;
-            border: 1px solid #eef1f5;
-        }
-
-        .skeleton-avatar {
-            width: 84px;
-            height: 84px;
-            border-radius: 50%;
-            margin: auto;
-            background: #e9edf3;
-        }
-
-        .skeleton-line {
-            height: 10px;
-            background: #e9edf3;
-            border-radius: 6px;
-            margin: 10px auto;
-        }
-
-        /* shimmer animation */
-        .skeleton-avatar,
-        .skeleton-line {
-            position: relative;
-            overflow: hidden;
-        }
-
-            .skeleton-avatar::after,
-            .skeleton-line::after {
-                content: "";
-                position: absolute;
-                inset: 0;
-                transform: translateX(-100%);
-                background: linear-gradient( 90deg, transparent, rgba(255,255,255,.6), transparent );
-                animation: shimmer 1.4s infinite;
-            }
-
-        @@keyframes shimmer {
-            100%
-
-        {
-            transform: translateX(100%);
-        }
-
-        }
-
-        /* ================= Entry Animation ================= */
-
-        .faculty-card {
-            opacity: 0;
-            transform: translateY(16px);
-            animation: cardIn .6s ease forwards;
-        }
-
-            .faculty-card:nth-child(1) {
-                animation-delay: .05s;
-            }
-
-            .faculty-card:nth-child(2) {
-                animation-delay: .1s;
-            }
-
-            .faculty-card:nth-child(3) {
-                animation-delay: .15s;
-            }
-
-            .faculty-card:nth-child(4) {
-                animation-delay: .2s;
-            }
-
-        @@keyframes cardIn {
-            to
-
-        {
-            opacity: 1;
-            transform: none;
-        }
-
-        }
-    </style>
-}
 @section Scripts {
     <script>
-        // Hide skeleton after load
-        window.addEventListener("load", function () {
+        // Init
+        document.addEventListener("DOMContentLoaded", function () {
+            // Hide skeleton, show grid
             const sk = document.getElementById("faculty-skeleton");
-            if (sk) sk.style.display = "none";
+            const grid = document.getElementById("faculty-grid");
+            if (sk && grid) {
+                // Simulate small network delay for smooth effect or just show immediately
+                setTimeout(() => {
+                    sk.style.display = "none";
+                    grid.style.display = "flex";
+                    
+                    // Stagger animation
+                    const items = document.querySelectorAll(".fade-in-item");
+                    items.forEach((item, index) => {
+                        item.style.opacity = "0";
+                        item.style.transform = "translateY(20px)";
+                        item.style.transition = `all 0.5s ease-out ${index * 0.05}s`;
+                        setTimeout(() => {
+                            item.style.opacity = "1";
+                            item.style.transform = "translateY(0)";
+                        }, 50);
+                    });
+                }, 300);
+            }
+            
+            // Modal Logic
+            const modal = document.getElementById('facultyModal');
+            if (modal) {
+                modal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    document.getElementById("mImg").src = button.dataset.img;
+                    document.getElementById("mName").textContent = button.dataset.name;
+                    document.getElementById("mTitle").textContent = button.dataset.title;
+                    document.getElementById("mDep").textContent = button.dataset.dep;
+                });
+            }
         });
-
-        // Faculty modal binding
-        const modal = document.getElementById('facultyModal');
-        if (modal) {
-            modal.addEventListener('show.bs.modal', function (event) {
-                const card = event.relatedTarget;
-                document.getElementById("mImg").src = card.dataset.img;
-                document.getElementById("mName").textContent = card.dataset.name;
-                document.getElementById("mTitle").textContent = card.dataset.title;
-                document.getElementById("mDep").textContent = card.dataset.dep;
-            });
-        }
     </script>
 }
-

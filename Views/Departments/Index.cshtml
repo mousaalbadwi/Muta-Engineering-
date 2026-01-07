@@ -10,241 +10,331 @@
     bool isAdmin = Context.Session.GetString("UserRole") == "Admin";
 }
 
-<section class="container after-hero">
-    <h2 class="h4 mb-3">@ViewData["Title"]</h2>
-
-    @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
-    {
-        <div class="alert alert-success">@ok</div>
-    }
-
-    @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
-    {
-        <div class="alert alert-danger">@err</div>
-    }
-
-    @if (isAdmin)
-    {
-        <div class="mb-3">
-            <a class="btn btn-primary"
-               asp-action="Create"
-               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
-                <i class="bi bi-plus-lg me-1"></i>@T("إضافة قسم", "Add Department")
-            </a>
-        </div>
-    }
-
-    <form method="get" class="row g-2 align-items-end mb-3">
-        <div class="col-12 col-md-10">
-            <label class="form-label small">@T("بحث بالاسم/الكود/الوصف", "Search name/code/desc")</label>
-            <input name="q" class="form-control" value="@q" />
-        </div>
-        <div class="col-12 col-md-2 d-grid">
-            <button class="btn btn-primary" type="submit">
-                <i class="bi bi-search me-1"></i>@T("بحث", "Search")
-            </button>
-        </div>
-    </form>
-
-    <div class="row g-3 g-md-4">
-        @if (!Model.Any())
-        {
-            <div class="col-12">
-                <div class="alert alert-info mb-0">@T("لا توجد أقسام.", "No departments.")</div>
-            </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/home-premium.css" asp-append-version="true" />
+    <style>
+        .dept-page-wrapper {
+            background-color: #f8fafc;
+            min-height: 100vh;
+            padding-top: 50px;
+            padding-bottom: 100px;
         }
-        else
+
+        .dept-search-bar {
+            background: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .dept-search-bar:focus-within {
+            box-shadow: 0 15px 40px rgba(128,0,0,0.1);
+            border-color: rgba(128,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        .dept-search-input {
+            border: none;
+            outline: none;
+            box-shadow: none;
+            background: transparent;
+            font-size: 1.1rem;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .search-btn-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--muta-maroon);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .search-btn-circle:hover {
+            transform: scale(1.1);
+            background: #600000;
+        }
+
+        /* Modern Dept Card */
+        .modern-dept-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .modern-dept-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(128,0,0,0.03) 0%, rgba(212,175,55,0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .modern-dept-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: rgba(128,0,0,0.1);
+        }
+
+        .modern-dept-card:hover::before {
+            opacity: 1;
+        }
+
+        .dept-thumb-modern {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            object-fit: cover;
+            background: #f1f5f9;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            transition: transform 0.4s ease;
+        }
+
+        .modern-dept-card:hover .dept-thumb-modern {
+            transform: scale(1.1) rotate(-3deg);
+        }
+
+        .dept-info {
+            flex-grow: 1;
+            z-index: 1;
+        }
+
+        .dept-code {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--muta-gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .dept-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--dark-surface);
+            margin: 0;
+            line-height: 1.3;
+        }
+        
+        .arrow-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f8fafc;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modern-dept-card:hover .arrow-icon {
+            background: var(--muta-maroon);
+            color: white;
+            transform: translateX(@(isRtl ? "-5px" : "5px"));
+        }
+
+        /* Admin Actions */
+        .admin-controls {
+            position: absolute;
+            top: 15px;
+            left: @(isRtl ? "15px" : "auto");
+            right: @(isRtl ? "auto" : "15px");
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 8px;
+        }
+
+        .modern-dept-card:hover .admin-controls {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn-mini {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+    </style>
+}
+
+<div class="dept-page-wrapper">
+    <div class="container">
+        
+        <!-- Header & Search -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <span class="badge bg-white text-dark border shadow-sm px-3 py-2 rounded-pill mb-3">
+                    <i class="bi bi-buildings-fill text-warning me-2"></i> @T("الأقسام الأكاديمية", "Academic Departments")
+                </span>
+                <h1 class="display-5 fw-bold mb-4" style="color: var(--dark-surface);">
+                    @T("تخصصات هندسية رائدة", "Leading Engineering Disciplines")
+                </h1>
+                
+                <form method="get" class="dept-search-bar d-flex align-items-center">
+                    <i class="bi bi-search text-muted ms-3 fs-5"></i>
+                    <input name="q" class="dept-search-input" value="@q" placeholder="@T("ابحث عن التخصص، الرمز، أو الوصف...", "Search for department, code, or description...")" />
+                    <button type="submit" class="search-btn-circle shadow-sm">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+
+                @if (isAdmin)
+                {
+                    <div class="mt-4">
+                        <a class="btn btn-outline-dark rounded-pill px-4"
+                           asp-action="Create"
+                           asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                            <i class="bi bi-plus-lg me-1"></i> @T("إضافة قسم جديد", "Add New Department")
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        @if (TempData["Ok"] is string ok && !string.IsNullOrWhiteSpace(ok))
         {
-            @foreach (var d in Model)
+            <div class="alert alert-success border-0 shadow-sm rounded-4 mb-4 text-center">@ok</div>
+        }
+        @if (TempData["Err"] is string err && !string.IsNullOrWhiteSpace(err))
+        {
+            <div class="alert alert-danger border-0 shadow-sm rounded-4 mb-4 text-center">@err</div>
+        }
+
+        <!-- Grid -->
+        <div class="row g-4">
+            @if (!Model.Any())
             {
-                var name = isRtl ? d.NameAr : d.NameEn;
-                var code = (d.Code ?? "").ToLower();
-                var guess = Url.Content($"~/img/departments/{code}.svg");
-                var fallback = Url.Content("~/img/departments/default.svg");
-                var img = Url.Content(string.IsNullOrWhiteSpace(d.ImagePath) ? guess : d.ImagePath);
-
-                <div class="col-12 col-md-6">
-                    <div class="card dept-card border-0 shadow-sm rounded-4 p-3 position-relative">
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="@img" alt="@name" class="dept-thumb"
-                                 onerror="this.onerror=null;this.src='@fallback';"
-                                 style="width:56px;height:56px;object-fit:cover;border-radius:12px;background:#f2f4f7" />
-                            <div class="flex-grow-1">
-                                <div class="small text-muted">@d.Code</div>
-                                <h5 class="m-0">@name</h5>
-                            </div>
-                        </div>
-
-                        <a class="stretched-link" asp-action="Details" asp-route-id="@d.Id"></a>
-
-                        @if (isAdmin)
-                        {
-                            <div class="position-absolute bottom-0 end-0 p-2 d-flex gap-1 admin-actions" style="z-index:20;">
-                                <a class="btn btn-sm btn-light border"
-                                   asp-action="Edit" asp-route-id="@d.Id"
-                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
-                                   title="@T("تعديل", "Edit")"
-                                   onclick="event.stopPropagation();">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-
-                                <form asp-action="Delete" method="post" class="d-inline js-delete-form" onsubmit="event.stopPropagation();">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@d.Id" />
-                                    <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
-                                    <button type="button" class="btn btn-sm btn-light border js-delete-btn" title="@T("حذف", "Delete")">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        }
+                <div class="col-12 text-center py-5">
+                    <div class="p-5 rounded-4 bg-white shadow-sm d-inline-block">
+                        <i class="bi bi-inbox display-1 text-light mb-3"></i>
+                        <h4 class="fw-bold">@T("لا توجد أقسام مطابقة", "No Departments Found")</h4>
+                        <p class="text-muted">@T("يرجى المحاولة باستخدام كلمات بحث أخرى.", "Please try different search keywords.")</p>
+                        <a href="@Context.Request.Path" class="btn btn-primary rounded-pill mt-2">@T("عرض الكل", "Show All")</a>
                     </div>
                 </div>
             }
-        }
+            else
+            {
+                @foreach (var d in Model)
+                {
+                    var name = isRtl ? d.NameAr : d.NameEn;
+                    var code = (d.Code ?? "").ToLower();
+                    var guess = Url.Content($"~/img/departments/{code}.svg");
+                    var fallback = Url.Content("~/img/departments/default.svg");
+                    var img = Url.Content(string.IsNullOrWhiteSpace(d.ImagePath) ? guess : d.ImagePath);
+
+                    <div class="col-md-6 col-lg-4 fade-in-up">
+                        <div class="modern-dept-card position-relative">
+                            
+                            <img src="@img" alt="@name" class="dept-thumb-modern"
+                                 onerror="this.onerror=null;this.src='@fallback';" />
+                            
+                            <div class="dept-info">
+                                <span class="dept-code">@d.Code</span>
+                                <h5 class="dept-title">@name</h5>
+                            </div>
+
+                            <a class="stretched-link" asp-action="Details" asp-route-id="@d.Id" style="position: absolute; inset: 0; z-index: 5;"></a>
+                            
+                            <div class="arrow-icon">
+                                <i class="bi @(isRtl ? "bi-arrow-left" : "bi-arrow-right")"></i>
+                            </div>
+
+                            @if (isAdmin)
+                            {
+                                <div class="admin-controls">
+                                    <a class="btn btn-warning btn-mini text-white"
+                                       asp-action="Edit" asp-route-id="@d.Id"
+                                       asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
+                                       style="z-index: 20; position: relative;"
+                                       onclick="event.stopPropagation();">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+
+                                    <form asp-action="Delete" method="post" class="d-inline js-delete-form" onsubmit="event.stopPropagation();">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@d.Id" />
+                                        <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+                                        <button type="button" class="btn btn-danger btn-mini js-delete-btn" 
+                                                style="z-index: 20; position: relative;"
+                                                onclick="event.stopPropagation(); deleteConfirm(this);">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
     </div>
-</section>
+</div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        (function () {
-            document.addEventListener('click', function (ev) {
-                const btn = ev.target.closest('.js-delete-btn');
-                if (!btn) return;
-                ev.preventDefault(); ev.stopPropagation();
-                const form = btn.closest('.js-delete-form');
-                if (!form) return;
+        // Stagger Animation
+        document.addEventListener("DOMContentLoaded", () => {
+             const items = document.querySelectorAll(".fade-in-up");
+             items.forEach((item, index) => {
+                 item.style.opacity = "0";
+                 item.style.transform = "translateY(20px)";
+                 item.style.transition = `all 0.5s ease-out ${index * 0.1}s`;
+                 setTimeout(() => {
+                     item.style.opacity = "1";
+                     item.style.transform = "translateY(0)";
+                 }, 50);
+             });
+        });
 
-                const rtl = document.documentElement.dir === 'rtl';
-                Swal.fire({
-                    title: rtl ? 'تأكيد الحذف؟' : 'Confirm delete?',
-                    text:  rtl ? 'لا يمكن التراجع بعد الحذف.' : 'This action cannot be undone.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: rtl ? 'نعم، احذف' : 'Yes, delete',
-                    cancelButtonText:   rtl ? 'إلغاء' : 'Cancel',
-                    reverseButtons: rtl,
-                    customClass: { confirmButton: 'btn btn-danger', cancelButton: 'btn btn-secondary ms-2' },
-                    buttonsStyling: false
-                }).then(res => { if (res.isConfirmed) form.submit(); });
-            }, true);
-        })();
+        function deleteConfirm(btn) {
+            const form = btn.closest('form');
+            if (!form) return;
+            
+            const rtl = document.documentElement.dir === 'rtl';
+            Swal.fire({
+                title: rtl ? 'تأكيد الحذف؟' : 'Confirm delete?',
+                text:  rtl ? 'لا يمكن التراجع بعد الحذف.' : 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: rtl ? 'نعم، احذف' : 'Yes, delete',
+                cancelButtonText:   rtl ? 'إلغاء' : 'Cancel',
+                reverseButtons: rtl,
+                customClass: { confirmButton: 'btn btn-danger', cancelButton: 'btn btn-secondary ms-2' },
+                buttonsStyling: false
+            }).then(res => { 
+                if (res.isConfirmed) form.submit(); 
+            });
+        }
     </script>
-    <style>
-        .card .admin-actions {
-            z-index: 20;
-        }
-
-        .stretched-link::after {
-            z-index: 1;
-        }
-
-        .admin-actions, .admin-actions * {
-            pointer-events: auto !important;
-        }
-        /* ===============================
-           DEPARTMENTS – ACADEMIC STYLE
-           Inspired by Ivy League
-           =============================== */
-
-        .dept-card {
-            background: #ffffff;
-            border: 1px solid #eef1f5;
-            transition: all .25s ease;
-            overflow: hidden;
-        }
-
-            .dept-card::after {
-                content: "";
-                position: absolute;
-                inset-inline-start: 0;
-                top: 0;
-                width: 4px;
-                height: 100%;
-                background: #8b1538;
-                opacity: 0;
-                transition: opacity .25s ease;
-            }
-
-            .dept-card:hover::after {
-                opacity: 1;
-            }
-
-            .dept-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 18px 36px rgba(0,0,0,.08);
-            }
-
-        /* Department Icon */
-        .dept-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            background: #f8f9fb;
-            border: 1px solid #e4e7ec;
-            padding: 8px;
-            transition: all .25s ease;
-        }
-
-        .dept-card:hover .dept-icon {
-            background: #8b1538;
-            border-color: #8b1538;
-            filter: brightness(0) invert(1);
-        }
-
-        /* Text */
-        .dept-card h5 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0;
-        }
-
-        .dept-card .text-muted {
-            font-size: .8rem;
-            letter-spacing: .3px;
-        }
-
-        /* Admin actions – تظهر بس عند hover */
-        .dept-card .admin-actions {
-            opacity: 0;
-            transform: translateY(4px);
-            transition: all .2s ease;
-        }
-
-        .dept-card:hover .admin-actions {
-            opacity: 1;
-            transform: none;
-        }
-
-        /* Search form refinement */
-        form .form-control {
-            border-radius: .75rem;
-        }
-
-        form .btn {
-            border-radius: .75rem;
-        }
-
-        /* Alerts softer */
-        .alert {
-            border-radius: .75rem;
-        }
-
-        /* Empty state */
-        .alert-info {
-            background: #f8f9fb;
-            border: 1px dashed #d0d5dd;
-            color: #475467;
-        }
-
-        .dept-card h5 {
-            transition: color .2s ease;
-        }
-
-        .dept-card:hover h5 {
-            color: #8b1538;
-        }
-
-    </style>
 }
